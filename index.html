@@ -403,11 +403,11 @@ function getSheetLog(){
   return getGSToken().then(function(t){
     var sid=document.getElementById("gs-sheet-id").value;
     var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
-    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A:J",{headers:{Authorization:"Bearer "+t}});
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A:K",{headers:{Authorization:"Bearer "+t}});
   }).then(function(r){return r.json();}).then(function(d){
     if(!d.values)return[];
     var rows=d.values.slice(1);
-    return rows.map(function(r){return{timestamp:r[0]||"",jobNum:r[1]||"",name:r[2]||"",phone:r[3]||"",trigger:r[4]||"",template:r[5]||"",message:r[6]||"",acculynxLogged:r[7]||"",status:r[8]||"",jobGuid:r[9]||""};});
+    return rows.map(function(r){return{timestamp:r[0]||"",jobNum:r[1]||"",name:r[2]||"",phone:r[3]||"",trigger:r[4]||"",template:r[5]||"",message:r[6]||"",acculynxLogged:r[7]||"",status:r[8]||"",jobGuid:r[9]||"",messageId:r[10]||""};});
   });
 }
 function appendSheetLog(e){
@@ -415,7 +415,7 @@ function appendSheetLog(e){
     var sid=document.getElementById("gs-sheet-id").value;
     var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
     var url="https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
-    return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[[e.timestamp,e.jobNum,e.name,e.phone,e.trigger,e.template,e.message,e.acculynxLogged,e.status,e.jobGuid||""]]})});
+    return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[[e.timestamp,e.jobNum,e.name,e.phone,e.trigger,e.template,e.message,e.acculynxLogged,e.status,e.jobGuid||"",e.messageId||""]]})});
   }).then(function(r){
     if(!r.ok)return r.text().then(function(t){throw new Error("Sheets append failed: "+t);});
     return r.json();
@@ -451,9 +451,9 @@ function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
   var guid=extractGuid(jobNumUrl)||extractGuid(jobNameUrl);
   if(!guid){
     addLog("warn","No GUID found for Job "+jobNum+" — skipping AccuLynx log");
-    return Promise.resolve({guid:""});
+    return Promise.resolve({guid:"",messageId:""});
   }
-  // First fetch the job to get the real API ID
+  // Fetch job to get real API ID
   return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+guid,{
     headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"}
   }).then(function(r){
@@ -468,7 +468,11 @@ function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
       body:JSON.stringify({message:"[Auto-Text Sent] "+msg})
     }).then(function(r){
       if(!r.ok)return r.text().then(function(t){throw new Error("AccuLynx post failed: "+r.status+" "+t);});
-      return {guid:apiGuid};
+      return r.json();
+    }).then(function(data){
+      var messageId=data.messageId||"";
+      addLog("info","AccuLynx message ID: "+messageId);
+      return {guid:apiGuid,messageId:messageId};
     });
   });
 }
@@ -563,7 +567,7 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
       return {status:"failed",guid:""};
     });
   }).then(function(alResult){
-    var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||""};
+    var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:alResult.messageId||""};
     log.push(entry);stats.sent++;
     addLog("success",tmpl.id+" sent — "+fullName+" | Job "+jobNum);
     return appendSheetLog(entry);
@@ -657,4 +661,3 @@ console.log("Init complete");
 </script>
 </body>
 </html>
-
