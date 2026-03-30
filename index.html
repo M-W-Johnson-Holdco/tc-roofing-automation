@@ -1,1 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TC Roofing Text Automation</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+  header{background:#1a1f2e;border-bottom:3px solid #4A90D9;padding:14px 28px;display:flex;align-items:center;gap:16px}
+  header img{height:52px;width:auto;display:none}
+  #header-fallback{font-size:1.3rem;font-weight:800;color:#4A90D9}
+  #header-fallback span{color:#8DC63F}
+  header .badge{background:#4A90D9;color:#fff;font-size:0.7rem;padding:3px 10px;border-radius:20px;font-weight:600;margin-left:auto}
+  .container{max-width:960px;margin:0 auto;padding:28px 20px}
+  .card{background:#1a1f2e;border:1px solid #2a3050;border-radius:12px;padding:22px;margin-bottom:20px}
+  .card h2{font-size:0.95rem;font-weight:700;color:#4A90D9;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.05em}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  label{display:block;font-size:0.78rem;color:#94a3b8;margin-bottom:5px;font-weight:600}
+  input,textarea{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:0.85rem;outline:none;transition:border 0.2s}
+  input:focus,textarea:focus{border-color:#4A90D9}
+  textarea{resize:vertical;font-family:monospace;font-size:0.8rem}
+  .btn{padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:0.9rem;transition:all 0.2s}
+  .btn-primary{background:#4A90D9;color:#fff}.btn-primary:hover{background:#357abd}
+  .btn-secondary{background:#1e2a3a;color:#4A90D9}.btn-secondary:hover{background:#253448}
+  .btn-danger{background:#7f1d1d;color:#fca5a5}
+  .btn-warn{background:#78350f;color:#fcd34d}
+  .btn-sm{padding:5px 12px;font-size:0.75rem}
+  .btn:disabled{opacity:0.5;cursor:not-allowed}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .log-box{background:#0a0d14;border:1px solid #1e2640;border-radius:8px;padding:14px;height:260px;overflow-y:auto;font-family:monospace;font-size:0.78rem;line-height:1.6}
+  .log-entry{padding:2px 0;border-bottom:1px solid #1a1f2e}
+  .log-entry.success{color:#8DC63F}.log-entry.error{color:#fca5a5}.log-entry.info{color:#4A90D9}.log-entry.warn{color:#fcd34d}.log-entry.skip{color:#94a3b8}
+  .status-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px}
+  .status-bar.idle{background:#1e2640;color:#94a3b8}.status-bar.running{background:#1a2a3f;color:#4A90D9}.status-bar.done{background:#1a2a1f;color:#8DC63F}.status-bar.error{background:#2d1515;color:#fca5a5}
+  .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+  .dot.pulse{animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .stat{background:#1a1f2e;border:1px solid #2a3050;border-radius:10px;padding:14px;text-align:center}
+  .stat .num{font-size:1.8rem;font-weight:800;color:#4A90D9}
+  .stat .lbl{font-size:0.72rem;color:#64748b;margin-top:2px;text-transform:uppercase;letter-spacing:0.05em}
+  .template-item{background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:14px;margin-bottom:12px}
+  .template-item h3{font-size:0.85rem;color:#8DC63F;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+  .trigger-badge{display:inline-block;background:#1a2a3f;color:#4A90D9;font-size:0.68rem;padding:2px 8px;border-radius:10px;margin-bottom:8px}
+  .template-body{font-size:0.78rem;color:#94a3b8;line-height:1.6;white-space:pre-wrap}
+  .template-edit-area{display:none;margin-top:10px}.template-edit-area.open{display:block}
+  .var-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .var-chip{background:#1a2a3f;color:#4A90D9;font-size:0.7rem;padding:3px 8px;border-radius:10px;cursor:pointer;border:1px solid #4A90D9;font-family:monospace}
+  .var-chip:hover{background:#4A90D9;color:#fff}
+  .mms-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .img-upload-box{background:#0f1117;border:1px dashed #2a3050;border-radius:8px;padding:14px;text-align:center}
+  .section-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .tab{padding:8px 18px;border-radius:20px;border:1px solid #2a3050;background:#1a1f2e;color:#94a3b8;cursor:pointer;font-size:0.82rem;font-weight:600;transition:all 0.2s}
+  .tab.active{background:#4A90D9;color:#fff;border-color:#4A90D9}
+  .section{display:none}.section.active{display:block}
+  .alert{padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px}
+  .alert-warn{background:#2d2008;color:#fcd34d;border:1px solid #854d0e}
+  .alert-info{background:#0c1a2e;color:#4A90D9;border:1px solid #1e3a5f}
+  .schedule-indicator{display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#94a3b8}
+  .next-run{color:#8DC63F;font-weight:600}
+  .small{font-size:0.75rem;color:#64748b;margin-top:4px}
+  hr{border:none;border-top:1px solid #2a3050;margin:16px 0}
+  .modified-badge{background:#78350f;color:#fcd34d;font-size:0.65rem;padding:2px 6px;border-radius:8px;margin-left:6px}
+</style>
+</head>
+<body>
+<header>
+  <img id="header-logo" alt="TC Roofing">
+  <div id="header-fallback">TC <span>Roofing</span> &amp; Restorations</div>
+  <span class="badge">DAILY SCHEDULER</span>
+</header>
+
+<div class="container">
+  <div class="section-tabs">
+    <div class="tab active" data-tab="dashboard">Job Status Updates</div>
+    <div class="tab" data-tab="weather">🌧️ Weather Blast</div>
+    <div class="tab" data-tab="templates">Text &amp; Image Templates</div>
+    <div class="tab" data-tab="config">Configuration</div>
+    <div class="tab" data-tab="logs">Run Logs</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="section active" id="tab-dashboard">
+    <div class="stats">
+      <div class="stat"><div class="num" id="stat-sent">0</div><div class="lbl">Texts Sent</div></div>
+      <div class="stat"><div class="num" id="stat-skipped">0</div><div class="lbl">Skipped</div></div>
+      <div class="stat"><div class="num" id="stat-errors">0</div><div class="lbl">Errors</div></div>
+      <div class="stat"><div class="num" id="stat-jobs">0</div><div class="lbl">Jobs Processed</div></div>
+    </div>
+    <div class="status-bar idle" id="status-bar">
+      <div class="dot" id="status-dot"></div>
+      <span id="status-text">Ready — paste CSV and click Run Now</span>
+    </div>
+    <div class="card">
+      <h2>Controls</h2>
+      <div class="alert alert-warn">⚠️ Paste your AccuLynx CSV data below before running.</div>
+      <label>Paste AccuLynx CSV Data Here</label>
+      <textarea id="csv-input" rows="6" placeholder="Paste full CSV content here (including header row)..."></textarea>
+      <div class="small">Tip: Open CSV from AccuLynx email, Select All (Ctrl+A), Copy, Paste here.</div>
+      <br>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="run-btn">&#9654; Run Now</button>
+        <button class="btn btn-secondary" id="clear-log-btn">Clear Log</button>
+      </div>
+      <br>
+      <div class="schedule-indicator">Texting window: 8:00 AM to 8:00 PM CST &nbsp;|&nbsp; Next 8am: <span class="next-run" id="next-run-time">--</span></div>
+    </div>
+    <div class="card">
+      <h2>Live Log</h2>
+      <div class="log-box" id="log-box"><div class="log-entry info">System ready.</div></div>
+    </div>
+  </div>
+
+  <!-- WEATHER -->
+  <div class="section" id="tab-weather">
+    <div class="card">
+      <h2>Weather Blast</h2>
+      <div class="alert alert-warn">⚠️ Sends immediately to all numbers plus fixed group. Double-check before sending.</div>
+      <div class="status-bar idle" id="weather-status-bar"><div class="dot" id="weather-dot"></div><span id="weather-status-text">Ready</span></div>
+      <label>Customer Phone Numbers</label>
+      <div class="small" style="margin-bottom:8px;">One per line or comma separated.</div>
+      <textarea id="weather-numbers" rows="8" placeholder="2145551234&#10;9453648551&#10;..."></textarea>
+      <div id="weather-count" class="small" style="margin-top:6px;"></div>
+      <hr>
+      <label>Message Preview</label>
+      <div id="weather-preview" style="background:#0a0d14;border:1px solid #2a3050;border-radius:8px;padding:14px;font-size:0.82rem;line-height:1.6;margin-bottom:16px;"></div>
+      <label>Also sending to:</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px;">
+        <span class="trigger-badge">Estimating (214) 347-8753</span>
+        <span class="trigger-badge">Production (214) 833-0149</span>
+        <span class="trigger-badge">Billing (214) 764-8652</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="weather-send-btn">Send Weather Texts</button>
+        <button class="btn btn-secondary" id="weather-clear-btn">Clear Log</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Weather Blast Log</h2>
+      <div class="log-box" id="weather-log" style="height:220px;"><div class="log-entry info">No weather blast sent yet.</div></div>
+    </div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <div class="section" id="tab-templates">
+    <div class="card">
+      <h2>Text Templates &amp; Triggers</h2>
+      <div class="alert alert-info">Click Edit to change wording. Use variable chips to insert dynamic fields. Changes save permanently.</div>
+      <div id="templates-list"></div>
+    </div>
+    <div class="card">
+      <h2>MMS Image Uploads</h2>
+      <div class="alert alert-info">T1, T6, and T8 support image attachments. Images save permanently.</div>
+      <div class="mms-grid">
+        <div class="img-upload-box"><label>T1 — Welcome</label><input type="file" id="img-T1" accept="image/*"><div id="img-T1-preview"></div></div>
+        <div class="img-upload-box"><label>T6 — Settlement</label><input type="file" id="img-T6" accept="image/*"><div id="img-T6-preview"></div></div>
+        <div class="img-upload-box"><label>T8 — Work Order</label><input type="file" id="img-T8" accept="image/*"><div id="img-T8-preview"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="section" id="tab-config">
+    <div class="card">
+      <h2>Brand Logo</h2>
+      <div class="small" style="margin-bottom:10px;">Upload once — saves permanently.</div>
+      <input type="file" id="logo-upload" accept="image/*">
+      <div id="logo-preview" style="margin-top:10px;"></div>
+    </div>
+    <div class="card">
+      <h2>RingCentral Inbound SMS Webhook</h2>
+      <div class="alert alert-info">Register your Cloudflare Worker to log inbound SMS replies to AccuLynx. Do once.</div>
+      <div id="webhook-status" class="small" style="margin-bottom:12px;color:#94a3b8;">Status: Unknown</div>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-sm" id="register-webhook-btn">Register Webhook</button>
+        <button class="btn btn-secondary btn-sm" id="check-webhook-btn">Check Status</button>
+        <button class="btn btn-danger btn-sm" id="delete-webhook-btn">Delete</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>RingCentral Credentials</h2>
+      <div class="grid2">
+        <div><label>Client ID</label><input type="text" id="rc-client-id"></div>
+        <div><label>Client Secret</label><input type="password" id="rc-client-secret"></div>
+        <div><label>JWT Token</label><input type="password" id="rc-jwt"></div>
+        <div><label>From Number</label><input type="text" id="rc-from"></div>
+      </div>
+      <div class="btn-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" id="save-rc-btn">Save RC Credentials</button></div>
+    </div>
+    <div class="card">
+      <h2>Google Sheets Credentials</h2>
+      <div class="grid2">
+        <div><label>OAuth Client ID</label><input type="text" id="gs-client-id"></div>
+        <div><label>OAuth Client Secret</label><input type="password" id="gs-client-secret"></div>
+        <div><label>Refresh Token</label><input type="password" id="gs-refresh-token"></div>
+        <div><label>Spreadsheet ID</label><input type="text" id="gs-sheet-id"></div>
+        <div><label>Sheet Tab Name</label><input type="text" id="gs-sheet-name"></div>
+      </div>
+      <div class="btn-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" id="save-gs-btn">Save Sheets Credentials</button></div>
+    </div>
+    <div class="card">
+      <h2>AccuLynx Credentials</h2>
+      <div><label>API Key</label><input type="password" id="acculynx-api-key"></div>
+      <div class="btn-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" id="save-al-btn">Save AccuLynx Credentials</button></div>
+    </div>
+    <div class="card">
+      <h2>Fixed Group Numbers</h2>
+      <div class="grid2">
+        <div><label>Estimating Dept</label><input type="text" value="+12143478753" readonly></div>
+        <div><label>Production Dept</label><input type="text" value="+12148330149" readonly></div>
+        <div><label>Billing Dept</label><input type="text" value="+12147648652" readonly></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGS -->
+  <div class="section" id="tab-logs">
+    <div class="card">
+      <h2>Session Log</h2>
+      <div class="log-box" id="log-box-2" style="height:400px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+console.log("TC Roofing Automation v3.0 loaded");
+
+var store = {
+  get: function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set: function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
+  del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+
+var SALESPERSON_MAP = {
+  "Buck Broadhead":"+14705729742","Isaac Perez":"+19453648551",
+  "Omar Al Shanti":"+19453468547","Kyle Pippins":"+19453468500",
+  "Noah Carr":"+19453468585","Leobardo Gonzalez":"+19453648552",
+  "Nick Scobee":"+19453648547","Joseph Valderrama":"+19453648549",
+  "Ryan Comer":"+19453722324","Charles Tomlinson":"+19453710200",
+  "Matt Timcho":"+14048198711","Matthew Timcho":"+14048198711"
+};
+var FIXED_NUMBERS = ["+12143478753","+12148330149","+12147648652"];
+var PRODUCTION_PHONE = "(214) 833-0149";
+var ESTIMATING_EMAIL = "estimating@tcroofingexperts.com";
+var ACCULYNX_PROXY = "https://acculynx-proxy.k-liss.workers.dev";
+var WEBHOOK_URL = "https://acculynx-sms-logger.k-liss.workers.dev/";
+var TEMPLATE_VARS = ["{{First Name}}","{{Last Name}}","{{Primary Salesperson}}","{{Salesperson Phone}}","{{Insurance Company}}","{{Job Number}}","{{Completed Date}}","{{Invoiced Date}}","{{WO Scheduled Date}}","{{Claim Number}}"];
+var WEATHER_MESSAGE = "Mother Nature has other plans! Due to recent weather, we unfortunately need to delay your roof replacement to ensure a safe and high-quality build. We are closely monitoring the forecast and will reach out as soon as possible with your newly rescheduled build date. If you have immediate questions, please call Production at (214) 833-0149. Thank you for your patience! - TC Roofing & Exteriors";
+
+var DEFAULT_BODIES = {
+  T1: "Hi {{First Name}}, thank you for choosing TC Roofing & Restorations! We're excited to get started with you. Check out the image below for important contact information throughout the process. Feel free to text in this group message at any point throughout your project to reach your dedicated team.",
+  T2: "This is an important message from TC Roofing & Restorations. We have an update on your insurance claim. Please reach out to {{Primary Salesperson}} at {{Salesperson Phone}} ASAP.",
+  T3: "This is an important message from TC Roofing & Restorations. Your roof replacement has been scheduled. Please reach out to {{Primary Salesperson}} ASAP at {{Salesperson Phone}} to choose roof materials if haven't scheduled appointment already.",
+  T4: "Hi {{First Name}}! Congrats on your new roof! Do you have any questions or concerns regarding how your roof replacement went? Feel free to respond to this text or call Production directly at " + PRODUCTION_PHONE + ". Our Estimating Dept is submitting supplemental documentation to {{Insurance Company}}, so please keep an eye out for any funds released.\n\nNext steps: If you haven't had your final walk-through and attic inspection please reach out to {{Primary Salesperson}} to schedule.",
+  T5: "Hi {{First Name}}! All work has now been completed with TC Roofing! Do you have any questions or concerns regarding work recently completed? Feel free to respond to this text or call Production directly at " + PRODUCTION_PHONE + ". Our Estimating Dept is submitting final documentation to {{Insurance Company}}, so please keep an eye out for any funds released.",
+  T6: "TC Roofing & Restorations has an important update regarding your claim. Settlement on your claim with {{Insurance Company}} has been reached.",
+  T7: "Your adjustment appointment with {{Insurance Company}} has completed. It typically takes about 7-10 days for the first insurance estimate to be released post-adjustment. Please make sure to forward any email communication to our estimating department at " + ESTIMATING_EMAIL + ", so we can review and assist ASAP to keep your project moving. Feel free to respond to this text at any time with any questions. Thank you for choosing TC Roofing & Restorations!",
+  T8: "Hi {{First Name}}! EXCITING NEWS from TC Roofing! Your Work Order is officially COMPLETED, which means you are on the final path to your brand-new roof! We can't wait to get started! Let us know if you have any questions!"
+};
+
+var templateBodies = {};
+for(var k in DEFAULT_BODIES) templateBodies[k] = DEFAULT_BODIES[k];
+var imageStore = {T1:null,T6:null,T8:null};
+
+var TEMPLATES = [
+  {id:"T1",name:"Welcome",trigger:"Submitted as Prospect Date — day of",
+   check:function(row,today){var d=pd(row["Submitted as Prospect Date"]);return d&&sd(d,today);}},
+  {id:"T2",name:"LGIB Insurance Update",trigger:"Current Status = lgib — day of",
+   check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;var d=pd(row["Current Status Date"]);return d&&sd(d,today);}},
+  {id:"T3",name:"LGIB Materials",trigger:"Current Status = lgib — 2 hours after T2",
+   check:function(row,today,log){
+     if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;
+     var d=pd(row["Current Status Date"]);if(!d||!sd(d,today))return false;
+     var t2=null;for(var i=0;i<log.length;i++){if(log[i].jobNum===row["Job Number"]&&log[i].template==="T2"){t2=log[i];break;}}
+     if(!t2)return false;
+     return(new Date()-new Date(t2.timestamp))>=7200000;
+   }},
+  {id:"T4",name:"Roof Completed",trigger:"Completed Date — within 4 days",
+   check:function(row,today){var d=pd(row["Completed Date"]);return d&&wc(d,today,4);}},
+  {id:"T5",name:"Other Trades Completed",trigger:"Current Status = Other Trade(s) Completed — within 4 days",
+   check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="other trade(s) completed")return false;var d=pd(row["Current Status Date"]);return d&&wc(d,today,4);}},
+  {id:"T6",name:"Settlement Reached",trigger:"Invoiced Date — within 2 days",
+   check:function(row,today){var d=pd(row["Invoiced Date"]);return d&&wc(d,today,2);}},
+  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — day after, 7 day catchup",
+   check:function(row,today){var d=pd(row["Met With Adjuster Date"]);if(!d)return false;var da=new Date(d);da.setDate(da.getDate()+1);return wc(da,today,7);}},
+  {id:"T8",name:"Work Order Approved",trigger:"Submitted for Approval Date — within 2 days",
+   check:function(row,today){var d=pd(row["Submitted for Approval Date"]);return d&&wc(d,today,2);}}
+];
+
+function pd(v){if(!v||!v.trim())return null;var d=new Date(v);return isNaN(d.getTime())?null:d;}
+function sd(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+function wc(t,today,days){var a=new Date(t);a.setHours(0,0,0,0);var b=new Date(today);b.setHours(0,0,0,0);var diff=Math.floor((b-a)/86400000);return diff>=0&&diff<=days;}
+function getCSTHour(){var c=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Chicago"}));return c.getHours()+c.getMinutes()/60;}
+function isWithinTextingHours(){var h=getCSTHour();return h>=8&&h<20;}
+function getTodayCST(){return new Date(new Date().toLocaleString("en-US",{timeZone:"America/Chicago"}));}
+function toE164(p){if(!p)return null;var d=p.replace(/\D/g,"");if(d.length===10)return"+1"+d;if(d.length===11&&d[0]==="1")return"+"+d;return null;}
+function extractGuid(url){if(!url)return null;var m=url.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);return m?m[0]:null;}
+
+function spDisplay(name){
+  if(!name)return"";
+  var keys=Object.keys(SALESPERSON_MAP);
+  for(var i=0;i<keys.length;i++){
+    if(keys[i].toLowerCase()===name.trim().toLowerCase()){
+      var v=SALESPERSON_MAP[keys[i]];var d=v.replace("+1","");
+      return"("+d.slice(0,3)+") "+d.slice(3,6)+"-"+d.slice(6);
+    }
+  }
+  return name;
+}
+function spE164(name){
+  if(!name)return null;
+  var keys=Object.keys(SALESPERSON_MAP);
+  for(var i=0;i<keys.length;i++){if(keys[i].toLowerCase()===name.trim().toLowerCase())return SALESPERSON_MAP[keys[i]];}
+  return null;
+}
+
+function buildMsg(id,row){
+  var m=templateBodies[id]||DEFAULT_BODIES[id];
+  m=m.replace(/{{First Name}}/g,row["Primary Contact: First Name"]||"");
+  m=m.replace(/{{Last Name}}/g,row["Primary Contact: Last Name"]||"");
+  m=m.replace(/{{Primary Salesperson}}/g,row["Primary Salesperson"]||"");
+  m=m.replace(/{{Salesperson Phone}}/g,spDisplay(row["Primary Salesperson"]));
+  m=m.replace(/{{Insurance Company}}/g,row["Insurance Company"]||"");
+  m=m.replace(/{{Job Number}}/g,row["Job Number"]||"");
+  m=m.replace(/{{Completed Date}}/g,row["Completed Date"]||"");
+  m=m.replace(/{{Invoiced Date}}/g,row["Invoiced Date"]||"");
+  m=m.replace(/{{WO Scheduled Date}}/g,row["WO Scheduled Date"]||"");
+  m=m.replace(/{{Claim Number}}/g,row["Claim Number"]||"");
+  return m;
+}
+
+function parseCSV(text){
+  var lines=text.trim().split(/\r?\n/);
+  if(lines.length<2)return[];
+  var delim=lines[0].indexOf("\t")>-1?"\t":",";
+  var headers=lines[0].split(delim).map(function(h){return h.trim().replace(/^"|"$/g,"");});
+  return lines.slice(1).map(function(line){
+    var vals=line.split(delim).map(function(v){return v.trim().replace(/^"|"$/g,"");});
+    var row={};headers.forEach(function(h,i){row[h]=vals[i]||"";});return row;
+  }).filter(function(r){return Object.values(r).some(function(v){return v;});});
+}
+
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+
+function getCred(k,def){return store.get("cred_"+k)||def||"";}
+function saveCred(k,v){store.set("cred_"+k,v);}
+function loadCredentials(){
+  document.getElementById("rc-client-id").value=getCred("rc_client_id","***ROTATED-SECRET-REMOVED***");
+  document.getElementById("rc-client-secret").value=getCred("rc_client_secret","***ROTATED-SECRET-REMOVED***");
+  document.getElementById("rc-jwt").value=getCred("rc_jwt","");
+  document.getElementById("rc-from").value=getCred("rc_from","+12147168582");
+  document.getElementById("gs-client-id").value=getCred("gs_client_id","129261519673-qdi4bnqqr08b3vqiarcvgvr59gbmhvem.apps.googleusercontent.com");
+  document.getElementById("gs-client-secret").value=getCred("gs_client_secret","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");
+  document.getElementById("gs-refresh-token").value=getCred("gs_refresh_token","1//04nEAloEurHn8CgYIARAAGAQSNwF-L9IrgcDOXl0VNXiqrDSzBl3v5Tmh3nitc57IjYBQPI2-WU7hUQ4tMo2ViNJ5tRz1eG9MSb8");
+  document.getElementById("gs-sheet-id").value=getCred("gs_sheet_id","1vCz8x85_SW3AZdhiDPTY7n0jwo84YpPmdBG9zo8RRR4");
+  document.getElementById("gs-sheet-name").value=getCred("gs_sheet_name","Log 2026");
+  document.getElementById("acculynx-api-key").value=getCred("al_api_key","***ROTATED-SECRET-REMOVED***");
+}
+
+function applyLogo(d){var l=document.getElementById("header-logo");var f=document.getElementById("header-fallback");l.src=d;l.style.display="block";f.style.display="none";}
+function renderLogoPreview(d){document.getElementById("logo-preview").innerHTML='<img src="'+d+'" style="max-height:60px;border-radius:6px;border:1px solid #2a3050;background:#0f1117;padding:6px;margin-top:8px;"><div class="small" style="margin-top:4px;">Logo saved</div><button class="btn btn-danger btn-sm" id="remove-logo-btn" style="margin-top:6px;">Remove</button>';var b=document.getElementById("remove-logo-btn");if(b)b.addEventListener("click",clearLogo);}
+function clearLogo(){store.del("brand_logo");var l=document.getElementById("header-logo");l.src="";l.style.display="none";document.getElementById("header-fallback").style.display="block";document.getElementById("logo-preview").innerHTML="";document.getElementById("logo-upload").value="";}
+function loadLogo(){var d=store.get("brand_logo");if(d){applyLogo(d);renderLogoPreview(d);}}
+
+function loadImages(){
+  ["T1","T6","T8"].forEach(function(id){
+    var d=store.get("img_"+id);
+    if(d){try{var o=JSON.parse(d);imageStore[id]=o;renderImgPreview(id,o);}catch(e){}}
+  });
+}
+function renderImgPreview(id,obj){
+  var el=document.getElementById("img-"+id+"-preview");
+  if(!el)return;
+  el.innerHTML='<img src="'+obj.dataUrl+'" style="max-width:100%;max-height:100px;border-radius:6px;margin-top:8px;"><div class="small" style="margin-top:4px;">'+obj.name+'</div><button class="btn btn-danger btn-sm" style="margin-top:6px;" data-clear-img="'+id+'">Remove</button>';
+}
+function clearImg(id){imageStore[id]=null;store.del("img_"+id);var el=document.getElementById("img-"+id+"-preview");if(el)el.innerHTML="";var inp=document.getElementById("img-"+id);if(inp)inp.value="";}
+
+function loadTemplateBodies(){Object.keys(DEFAULT_BODIES).forEach(function(id){var v=store.get("tmpl_"+id);if(v)templateBodies[id]=v;});}
+function saveTemplateBody(id,body){templateBodies[id]=body;store.set("tmpl_"+id,body);}
+function resetTemplateBody(id){templateBodies[id]=DEFAULT_BODIES[id];store.del("tmpl_"+id);}
+function isModified(id){return templateBodies[id]!==DEFAULT_BODIES[id];}
+
+function renderTemplates(){
+  var el=document.getElementById("templates-list");
+  if(!el)return;
+  var sampleRow={"Primary Contact: First Name":"[First Name]","Primary Salesperson":"[Salesperson]","Insurance Company":"[Insurance Co]","Job Number":"12345","Completed Date":"[Date]","Invoiced Date":"[Date]","WO Scheduled Date":"[Date]","Claim Number":"[Claim#]"};
+  el.innerHTML=TEMPLATES.map(function(t){
+    var mod=isModified(t.id);
+    var prev=buildMsg(t.id,sampleRow);
+    return'<div class="template-item"><h3><span>'+t.id+' — '+t.name+(mod?'<span class="modified-badge">MODIFIED</span>':'')+'</span><div style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm" data-edit="'+t.id+'">Edit</button>'+(mod?'<button class="btn btn-warn btn-sm" data-reset="'+t.id+'">Reset</button>':'')+'</div></h3><div class="trigger-badge">'+t.trigger+'</div><div class="template-body" id="body-prev-'+t.id+'">'+prev+'</div><div class="template-edit-area" id="edit-area-'+t.id+'"><hr><label>Insert Variable:</label><div class="var-chips">'+TEMPLATE_VARS.map(function(v){return'<span class="var-chip" data-var="'+v+'" data-tmpl="'+t.id+'">'+v+'</span>';}).join("")+'</div><textarea id="edit-ta-'+t.id+'" rows="5"></textarea><div class="btn-row" style="margin-top:8px;"><button class="btn btn-primary btn-sm" data-save="'+t.id+'">Save</button><button class="btn btn-secondary btn-sm" data-cancel="'+t.id+'">Cancel</button></div></div></div>';
+  }).join("");
+}
+
+// GOOGLE SHEETS
+var gsToken=null,gsExpiry=0;
+function getGSToken(){
+  if(gsToken&&Date.now()<gsExpiry)return Promise.resolve(gsToken);
+  return fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"client_id="+encodeURIComponent(document.getElementById("gs-client-id").value)+"&client_secret="+encodeURIComponent(document.getElementById("gs-client-secret").value)+"&refresh_token="+encodeURIComponent(document.getElementById("gs-refresh-token").value)+"&grant_type=refresh_token"})
+  .then(function(r){return r.json();}).then(function(d){if(!d.access_token)throw new Error("Google token failed");gsToken=d.access_token;gsExpiry=Date.now()+(d.expires_in-60)*1000;return gsToken;});
+}
+function getSheetLog(){
+  return getGSToken().then(function(t){
+    var sid=document.getElementById("gs-sheet-id").value;
+    var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A:J",{headers:{Authorization:"Bearer "+t}});
+  }).then(function(r){return r.json();}).then(function(d){
+    if(!d.values)return[];
+    var rows=d.values.slice(1);
+    return rows.map(function(r){return{timestamp:r[0]||"",jobNum:r[1]||"",name:r[2]||"",phone:r[3]||"",trigger:r[4]||"",template:r[5]||"",message:r[6]||"",acculynxLogged:r[7]||"",status:r[8]||"",jobGuid:r[9]||""};});
+  });
+}
+function appendSheetLog(e){
+  return getGSToken().then(function(t){
+    var sid=document.getElementById("gs-sheet-id").value;
+    var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
+    var url="https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
+    return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[[e.timestamp,e.jobNum,e.name,e.phone,e.trigger,e.template,e.message,e.acculynxLogged,e.status,e.jobGuid||""]]})});
+  }).then(function(r){
+    if(!r.ok)return r.text().then(function(t){throw new Error("Sheets append failed: "+t);});
+    return r.json();
+  });
+}
+
+// RINGCENTRAL
+var rcToken=null,rcExpiry=0;
+function getRCToken(){
+  if(rcToken&&Date.now()<rcExpiry)return Promise.resolve(rcToken);
+  var creds=btoa(document.getElementById("rc-client-id").value+":"+document.getElementById("rc-client-secret").value);
+  return fetch("https://platform.ringcentral.com/restapi/oauth/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Authorization":"Basic "+creds},body:"grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion="+encodeURIComponent(document.getElementById("rc-jwt").value)})
+  .then(function(r){return r.json();}).then(function(d){if(!d.access_token)throw new Error("RC auth failed: "+JSON.stringify(d));rcToken=d.access_token;rcExpiry=Date.now()+(d.expires_in-60)*1000;return rcToken;});
+}
+function sendSMS(to,msg){
+  return getRCToken().then(function(t){
+    return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms",{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({from:{phoneNumber:document.getElementById("rc-from").value},to:to.map(function(n){return{phoneNumber:n};}),text:msg})});
+  }).then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error("SMS failed: "+JSON.stringify(d));return d;});
+}
+function sendMMS(to,img){
+  return getRCToken().then(function(t){
+    var fd=new FormData();
+    fd.append("json",new Blob([JSON.stringify({from:{phoneNumber:document.getElementById("rc-from").value},to:to.map(function(n){return{phoneNumber:n};}),text:""})],{type:"application/json"}));
+    var b64=img.dataUrl.split(",")[1];var bytes=atob(b64);var arr=new Uint8Array(bytes.length);for(var i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i);
+    fd.append("attachment",new Blob([arr],{type:img.type}),img.name);
+    return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/mms",{method:"POST",headers:{Authorization:"Bearer "+t},body:fd});
+  }).then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error("MMS failed: "+JSON.stringify(d));return d;});
+}
+
+// ACCULYNX
+function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
+  var key=document.getElementById("acculynx-api-key").value;
+  var guid=extractGuid(jobNumUrl)||extractGuid(jobNameUrl);
+  if(!guid){
+    addLog("warn","No GUID found for Job "+jobNum+" — skipping AccuLynx log");
+    return Promise.resolve({guid:""});
+  }
+  // First fetch the job to get the real API ID
+  return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+guid,{
+    headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"}
+  }).then(function(r){
+    if(!r.ok)throw new Error("Job fetch failed: "+r.status);
+    return r.json();
+  }).then(function(jobData){
+    var apiGuid=jobData.id||guid;
+    addLog("info","AccuLynx API GUID: "+apiGuid);
+    return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+apiGuid+"/messages",{
+      method:"POST",
+      headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},
+      body:JSON.stringify({message:"[Auto-Text Sent] "+msg})
+    }).then(function(r){
+      if(!r.ok)return r.text().then(function(t){throw new Error("AccuLynx post failed: "+r.status+" "+t);});
+      return {guid:apiGuid};
+    });
+  });
+}
+
+// WEBHOOK
+function getExistingWebhook(){
+  return fetch("https://platform.ringcentral.com/restapi/v1.0/subscription",{headers:{Authorization:"Bearer "+rcToken}})
+  .then(function(r){return r.json();}).then(function(d){
+    var recs=d.records||[];
+    for(var i=0;i<recs.length;i++){if(recs[i].deliveryMode&&recs[i].deliveryMode.address===WEBHOOK_URL)return recs[i];}
+    return null;
+  });
+}
+function setWebhookStatus(msg,color){var el=document.getElementById("webhook-status");if(el){el.textContent="Status: "+msg;el.style.color=color||"#94a3b8";}}
+
+// MAIN RUN
+var stats={sent:0,skipped:0,errors:0,jobs:0};
+
+function runAutomation(){
+  if(!isWithinTextingHours()){addLog("warn","Outside 8am-8pm CST. Hour: "+getCSTHour().toFixed(1));return;}
+  var csv=document.getElementById("csv-input").value.trim();
+  if(!csv){addLog("error","No CSV pasted.");return;}
+  var btn=document.getElementById("run-btn");btn.disabled=true;
+  setStatus("running","Processing...");stats={sent:0,skipped:0,errors:0,jobs:0};updateStats();
+  addLog("info","Run started at "+new Date().toLocaleTimeString());
+  var rows,log;
+  try{rows=parseCSV(csv);addLog("info",rows.length+" jobs parsed");}
+  catch(e){addLog("error","CSV error: "+e.message);btn.disabled=false;setStatus("error","CSV failed");return;}
+
+  getSheetLog().then(function(existingLog){
+    log=existingLog;
+    addLog("info",log.length+" existing log entries");
+    return getRCToken();
+  }).then(function(){
+    addLog("success","RingCentral ready");
+    var today=getTodayCST();
+    return processRows(rows,log,today);
+  }).then(function(){
+    updateStats();
+    setStatus("done","Done — "+stats.sent+" sent, "+stats.skipped+" skipped, "+stats.errors+" errors");
+    addLog("info","Complete. Sent:"+stats.sent+" Skipped:"+stats.skipped+" Errors:"+stats.errors);
+    btn.disabled=false;
+  }).catch(function(e){
+    addLog("error","Fatal error: "+e.message);
+    btn.disabled=false;setStatus("error",e.message);
+  });
+}
+
+function processRows(rows,log,today){
+  var i=0;
+  function next(){
+    if(i>=rows.length)return Promise.resolve();
+    var row=rows[i++];stats.jobs++;
+    var jobNum=row["Job Number"]||"";
+    var fullName=((row["Primary Contact: First Name"]||"")+" "+(row["Primary Contact: Last Name"]||"")).trim();
+    var custPhone=toE164(row["Phone Number"]||"");
+    if(!custPhone){addLog("warn","Job "+jobNum+" ("+fullName+") invalid phone, skipping");stats.errors++;return next();}
+    return processTemplates(row,log,today,jobNum,fullName,custPhone,0).then(function(){updateStats();return next();});
+  }
+  return next();
+}
+
+function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
+  if(ti>=TEMPLATES.length)return Promise.resolve();
+  var tmpl=TEMPLATES[ti];
+  var alreadySent=false;
+  for(var i=0;i<log.length;i++){if(log[i].jobNum===jobNum&&log[i].template===tmpl.id){alreadySent=true;break;}}
+  if(alreadySent&&tmpl.id!=="T3"){stats.skipped++;return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);}
+  if(!tmpl.check(row,today,log))return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);
+
+  var msg=buildMsg(tmpl.id,row);
+  var recips=[custPhone].concat(FIXED_NUMBERS);
+  var sp=spE164(row["Primary Salesperson"]);
+  if(sp&&recips.indexOf(sp)===-1)recips.push(sp);
+  var img=imageStore[tmpl.id]||null;
+
+  var sendPromise;
+  if(img){
+    addLog("info","Sending "+tmpl.id+" text to "+fullName);
+    sendPromise=sendSMS(recips,msg).then(function(){return sleep(3000);}).then(function(){addLog("info","Sending "+tmpl.id+" image to "+fullName);return sendMMS(recips,img);});
+  } else {
+    addLog("info","Sending "+tmpl.id+" to "+fullName);
+    sendPromise=sendSMS(recips,msg);
+  }
+
+  return sendPromise.then(function(){
+    return logToAccuLynx(jobNum,msg,row["Job Number Url"]||"",row["Job Name Url"]||"").then(function(result){
+      addLog("success","AccuLynx updated — Job "+jobNum);
+      return {status:"logged",guid:result&&result.guid||""};
+    }).catch(function(e){
+      addLog("warn","AccuLynx failed Job "+jobNum+": "+e.message);
+      return {status:"failed",guid:""};
+    });
+  }).then(function(alResult){
+    var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||""};
+    log.push(entry);stats.sent++;
+    addLog("success",tmpl.id+" sent — "+fullName+" | Job "+jobNum);
+    return appendSheetLog(entry);
+  }).then(function(){return sleep(800);}).then(function(){return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);})
+  .catch(function(e){stats.errors++;addLog("error",tmpl.id+" Job "+jobNum+": "+e.message);return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);});
+}
+
+// WEATHER
+function parseWeatherNums(raw){return raw.split(/[\n,]+/).map(function(n){return toE164(n.trim());}).filter(Boolean);}
+function updateWeatherPreview(){
+  var el=document.getElementById("weather-preview");if(el)el.textContent=WEATHER_MESSAGE;
+  var nums=parseWeatherNums((document.getElementById("weather-numbers")||{}).value||"");
+  var c=document.getElementById("weather-count");if(c)c.textContent=nums.length>0?nums.length+" valid numbers detected":"";
+}
+function sendWeatherBlast(){
+  if(!isWithinTextingHours()){addWeatherLog("warn","Outside 8am-8pm CST");return;}
+  var nums=parseWeatherNums(document.getElementById("weather-numbers").value||"");
+  if(!nums.length){addWeatherLog("error","No valid numbers.");return;}
+  if(!confirm("Send weather delay text to "+nums.length+" customer(s) + fixed group?"))return;
+  var btn=document.getElementById("weather-send-btn");btn.disabled=true;
+  setWeatherStatus("running","Sending to "+nums.length+" customers...");
+  addWeatherLog("info","Weather blast — "+nums.length+" customers");
+  getRCToken().then(function(){
+    addWeatherLog("success","RC authenticated");
+    var i=0;var sent=0;var failed=0;
+    function next(){
+      if(i>=nums.length){setWeatherStatus("done","Done — "+sent+" sent, "+failed+" failed");addWeatherLog("info","Complete. Sent:"+sent+" Failed:"+failed);btn.disabled=false;return;}
+      var p=nums[i++];
+      sendSMS([p].concat(FIXED_NUMBERS),WEATHER_MESSAGE).then(function(){addWeatherLog("success","Sent to "+p);sent++;}).catch(function(e){addWeatherLog("error","Failed "+p+": "+e.message);failed++;}).then(function(){return sleep(800);}).then(next);
+    }
+    next();
+  }).catch(function(e){addWeatherLog("error","RC auth: "+e.message);btn.disabled=false;setWeatherStatus("idle","Auth failed");});
+}
+function addWeatherLog(type,msg){var box=document.getElementById("weather-log");if(!box)return;var d=document.createElement("div");d.className="log-entry "+type;d.textContent="["+new Date().toLocaleTimeString()+"] "+msg;box.appendChild(d);box.scrollTop=box.scrollHeight;}
+function setWeatherStatus(state,text){var bar=document.getElementById("weather-status-bar");var dot=document.getElementById("weather-dot");var txt=document.getElementById("weather-status-text");if(bar)bar.className="status-bar "+state;if(dot)dot.className="dot"+(state==="running"?" pulse":"");if(txt)txt.textContent=text;}
+
+function addLog(type,msg){
+  var t=new Date().toLocaleTimeString();
+  ["log-box","log-box-2"].forEach(function(id){var box=document.getElementById(id);if(!box)return;var d=document.createElement("div");d.className="log-entry "+type;d.textContent="["+t+"] "+msg;box.appendChild(d);box.scrollTop=box.scrollHeight;});
+}
+function setStatus(state,text){var bar=document.getElementById("status-bar");var dot=document.getElementById("status-dot");var txt=document.getElementById("status-text");if(bar)bar.className="status-bar "+state;if(dot)dot.className="dot"+(state==="running"?" pulse":"");if(txt)txt.textContent=text;}
+function updateStats(){document.getElementById("stat-sent").textContent=stats.sent;document.getElementById("stat-skipped").textContent=stats.skipped;document.getElementById("stat-errors").textContent=stats.errors;document.getElementById("stat-jobs").textContent=stats.jobs;}
+function updateNextRun(){var cst=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Chicago"}));var next=new Date(cst);next.setHours(8,5,0,0);if(cst>=next)next.setDate(next.getDate()+1);var diff=next-cst,h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);var el=document.getElementById("next-run-time");if(el)el.textContent="in "+h+"h "+m+"m";}
+
+document.addEventListener("click",function(e){
+  var t=e.target;
+  if(t.classList.contains("tab")&&t.dataset.tab){document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");t.classList.add("active");return;}
+  if(t.id==="run-btn"){runAutomation();return;}
+  if(t.id==="clear-log-btn"){["log-box","log-box-2"].forEach(function(id){var b=document.getElementById(id);if(b)b.innerHTML="";});return;}
+  if(t.id==="weather-send-btn"){sendWeatherBlast();return;}
+  if(t.id==="weather-clear-btn"){var b=document.getElementById("weather-log");if(b)b.innerHTML="";return;}
+  if(t.id==="save-rc-btn"){saveCred("rc_client_id",document.getElementById("rc-client-id").value);saveCred("rc_client_secret",document.getElementById("rc-client-secret").value);saveCred("rc_jwt",document.getElementById("rc-jwt").value);saveCred("rc_from",document.getElementById("rc-from").value);rcToken=null;alert("RingCentral credentials saved!");return;}
+  if(t.id==="save-gs-btn"){saveCred("gs_client_id",document.getElementById("gs-client-id").value);saveCred("gs_client_secret",document.getElementById("gs-client-secret").value);saveCred("gs_refresh_token",document.getElementById("gs-refresh-token").value);saveCred("gs_sheet_id",document.getElementById("gs-sheet-id").value);saveCred("gs_sheet_name",document.getElementById("gs-sheet-name").value);gsToken=null;alert("Google Sheets credentials saved!");return;}
+  if(t.id==="save-al-btn"){saveCred("al_api_key",document.getElementById("acculynx-api-key").value);alert("AccuLynx credentials saved!");return;}
+  if(t.id==="register-webhook-btn"){
+    setWebhookStatus("Authenticating...","#4A90D9");
+    getRCToken().then(function(){return getExistingWebhook();}).then(function(ex){
+      if(ex){setWebhookStatus("Already registered — expires "+new Date(ex.expirationTime).toLocaleDateString(),"#8DC63F");return;}
+      return fetch("https://platform.ringcentral.com/restapi/v1.0/subscription",{method:"POST",headers:{Authorization:"Bearer "+rcToken,"Content-Type":"application/json"},body:JSON.stringify({eventFilters:["/restapi/v1.0/account/~/extension/~/message-store/instant?type=SMS"],deliveryMode:{transportType:"WebHook",address:WEBHOOK_URL},expiresIn:31536000})})
+      .then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error(JSON.stringify(d));setWebhookStatus("Registered! Expires "+new Date(d.expirationTime).toLocaleDateString(),"#8DC63F");});
+    }).catch(function(e){setWebhookStatus("Failed: "+e.message,"#fca5a5");});return;
+  }
+  if(t.id==="check-webhook-btn"){setWebhookStatus("Checking...","#4A90D9");getRCToken().then(function(){return getExistingWebhook();}).then(function(ex){if(ex){var exp=new Date(ex.expirationTime);setWebhookStatus("Active — expires in "+Math.floor((exp-new Date())/86400000)+" days","#8DC63F");}else{setWebhookStatus("Not registered","#fcd34d");}}).catch(function(e){setWebhookStatus("Error: "+e.message,"#fca5a5");});return;}
+  if(t.id==="delete-webhook-btn"){if(!confirm("Delete webhook?"))return;getRCToken().then(function(){return getExistingWebhook();}).then(function(ex){if(!ex){setWebhookStatus("None found","#fcd34d");return;}return fetch("https://platform.ringcentral.com/restapi/v1.0/subscription/"+ex.id,{method:"DELETE",headers:{Authorization:"Bearer "+rcToken}}).then(function(){setWebhookStatus("Deleted","#94a3b8");});}).catch(function(e){setWebhookStatus("Error: "+e.message,"#fca5a5");});return;}
+  if(t.dataset.edit){var id=t.dataset.edit;var area=document.getElementById("edit-area-"+id);var ta=document.getElementById("edit-ta-"+id);if(area&&ta){ta.value=templateBodies[id];area.classList.add("open");}return;}
+  if(t.dataset.save){var sid=t.dataset.save;var sta=document.getElementById("edit-ta-"+sid);if(sta){saveTemplateBody(sid,sta.value);document.getElementById("edit-area-"+sid).classList.remove("open");renderTemplates();}return;}
+  if(t.dataset.cancel){var ca=document.getElementById("edit-area-"+t.dataset.cancel);if(ca)ca.classList.remove("open");return;}
+  if(t.dataset.reset){if(confirm("Reset "+t.dataset.reset+" to original?")){resetTemplateBody(t.dataset.reset);renderTemplates();}return;}
+  if(t.dataset.clearImg){clearImg(t.dataset.clearImg);return;}
+  if(t.id==="remove-logo-btn"){clearLogo();return;}
+  if(t.dataset.var&&t.dataset.tmpl){var ta2=document.getElementById("edit-ta-"+t.dataset.tmpl);if(!ta2)return;var s=ta2.selectionStart,en=ta2.selectionEnd;ta2.value=ta2.value.slice(0,s)+t.dataset.var+ta2.value.slice(en);ta2.selectionStart=ta2.selectionEnd=s+t.dataset.var.length;ta2.focus();return;}
+});
+
+document.addEventListener("change",function(e){
+  var t=e.target;
+  if(t.id==="logo-upload"&&t.files[0]){var r=new FileReader();r.onload=function(ev){store.set("brand_logo",ev.target.result);applyLogo(ev.target.result);renderLogoPreview(ev.target.result);};r.readAsDataURL(t.files[0]);return;}
+  if((t.id==="img-T1"||t.id==="img-T6"||t.id==="img-T8")&&t.files[0]){var id=t.id.replace("img-","");var r2=new FileReader();r2.onload=function(ev){var obj={dataUrl:ev.target.result,type:t.files[0].type,name:t.files[0].name};imageStore[id]=obj;store.set("img_"+id,JSON.stringify(obj));renderImgPreview(id,obj);};r2.readAsDataURL(t.files[0]);return;}
+});
+
+document.addEventListener("input",function(e){if(e.target.id==="weather-numbers")updateWeatherPreview();});
+
+loadCredentials();
+loadTemplateBodies();
+renderTemplates();
+loadImages();
+loadLogo();
+updateWeatherPreview();
+updateNextRun();
+setInterval(updateNextRun,60000);
+console.log("Init complete");
+</script>
+</body>
+</html>
 
