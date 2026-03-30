@@ -570,6 +570,7 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
     var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:alResult.messageId||""};
     log.push(entry);stats.sent++;
     addLog("success",tmpl.id+" sent — "+fullName+" | Job "+jobNum);
+    addLog("info","DEBUG entry jobGuid="+entry.jobGuid+" messageId="+entry.messageId);
     return appendSheetLog(entry);
   }).then(function(){return sleep(800);}).then(function(){return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);})
   .catch(function(e){stats.errors++;addLog("error",tmpl.id+" Job "+jobNum+": "+e.message);return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);});
