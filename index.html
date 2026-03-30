@@ -560,11 +560,11 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
 
   return sendPromise.then(function(){
     return logToAccuLynx(jobNum,msg,row["Job Number Url"]||"",row["Job Name Url"]||"").then(function(result){
-      addLog("success","AccuLynx updated — Job "+jobNum);
-      return {status:"logged",guid:result&&result.guid||""};
+      addLog("success","AccuLynx updated — Job "+jobNum+" | MsgID: "+(result&&result.messageId||"none"));
+      return {status:"logged",guid:result&&result.guid||"",messageId:result&&result.messageId||""};
     }).catch(function(e){
       addLog("warn","AccuLynx failed Job "+jobNum+": "+e.message);
-      return {status:"failed",guid:""};
+      return {status:"failed",guid:"",messageId:""};
     });
   }).then(function(alResult){
     var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:alResult.messageId||""};
