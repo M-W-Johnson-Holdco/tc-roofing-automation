@@ -627,7 +627,11 @@ document.addEventListener("click",function(e){
     setWebhookStatus("Authenticating...","#4A90D9");
     getRCToken().then(function(){return getExistingWebhook();}).then(function(ex){
       if(ex){setWebhookStatus("Already registered — expires "+new Date(ex.expirationTime).toLocaleDateString(),"#8DC63F");return;}
-      return fetch("https://platform.ringcentral.com/restapi/v1.0/subscription",{method:"POST",headers:{Authorization:"Bearer "+rcToken,"Content-Type":"application/json"},body:JSON.stringify({eventFilters:["/restapi/v1.0/account/~/extension/~/message-store/instant?type=SMS"],deliveryMode:{transportType:"WebHook",address:WEBHOOK_URL},expiresIn:31536000})})
+      return fetch("https://platform.ringcentral.com/restapi/v1.0/subscription",{method:"POST",headers:{Authorization:"Bearer "+rcToken,"Content-Type":"application/json"},body:JSON.stringify({eventFilters:[
+        "/restapi/v1.0/account/~/extension/~/message-store/instant?type=SMS",
+        "/restapi/v1.0/account/~/extension/~/message-store/instant?type=MMS",
+        "/restapi/v1.0/account/~/extension/~/message-store"
+      ],deliveryMode:{transportType:"WebHook",address:WEBHOOK_URL},expiresIn:31536000})})
       .then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error(JSON.stringify(d));setWebhookStatus("Registered! Expires "+new Date(d.expirationTime).toLocaleDateString(),"#8DC63F");});
     }).catch(function(e){setWebhookStatus("Failed: "+e.message,"#fca5a5");});return;
   }
