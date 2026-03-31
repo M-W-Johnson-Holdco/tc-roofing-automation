@@ -7,6 +7,15 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+  #pw-screen{position:fixed;inset:0;background:#0f1117;display:flex;align-items:center;justify-content:center;z-index:9999}
+  #pw-box{background:#1a1f2e;border:1px solid #2a3050;border-radius:16px;padding:40px;text-align:center;width:320px}
+  #pw-box h2{color:#4A90D9;font-size:1.1rem;margin-bottom:6px;font-weight:700}
+  #pw-box p{color:#64748b;font-size:0.8rem;margin-bottom:20px}
+  #pw-input{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:10px 14px;color:#e2e8f0;font-size:1rem;outline:none;text-align:center;letter-spacing:0.1em;margin-bottom:12px}
+  #pw-input:focus{border-color:#4A90D9}
+  #pw-error{color:#fca5a5;font-size:0.78rem;margin-bottom:10px;display:none}
+  #pw-btn{width:100%;background:#4A90D9;color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:0.95rem;cursor:pointer}
+  #pw-btn:hover{background:#357abd}
   header{background:#1a1f2e;border-bottom:3px solid #4A90D9;padding:14px 28px;display:flex;align-items:center;gap:16px}
   header img{height:52px;width:auto;display:none}
   #header-fallback{font-size:1.3rem;font-weight:800;color:#4A90D9}
@@ -65,6 +74,18 @@
 </style>
 </head>
 <body>
+
+<!-- PASSWORD SCREEN -->
+<div id="pw-screen">
+  <div id="pw-box">
+    <h2>TC Roofing Automation</h2>
+    <p>Enter password to continue</p>
+    <input type="password" id="pw-input" placeholder="Password">
+    <div id="pw-error">Incorrect password. Try again.</div>
+    <button id="pw-btn">Unlock</button>
+  </div>
+</div>
+
 <header>
   <img id="header-logo" alt="TC Roofing">
   <div id="header-fallback">TC <span>Roofing</span> &amp; Restorations</div>
@@ -224,13 +245,35 @@
 </div>
 
 <script>
-console.log("TC Roofing Automation v3.0 loaded");
+// VERSION: 4.0
+var PASSWORD = "hailyeah";
 
 var store = {
   get: function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
   set: function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
   del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
 };
+
+function checkPw(){
+  var val = document.getElementById("pw-input").value;
+  if(val === PASSWORD){
+    document.getElementById("pw-screen").style.display = "none";
+    store.set("pw_unlocked","1");
+  } else {
+    document.getElementById("pw-error").style.display = "block";
+    document.getElementById("pw-input").value = "";
+    document.getElementById("pw-input").focus();
+  }
+}
+
+document.getElementById("pw-btn").addEventListener("click", checkPw);
+document.getElementById("pw-input").addEventListener("keydown", function(e){ if(e.key==="Enter") checkPw(); });
+
+if(store.get("pw_unlocked") === "1"){
+  document.getElementById("pw-screen").style.display = "none";
+} else {
+  document.getElementById("pw-input").focus();
+}
 
 var SALESPERSON_MAP = {
   "Buck Broadhead":"+14705729742","Isaac Perez":"+19453648551",
@@ -346,16 +389,16 @@ function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
 function getCred(k,def){return store.get("cred_"+k)||def||"";}
 function saveCred(k,v){store.set("cred_"+k,v);}
 function loadCredentials(){
-  document.getElementById("rc-client-id").value=getCred("rc_client_id","***ROTATED-SECRET-REMOVED***");
-  document.getElementById("rc-client-secret").value=getCred("rc_client_secret","***ROTATED-SECRET-REMOVED***");
+  document.getElementById("rc-client-id").value=getCred("rc_client_id","");
+  document.getElementById("rc-client-secret").value=getCred("rc_client_secret","");
   document.getElementById("rc-jwt").value=getCred("rc_jwt","");
-  document.getElementById("rc-from").value=getCred("rc_from","+12147168582");
-  document.getElementById("gs-client-id").value=getCred("gs_client_id","129261519673-qdi4bnqqr08b3vqiarcvgvr59gbmhvem.apps.googleusercontent.com");
-  document.getElementById("gs-client-secret").value=getCred("gs_client_secret","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");
-  document.getElementById("gs-refresh-token").value=getCred("gs_refresh_token","1//04nEAloEurHn8CgYIARAAGAQSNwF-L9IrgcDOXl0VNXiqrDSzBl3v5Tmh3nitc57IjYBQPI2-WU7hUQ4tMo2ViNJ5tRz1eG9MSb8");
-  document.getElementById("gs-sheet-id").value=getCred("gs_sheet_id","1vCz8x85_SW3AZdhiDPTY7n0jwo84YpPmdBG9zo8RRR4");
-  document.getElementById("gs-sheet-name").value=getCred("gs_sheet_name","Log 2026");
-  document.getElementById("acculynx-api-key").value=getCred("al_api_key","***ROTATED-SECRET-REMOVED***");
+  document.getElementById("rc-from").value=getCred("rc_from","");
+  document.getElementById("gs-client-id").value=getCred("gs_client_id","");
+  document.getElementById("gs-client-secret").value=getCred("gs_client_secret","");
+  document.getElementById("gs-refresh-token").value=getCred("gs_refresh_token","");
+  document.getElementById("gs-sheet-id").value=getCred("gs_sheet_id","");
+  document.getElementById("gs-sheet-name").value=getCred("gs_sheet_name","");
+  document.getElementById("acculynx-api-key").value=getCred("al_api_key","");
 }
 
 function applyLogo(d){var l=document.getElementById("header-logo");var f=document.getElementById("header-fallback");l.src=d;l.style.display="block";f.style.display="none";}
@@ -392,7 +435,6 @@ function renderTemplates(){
   }).join("");
 }
 
-// GOOGLE SHEETS
 var gsToken=null,gsExpiry=0;
 function getGSToken(){
   if(gsToken&&Date.now()<gsExpiry)return Promise.resolve(gsToken);
@@ -422,7 +464,6 @@ function appendSheetLog(e){
   });
 }
 
-// RINGCENTRAL
 var rcToken=null,rcExpiry=0;
 function getRCToken(){
   if(rcToken&&Date.now()<rcExpiry)return Promise.resolve(rcToken);
@@ -445,7 +486,6 @@ function sendMMS(to,img){
   }).then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error("MMS failed: "+JSON.stringify(d));return d;});
 }
 
-// ACCULYNX
 function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
   var key=document.getElementById("acculynx-api-key").value;
   var guid=extractGuid(jobNumUrl)||extractGuid(jobNameUrl);
@@ -453,7 +493,6 @@ function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
     addLog("warn","No GUID found for Job "+jobNum+" — skipping AccuLynx log");
     return Promise.resolve({guid:"",messageId:""});
   }
-  // Fetch job to get real API ID
   return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+guid,{
     headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"}
   }).then(function(r){
@@ -461,7 +500,6 @@ function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
     return r.json();
   }).then(function(jobData){
     var apiGuid=jobData.id||guid;
-    addLog("info","AccuLynx API GUID: "+apiGuid);
     return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+apiGuid+"/messages",{
       method:"POST",
       headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},
@@ -471,13 +509,12 @@ function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
       return r.json();
     }).then(function(data){
       var messageId=data.messageId||"";
-      addLog("info","AccuLynx message ID: "+messageId);
+      addLog("info","AccuLynx logged — MsgID: "+messageId);
       return {guid:apiGuid,messageId:messageId};
     });
   });
 }
 
-// WEBHOOK
 function getExistingWebhook(){
   return fetch("https://platform.ringcentral.com/restapi/v1.0/subscription",{headers:{Authorization:"Bearer "+rcToken}})
   .then(function(r){return r.json();}).then(function(d){
@@ -488,7 +525,6 @@ function getExistingWebhook(){
 }
 function setWebhookStatus(msg,color){var el=document.getElementById("webhook-status");if(el){el.textContent="Status: "+msg;el.style.color=color||"#94a3b8";}}
 
-// MAIN RUN
 var stats={sent:0,skipped:0,errors:0,jobs:0};
 
 function runAutomation(){
@@ -560,7 +596,7 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
 
   return sendPromise.then(function(){
     return logToAccuLynx(jobNum,msg,row["Job Number Url"]||"",row["Job Name Url"]||"").then(function(result){
-      addLog("success","AccuLynx updated — Job "+jobNum+" | MsgID: "+(result&&result.messageId||"none"));
+      addLog("success","AccuLynx updated — Job "+jobNum);
       return {status:"logged",guid:result&&result.guid||"",messageId:result&&result.messageId||""};
     }).catch(function(e){
       addLog("warn","AccuLynx failed Job "+jobNum+": "+e.message);
@@ -570,13 +606,11 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
     var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:alResult.messageId||""};
     log.push(entry);stats.sent++;
     addLog("success",tmpl.id+" sent — "+fullName+" | Job "+jobNum);
-    addLog("info","DEBUG entry jobGuid="+entry.jobGuid+" messageId="+entry.messageId);
     return appendSheetLog(entry);
   }).then(function(){return sleep(800);}).then(function(){return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);})
   .catch(function(e){stats.errors++;addLog("error",tmpl.id+" Job "+jobNum+": "+e.message);return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);});
 }
 
-// WEATHER
 function parseWeatherNums(raw){return raw.split(/[\n,]+/).map(function(n){return toE164(n.trim());}).filter(Boolean);}
 function updateWeatherPreview(){
   var el=document.getElementById("weather-preview");if(el)el.textContent=WEATHER_MESSAGE;
@@ -658,7 +692,6 @@ loadLogo();
 updateWeatherPreview();
 updateNextRun();
 setInterval(updateNextRun,60000);
-console.log("Init complete");
 </script>
 </body>
 </html>
