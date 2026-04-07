@@ -10,7 +10,9 @@
   #pw-screen{position:fixed;inset:0;background:#0f1117;display:flex;align-items:center;justify-content:center;z-index:9999}
   #pw-box{background:#1a1f2e;border:1px solid #2a3050;border-radius:16px;padding:40px;text-align:center;width:320px}
   #pw-box h2{color:#4A90D9;font-size:1.1rem;margin-bottom:6px;font-weight:700}
-  #pw-box p{color:#64748b;font-size:0.8rem;margin-bottom:20px}
+  #pw-box p{color:#64748b;font-size:0.8rem;margin-bottom:16px}
+  #pw-name{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:10px 14px;color:#e2e8f0;font-size:1rem;outline:none;text-align:center;margin-bottom:10px}
+  #pw-name:focus{border-color:#8DC63F}
   #pw-input{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:10px 14px;color:#e2e8f0;font-size:1rem;outline:none;text-align:center;letter-spacing:0.1em;margin-bottom:12px}
   #pw-input:focus{border-color:#4A90D9}
   #pw-error{color:#fca5a5;font-size:0.78rem;margin-bottom:10px;display:none}
@@ -79,9 +81,10 @@
 <div id="pw-screen">
   <div id="pw-box">
     <h2>TC Roofing Automation</h2>
-    <p>Enter password to continue</p>
+    <p>Enter your name and password to continue</p>
+    <input type="text" id="pw-name" placeholder="Your Name">
     <input type="password" id="pw-input" placeholder="Password">
-    <div id="pw-error">Incorrect password. Try again.</div>
+    <div id="pw-error">Incorrect password or missing name. Try again.</div>
     <button id="pw-btn">Unlock</button>
   </div>
 </div>
@@ -258,25 +261,38 @@ var store = {
   del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
 };
 
+var currentUser = "";
+
 function checkPw(){
+  var name = document.getElementById("pw-name").value.trim();
   var val = document.getElementById("pw-input").value;
-  if(val === PASSWORD){
+  if(val === PASSWORD && name.length > 0){
+    currentUser = name;
     document.getElementById("pw-screen").style.display = "none";
     store.set("pw_unlocked","1");
+    store.set("current_user", name);
+    // Show user in header
+    var badge = document.querySelector("header .badge");
+    if(badge) badge.textContent = "👤 " + name;
   } else {
     document.getElementById("pw-error").style.display = "block";
     document.getElementById("pw-input").value = "";
-    document.getElementById("pw-input").focus();
+    if(!name) document.getElementById("pw-name").focus();
+    else document.getElementById("pw-input").focus();
   }
 }
 
 document.getElementById("pw-btn").addEventListener("click", checkPw);
 document.getElementById("pw-input").addEventListener("keydown", function(e){ if(e.key==="Enter") checkPw(); });
+document.getElementById("pw-name").addEventListener("keydown", function(e){ if(e.key==="Enter") document.getElementById("pw-input").focus(); });
 
 if(store.get("pw_unlocked") === "1"){
+  currentUser = store.get("current_user") || "Unknown";
   document.getElementById("pw-screen").style.display = "none";
+  var badge = document.querySelector("header .badge");
+  if(badge) badge.textContent = "👤 " + currentUser;
 } else {
-  document.getElementById("pw-input").focus();
+  document.getElementById("pw-name").focus();
 }
 
 var SALESPERSON_MAP = {
@@ -459,8 +475,8 @@ function appendSheetLog(e){
   return getGSToken().then(function(t){
     var sid=document.getElementById("gs-sheet-id").value;
     var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
-    var url="https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
-    return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[[e.timestamp,e.jobNum,e.name,e.phone,e.trigger,e.template,e.message,e.acculynxLogged,e.status,e.jobGuid||"",e.messageId||""]]})});
+        var url="https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
+    return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[[e.timestamp,e.jobNum,e.name,e.phone,e.trigger,e.template,e.message,e.acculynxLogged,e.status,e.jobGuid||"",e.messageId||"",e.runBy||""]]})}); 
   }).then(function(r){
     if(!r.ok)return r.text().then(function(t){throw new Error("Sheets append failed: "+t);});
     return r.json();
@@ -642,7 +658,7 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
     // For messageId, always use the first thread ID for this job if exists
     var threadId=alResult.messageId||"";
     for(var li=0;li<log.length;li++){if(log[li].jobNum===jobNum&&log[li].messageId){threadId=log[li].messageId;break;}}
-    var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:threadId};
+    var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:threadId,runBy:currentUser||"Unknown"};
     log.push(entry);stats.sent++;
     addLog("success",tmpl.id+" sent — "+fullName+" | Job "+jobNum);
     return appendSheetLog(entry);
