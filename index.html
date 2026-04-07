@@ -144,8 +144,12 @@
       <textarea id="weather-numbers" rows="8" placeholder="2145551234&#10;9453648551&#10;..."></textarea>
       <div id="weather-count" class="small" style="margin-top:6px;"></div>
       <hr>
-      <label>Message Preview</label>
-      <div id="weather-preview" style="background:#0a0d14;border:1px solid #2a3050;border-radius:8px;padding:14px;font-size:0.82rem;line-height:1.6;margin-bottom:16px;"></div>
+      <label>Message (editable)</label>
+      <textarea id="weather-msg-edit" rows="5" style="margin-bottom:8px;"></textarea>
+      <div class="btn-row" style="margin-bottom:12px;">
+        <button class="btn btn-primary btn-sm" id="weather-save-msg-btn">💾 Save Message</button>
+        <button class="btn btn-secondary btn-sm" id="weather-reset-msg-btn">↩ Reset to Default</button>
+      </div>
       <label>Also sending to:</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px;">
         <span class="trigger-badge">Estimating (214) 347-8753</span>
@@ -289,10 +293,10 @@ var ESTIMATING_EMAIL = "estimating@tcroofingexperts.com";
 var ACCULYNX_PROXY = "https://acculynx-proxy.k-liss.workers.dev";
 var WEBHOOK_URL = "https://acculynx-sms-logger.k-liss.workers.dev/";
 var TEMPLATE_VARS = ["{{First Name}}","{{Last Name}}","{{Primary Salesperson}}","{{Salesperson Phone}}","{{Insurance Company}}","{{Job Number}}","{{Completed Date}}","{{Invoiced Date}}","{{WO Scheduled Date}}","{{Claim Number}}"];
-var WEATHER_MESSAGE = "Mother Nature has other plans! Due to recent weather, we unfortunately need to delay your roof replacement to ensure a safe and high-quality build. We are closely monitoring the forecast and will reach out as soon as possible with your newly rescheduled build date. If you have immediate questions, please call Production at (214) 833-0149. Thank you for your patience! - TC Roofing & Exteriors";
+var WEATHER_MESSAGE_DEFAULT = "Mother Nature has other plans! Due to recent weather, we unfortunately need to delay your roof replacement to ensure a safe and high-quality build. We are closely monitoring the forecast and will reach out as soon as possible with your newly rescheduled build date. If you have immediate questions, please call Production at (214) 833-0149. Thank you for your patience! - TC Roofing & Restorations";
 
 var DEFAULT_BODIES = {
-  T1: "Hi {{First Name}}, thank you for choosing TC Roofing & Restorations! We're excited to get started with you. Check out the image below for important contact information throughout the process. Feel free to text in this group message at any point throughout your project to reach your dedicated team.",
+  T1: "Hi {{First Name}}, thank you for choosing TC Roofing & Restorations! We're excited to get started with you. Check out the image below for important contact information throughout the process. Text in this group message at any point throughout your project to reach your dedicated team.",
   T2: "This is an important message from TC Roofing & Restorations. We have an update on your insurance claim. Please reach out to {{Primary Salesperson}} at {{Salesperson Phone}} ASAP.",
   T3: "This is an important message from TC Roofing & Restorations. Your roof replacement has been scheduled. Please reach out to {{Primary Salesperson}} ASAP at {{Salesperson Phone}} to choose roof materials if haven't scheduled appointment already.",
   T4: "Hi {{First Name}}! Congrats on your new roof! Do you have any questions or concerns regarding how your roof replacement went? Feel free to respond to this text or call Production directly at " + PRODUCTION_PHONE + ". Our Estimating Dept is submitting supplemental documentation to {{Insurance Company}}, so please keep an eye out for any funds released.\n\nNext steps: If you haven't had your final walk-through and attic inspection please reach out to {{Primary Salesperson}} to schedule.",
@@ -311,13 +315,12 @@ var TEMPLATES = [
    check:function(row,today){var d=pd(row["Submitted as Prospect Date"]);return d&&sd(d,today);}},
   {id:"T2",name:"LGIB Insurance Update",trigger:"Current Status = lgib — day of",
    check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;var d=pd(row["Current Status Date"]);return d&&sd(d,today);}},
-  {id:"T3",name:"LGIB Materials",trigger:"Current Status = lgib — 2 hours after T2",
+  {id:"T3",name:"LGIB Materials",trigger:"Current Status = lgib — 2 days after LGIB status date",
    check:function(row,today,log){
      if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;
-     var d=pd(row["Current Status Date"]);if(!d||!sd(d,today))return false;
-     var t2=null;for(var i=0;i<log.length;i++){if(log[i].jobNum===row["Job Number"]&&log[i].template==="T2"){t2=log[i];break;}}
-     if(!t2)return false;
-     return(new Date()-new Date(t2.timestamp))>=7200000;
+     var d=pd(row["Current Status Date"]);if(!d)return false;
+     var dayAfter=new Date(d);dayAfter.setDate(dayAfter.getDate()+2);
+     return wc(dayAfter,today,1); // send on day 2, with 1 day catchup
    }},
   {id:"T4",name:"Roof Completed",trigger:"Completed Date — within 4 days",
    check:function(row,today){var d=pd(row["Completed Date"]);return d&&wc(d,today,4);}},
@@ -486,12 +489,22 @@ function sendMMS(to,img){
   }).then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error("MMS failed: "+JSON.stringify(d));return d;});
 }
 
-function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
+function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl,existingLog){
   var key=document.getElementById("acculynx-api-key").value;
   var guid=extractGuid(jobNumUrl)||extractGuid(jobNameUrl);
   if(!guid){
     addLog("warn","No GUID found for Job "+jobNum+" — skipping AccuLynx log");
     return Promise.resolve({guid:"",messageId:""});
+  }
+  // Find first ever message ID for this job to thread all messages together
+  var threadMessageId="";
+  var threadGuid="";
+  for(var i=0;i<existingLog.length;i++){
+    if(existingLog[i].jobNum===jobNum&&existingLog[i].messageId){
+      threadMessageId=existingLog[i].messageId;
+      threadGuid=existingLog[i].jobGuid;
+      break;
+    }
   }
   return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+guid,{
     headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"}
@@ -500,6 +513,22 @@ function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
     return r.json();
   }).then(function(jobData){
     var apiGuid=jobData.id||guid;
+    // If we have an existing thread, reply to it
+    if(threadMessageId && threadGuid){
+      addLog("info","Replying to existing AccuLynx thread for Job "+jobNum);
+      return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+threadGuid+"/messages/"+threadMessageId+"/replies",{
+        method:"POST",
+        headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},
+        body:JSON.stringify({message:"[Auto-Text Sent] "+msg})
+      }).then(function(r){
+        if(!r.ok)return r.text().then(function(t){throw new Error("Reply failed: "+r.status+" "+t);});
+        return r.json();
+      }).then(function(data){
+        return {guid:apiGuid,messageId:threadMessageId}; // Keep original thread ID
+      });
+    }
+    // No existing thread — create new message
+    addLog("info","Creating new AccuLynx thread for Job "+jobNum);
     return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+apiGuid+"/messages",{
       method:"POST",
       headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},
@@ -509,7 +538,7 @@ function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl){
       return r.json();
     }).then(function(data){
       var messageId=data.messageId||"";
-      addLog("info","AccuLynx logged — MsgID: "+messageId);
+      addLog("info","AccuLynx new thread — MsgID: "+messageId);
       return {guid:apiGuid,messageId:messageId};
     });
   });
@@ -566,6 +595,13 @@ function processRows(rows,log,today){
     var fullName=((row["Primary Contact: First Name"]||"")+" "+(row["Primary Contact: Last Name"]||"")).trim();
     var custPhone=toE164(row["Phone Number"]||"");
     if(!custPhone){addLog("warn","Job "+jobNum+" ("+fullName+") invalid phone, skipping");stats.errors++;return next();}
+    // Global cutoff — only process jobs submitted as prospect on 4/6/2026 or later
+    var prospectDate=pd(row["Submitted as Prospect Date"]);
+    var cutoff=new Date("2026-04-06");cutoff.setHours(0,0,0,0);
+    if(!prospectDate||prospectDate<cutoff){
+      addLog("skip","Job "+jobNum+" ("+fullName+") — prospect date before 4/6/2026, skipping all templates");
+      stats.skipped++;return next();
+    }
     return processTemplates(row,log,today,jobNum,fullName,custPhone,0).then(function(){updateStats();return next();});
   }
   return next();
@@ -595,7 +631,7 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
   }
 
   return sendPromise.then(function(){
-    return logToAccuLynx(jobNum,msg,row["Job Number Url"]||"",row["Job Name Url"]||"").then(function(result){
+    return logToAccuLynx(jobNum,msg,row["Job Number Url"]||"",row["Job Name Url"]||"",log).then(function(result){
       addLog("success","AccuLynx updated — Job "+jobNum);
       return {status:"logged",guid:result&&result.guid||"",messageId:result&&result.messageId||""};
     }).catch(function(e){
@@ -603,7 +639,10 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
       return {status:"failed",guid:"",messageId:""};
     });
   }).then(function(alResult){
-    var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:alResult.messageId||""};
+    // For messageId, always use the first thread ID for this job if exists
+    var threadId=alResult.messageId||"";
+    for(var li=0;li<log.length;li++){if(log[li].jobNum===jobNum&&log[li].messageId){threadId=log[li].messageId;break;}}
+    var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:threadId};
     log.push(entry);stats.sent++;
     addLog("success",tmpl.id+" sent — "+fullName+" | Job "+jobNum);
     return appendSheetLog(entry);
@@ -612,8 +651,10 @@ function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
 }
 
 function parseWeatherNums(raw){return raw.split(/[\n,]+/).map(function(n){return toE164(n.trim());}).filter(Boolean);}
+function getWeatherMessage(){return store.get("weather_msg")||WEATHER_MESSAGE_DEFAULT;}
 function updateWeatherPreview(){
-  var el=document.getElementById("weather-preview");if(el)el.textContent=WEATHER_MESSAGE;
+  var msg=getWeatherMessage();
+  var el=document.getElementById("weather-msg-edit");if(el)el.value=msg;
   var nums=parseWeatherNums((document.getElementById("weather-numbers")||{}).value||"");
   var c=document.getElementById("weather-count");if(c)c.textContent=nums.length>0?nums.length+" valid numbers detected":"";
 }
@@ -621,6 +662,7 @@ function sendWeatherBlast(){
   if(!isWithinTextingHours()){addWeatherLog("warn","Outside 8am-8pm CST");return;}
   var nums=parseWeatherNums(document.getElementById("weather-numbers").value||"");
   if(!nums.length){addWeatherLog("error","No valid numbers.");return;}
+  var weatherMsg = document.getElementById("weather-msg-edit").value || getWeatherMessage();
   if(!confirm("Send weather delay text to "+nums.length+" customer(s) + fixed group?"))return;
   var btn=document.getElementById("weather-send-btn");btn.disabled=true;
   setWeatherStatus("running","Sending to "+nums.length+" customers...");
@@ -631,7 +673,7 @@ function sendWeatherBlast(){
     function next(){
       if(i>=nums.length){setWeatherStatus("done","Done — "+sent+" sent, "+failed+" failed");addWeatherLog("info","Complete. Sent:"+sent+" Failed:"+failed);btn.disabled=false;return;}
       var p=nums[i++];
-      sendSMS([p].concat(FIXED_NUMBERS),WEATHER_MESSAGE).then(function(){addWeatherLog("success","Sent to "+p);sent++;}).catch(function(e){addWeatherLog("error","Failed "+p+": "+e.message);failed++;}).then(function(){return sleep(800);}).then(next);
+      sendSMS([p].concat(FIXED_NUMBERS),weatherMsg).then(function(){addWeatherLog("success","Sent to "+p);sent++;}).catch(function(e){addWeatherLog("error","Failed "+p+": "+e.message);failed++;}).then(function(){return sleep(800);}).then(next);
     }
     next();
   }).catch(function(e){addWeatherLog("error","RC auth: "+e.message);btn.disabled=false;setWeatherStatus("idle","Auth failed");});
@@ -652,6 +694,16 @@ document.addEventListener("click",function(e){
   if(t.classList.contains("tab")&&t.dataset.tab){document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");t.classList.add("active");return;}
   if(t.id==="run-btn"){runAutomation();return;}
   if(t.id==="clear-log-btn"){["log-box","log-box-2"].forEach(function(id){var b=document.getElementById(id);if(b)b.innerHTML="";});return;}
+  if(t.id==="weather-save-msg-btn"){
+    var msg=document.getElementById("weather-msg-edit").value;
+    store.set("weather_msg",msg);
+    alert("Weather message saved!");return;
+  }
+  if(t.id==="weather-reset-msg-btn"){
+    store.del("weather_msg");
+    document.getElementById("weather-msg-edit").value=WEATHER_MESSAGE_DEFAULT;
+    alert("Weather message reset to default!");return;
+  }
   if(t.id==="weather-send-btn"){sendWeatherBlast();return;}
   if(t.id==="weather-clear-btn"){var b=document.getElementById("weather-log");if(b)b.innerHTML="";return;}
   if(t.id==="save-rc-btn"){saveCred("rc_client_id",document.getElementById("rc-client-id").value);saveCred("rc_client_secret",document.getElementById("rc-client-secret").value);saveCred("rc_jwt",document.getElementById("rc-jwt").value);saveCred("rc_from",document.getElementById("rc-from").value);rcToken=null;alert("RingCentral credentials saved!");return;}
