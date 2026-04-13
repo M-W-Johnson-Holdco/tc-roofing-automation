@@ -623,13 +623,14 @@ function processRows(rows,log,today){
   return next();
 }
 
-function processTemplates(row,log,today,jobNum,fullName,custPhone,ti){
+function processTemplates(row,log,today,jobKey,fullName,custPhone,ti){
   if(ti>=TEMPLATES.length)return Promise.resolve();
   var tmpl=TEMPLATES[ti];
+  var jobNum=row["Job Number"]||jobKey; // use job number if available, else GUID
   var alreadySent=false;
-  for(var i=0;i<log.length;i++){if(log[i].jobNum===jobNum&&log[i].template===tmpl.id){alreadySent=true;break;}}
-  if(alreadySent&&tmpl.id!=="T3"){stats.skipped++;return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);}
-  if(!tmpl.check(row,today,log))return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);
+  for(var i=0;i<log.length;i++){if(log[i].jobNum===jobKey&&log[i].template===tmpl.id){alreadySent=true;break;}}
+  if(alreadySent&&tmpl.id!=="T3"){stats.skipped++;return processTemplates(row,log,today,jobKey,fullName,custPhone,ti+1);}
+  if(!tmpl.check(row,today,log))return processTemplates(row,log,today,jobKey,fullName,custPhone,ti+1);
 
   var msg=buildMsg(tmpl.id,row);
   var recips=[custPhone].concat(FIXED_NUMBERS);
