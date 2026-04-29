@@ -77,7 +77,6 @@
 </head>
 <body>
 
-<!-- PASSWORD SCREEN -->
 <div id="pw-screen">
   <div id="pw-box">
     <h2>TC Roofing Automation</h2>
@@ -104,7 +103,6 @@
     <div class="tab" data-tab="logs">Run Logs</div>
   </div>
 
-  <!-- DASHBOARD -->
   <div class="section active" id="tab-dashboard">
     <div class="stats">
       <div class="stat"><div class="num" id="stat-sent">0</div><div class="lbl">Texts Sent</div></div>
@@ -112,10 +110,7 @@
       <div class="stat"><div class="num" id="stat-errors">0</div><div class="lbl">Errors</div></div>
       <div class="stat"><div class="num" id="stat-jobs">0</div><div class="lbl">Jobs Processed</div></div>
     </div>
-    <div class="status-bar idle" id="status-bar">
-      <div class="dot" id="status-dot"></div>
-      <span id="status-text">Ready — paste CSV and click Run Now</span>
-    </div>
+    <div class="status-bar idle" id="status-bar"><div class="dot" id="status-dot"></div><span id="status-text">Ready — paste CSV and click Run Now</span></div>
     <div class="card">
       <h2>Controls</h2>
       <div class="alert alert-warn">⚠️ Paste your AccuLynx CSV data below before running.</div>
@@ -136,7 +131,6 @@
     </div>
   </div>
 
-  <!-- WEATHER -->
   <div class="section" id="tab-weather">
     <div class="card">
       <h2>Weather Blast</h2>
@@ -150,8 +144,8 @@
       <label>Message (editable)</label>
       <textarea id="weather-msg-edit" rows="5" style="margin-bottom:8px;"></textarea>
       <div class="btn-row" style="margin-bottom:12px;">
-        <button class="btn btn-primary btn-sm" id="weather-save-msg-btn">💾 Save Message</button>
-        <button class="btn btn-secondary btn-sm" id="weather-reset-msg-btn">↩ Reset to Default</button>
+        <button class="btn btn-primary btn-sm" id="weather-save-msg-btn">Save Message</button>
+        <button class="btn btn-secondary btn-sm" id="weather-reset-msg-btn">Reset to Default</button>
       </div>
       <label>Also sending to:</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px;">
@@ -170,7 +164,6 @@
     </div>
   </div>
 
-  <!-- TEMPLATES -->
   <div class="section" id="tab-templates">
     <div class="card">
       <h2>Text Templates &amp; Triggers</h2>
@@ -188,7 +181,6 @@
     </div>
   </div>
 
-  <!-- CONFIG -->
   <div class="section" id="tab-config">
     <div class="card">
       <h2>Brand Logo</h2>
@@ -242,7 +234,6 @@
     </div>
   </div>
 
-  <!-- LOGS -->
   <div class="section" id="tab-logs">
     <div class="card">
       <h2>Session Log</h2>
@@ -252,16 +243,14 @@
 </div>
 
 <script>
-// VERSION: 4.0
 var PASSWORD = "hailyeah";
+var currentUser = "";
 
 var store = {
   get: function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
   set: function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
   del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
 };
-
-var currentUser = "";
 
 function checkPw(){
   var name = document.getElementById("pw-name").value.trim();
@@ -271,7 +260,6 @@ function checkPw(){
     document.getElementById("pw-screen").style.display = "none";
     store.set("pw_unlocked","1");
     store.set("current_user", name);
-    // Show user in header
     var badge = document.querySelector("header .badge");
     if(badge) badge.textContent = "👤 " + name;
   } else {
@@ -332,11 +320,11 @@ var TEMPLATES = [
   {id:"T2",name:"LGIB Insurance Update",trigger:"Current Status = lgib — day of",
    check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;var d=pd(row["Current Status Date"]);return d&&sd(d,today);}},
   {id:"T3",name:"LGIB Materials",trigger:"Current Status = lgib — 2 days after LGIB status date",
-   check:function(row,today,log){
+   check:function(row,today){
      if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;
      var d=pd(row["Current Status Date"]);if(!d)return false;
      var dayAfter=new Date(d);dayAfter.setDate(dayAfter.getDate()+2);
-     return wc(dayAfter,today,1); // send on day 2, with 1 day catchup
+     return wc(dayAfter,today,1);
    }},
   {id:"T4",name:"Roof Completed",trigger:"Completed Date — within 4 days",
    check:function(row,today){var d=pd(row["Completed Date"]);return d&&wc(d,today,4);}},
@@ -464,19 +452,19 @@ function getSheetLog(){
   return getGSToken().then(function(t){
     var sid=document.getElementById("gs-sheet-id").value;
     var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
-    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A:K",{headers:{Authorization:"Bearer "+t}});
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A:L",{headers:{Authorization:"Bearer "+t}});
   }).then(function(r){return r.json();}).then(function(d){
     if(!d.values)return[];
     var rows=d.values.slice(1);
-    return rows.map(function(r){return{timestamp:r[0]||"",jobNum:r[1]||"",name:r[2]||"",phone:r[3]||"",trigger:r[4]||"",template:r[5]||"",message:r[6]||"",acculynxLogged:r[7]||"",status:r[8]||"",jobGuid:r[9]||"",messageId:r[10]||""};});
+    return rows.map(function(r){return{timestamp:r[0]||"",jobNum:r[1]||"",name:r[2]||"",phone:r[3]||"",trigger:r[4]||"",template:r[5]||"",message:r[6]||"",acculynxLogged:r[7]||"",status:r[8]||"",jobGuid:r[9]||"",messageId:r[10]||"",runBy:r[11]||""};});
   });
 }
 function appendSheetLog(e){
   return getGSToken().then(function(t){
     var sid=document.getElementById("gs-sheet-id").value;
     var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
-        var url="https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
-    return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[[e.timestamp,e.jobNum,e.name,e.phone,e.trigger,e.template,e.message,e.acculynxLogged,e.status,e.jobGuid||"",e.messageId||"",e.runBy||""]]})}); 
+    var url="https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
+    return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[[e.timestamp,e.jobNum,e.name,e.phone,e.trigger,e.template,e.message,e.acculynxLogged,e.status,e.jobGuid||"",e.messageId||"",e.runBy||""]]})});
   }).then(function(r){
     if(!r.ok)return r.text().then(function(t){throw new Error("Sheets append failed: "+t);});
     return r.json();
@@ -505,58 +493,28 @@ function sendMMS(to,img){
   }).then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error("MMS failed: "+JSON.stringify(d));return d;});
 }
 
-function logToAccuLynx(jobNum,msg,jobNumUrl,jobNameUrl,existingLog){
+function logToAccuLynx(jobKey,msg,jobNumUrl,jobNameUrl,existingLog){
   var key=document.getElementById("acculynx-api-key").value;
   var guid=extractGuid(jobNumUrl)||extractGuid(jobNameUrl);
-  if(!guid){
-    addLog("warn","No GUID found for Job "+jobNum+" — skipping AccuLynx log");
-    return Promise.resolve({guid:"",messageId:""});
-  }
-  // Find first ever message ID for this job to thread all messages together
-  var threadMessageId="";
-  var threadGuid="";
+  if(!guid){addLog("warn","No GUID found for Job "+jobKey+" — skipping AccuLynx log");return Promise.resolve({guid:"",messageId:""});}
+  var threadMessageId="";var threadGuid="";
   for(var i=0;i<existingLog.length;i++){
-    if(existingLog[i].jobNum===jobNum&&existingLog[i].messageId){
-      threadMessageId=existingLog[i].messageId;
-      threadGuid=existingLog[i].jobGuid;
-      break;
-    }
+    if(existingLog[i].jobNum===jobKey&&existingLog[i].messageId){threadMessageId=existingLog[i].messageId;threadGuid=existingLog[i].jobGuid;break;}
   }
-  return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+guid,{
-    headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"}
-  }).then(function(r){
-    if(!r.ok)throw new Error("Job fetch failed: "+r.status);
-    return r.json();
-  }).then(function(jobData){
+  return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+guid,{headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"}})
+  .then(function(r){if(!r.ok)throw new Error("Job fetch failed: "+r.status);return r.json();})
+  .then(function(jobData){
     var apiGuid=jobData.id||guid;
-    // If we have an existing thread, reply to it
-    if(threadMessageId && threadGuid){
-      addLog("info","Replying to existing AccuLynx thread for Job "+jobNum);
-      return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+threadGuid+"/messages/"+threadMessageId+"/replies",{
-        method:"POST",
-        headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},
-        body:JSON.stringify({message:"[Auto-Text Sent] "+msg})
-      }).then(function(r){
-        if(!r.ok)return r.text().then(function(t){throw new Error("Reply failed: "+r.status+" "+t);});
-        return r.json();
-      }).then(function(data){
-        return {guid:apiGuid,messageId:threadMessageId}; // Keep original thread ID
-      });
+    if(threadMessageId&&threadGuid){
+      addLog("info","Replying to existing AccuLynx thread for Job "+jobKey);
+      return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+threadGuid+"/messages/"+threadMessageId+"/replies",{method:"POST",headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({message:"[Auto-Text Sent] "+msg})})
+      .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error("Reply failed: "+r.status+" "+t);});return r.json();})
+      .then(function(){return{guid:apiGuid,messageId:threadMessageId};});
     }
-    // No existing thread — create new message
-    addLog("info","Creating new AccuLynx thread for Job "+jobNum);
-    return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+apiGuid+"/messages",{
-      method:"POST",
-      headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},
-      body:JSON.stringify({message:"[Auto-Text Sent] "+msg})
-    }).then(function(r){
-      if(!r.ok)return r.text().then(function(t){throw new Error("AccuLynx post failed: "+r.status+" "+t);});
-      return r.json();
-    }).then(function(data){
-      var messageId=data.messageId||"";
-      addLog("info","AccuLynx new thread — MsgID: "+messageId);
-      return {guid:apiGuid,messageId:messageId};
-    });
+    addLog("info","Creating new AccuLynx thread for Job "+jobKey);
+    return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+apiGuid+"/messages",{method:"POST",headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({message:"[Auto-Text Sent] "+msg})})
+    .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error("AccuLynx post failed: "+r.status+" "+t);});return r.json();})
+    .then(function(data){addLog("info","AccuLynx new thread — MsgID: "+(data.messageId||""));return{guid:apiGuid,messageId:data.messageId||""};});
   });
 }
 
@@ -578,28 +536,21 @@ function runAutomation(){
   if(!csv){addLog("error","No CSV pasted.");return;}
   var btn=document.getElementById("run-btn");btn.disabled=true;
   setStatus("running","Processing...");stats={sent:0,skipped:0,errors:0,jobs:0};updateStats();
-  addLog("info","Run started at "+new Date().toLocaleTimeString());
+  addLog("info","Run started by "+currentUser+" at "+new Date().toLocaleTimeString());
   var rows,log;
   try{rows=parseCSV(csv);addLog("info",rows.length+" jobs parsed");}
   catch(e){addLog("error","CSV error: "+e.message);btn.disabled=false;setStatus("error","CSV failed");return;}
-
   getSheetLog().then(function(existingLog){
-    log=existingLog;
-    addLog("info",log.length+" existing log entries");
-    return getRCToken();
+    log=existingLog;addLog("info",log.length+" existing log entries");return getRCToken();
   }).then(function(){
     addLog("success","RingCentral ready");
-    var today=getTodayCST();
-    return processRows(rows,log,today);
+    return processRows(rows,log,getTodayCST());
   }).then(function(){
     updateStats();
     setStatus("done","Done — "+stats.sent+" sent, "+stats.skipped+" skipped, "+stats.errors+" errors");
     addLog("info","Complete. Sent:"+stats.sent+" Skipped:"+stats.skipped+" Errors:"+stats.errors);
     btn.disabled=false;
-  }).catch(function(e){
-    addLog("error","Fatal error: "+e.message);
-    btn.disabled=false;setStatus("error",e.message);
-  });
+  }).catch(function(e){addLog("error","Fatal error: "+e.message);btn.disabled=false;setStatus("error",e.message);});
 }
 
 function processRows(rows,log,today){
@@ -608,36 +559,35 @@ function processRows(rows,log,today){
     if(i>=rows.length)return Promise.resolve();
     var row=rows[i++];stats.jobs++;
     var jobNum=row["Job Number"]||"";
+    var jobGuidFromUrl=extractGuid(row["Job Number Url"]||"")||extractGuid(row["Job Name Url"]||"");
+    var jobKey=jobNum||jobGuidFromUrl||"";
+    if(!jobKey){addLog("warn","Row has no Job Number or URL, skipping");stats.errors++;return next();}
     var fullName=((row["Primary Contact: First Name"]||"")+" "+(row["Primary Contact: Last Name"]||"")).trim();
     var custPhone=toE164(row["Phone Number"]||"");
-    if(!custPhone){addLog("warn","Job "+jobNum+" ("+fullName+") invalid phone, skipping");stats.errors++;return next();}
-    // Global cutoff — only process jobs submitted as prospect on 4/6/2026 or later
+    if(!custPhone){addLog("warn","Job "+jobKey+" ("+fullName+") invalid phone, skipping");stats.errors++;return next();}
+    var custPhone2=toE164(row["Secondary Phone"]||"");
     var prospectDate=pd(row["Submitted as Prospect Date"]);
     var cutoff=new Date("2026-04-06");cutoff.setHours(0,0,0,0);
-    if(!prospectDate||prospectDate<cutoff){
-      addLog("skip","Job "+jobNum+" ("+fullName+") — prospect date before 4/6/2026, skipping all templates");
-      stats.skipped++;return next();
-    }
-    return processTemplates(row,log,today,jobNum,fullName,custPhone,0).then(function(){updateStats();return next();});
+    if(!prospectDate||prospectDate<cutoff){addLog("skip","Job "+jobKey+" ("+fullName+") — prospect before 4/6/2026, skipping");stats.skipped++;return next();}
+    return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,0).then(function(){updateStats();return next();});
   }
   return next();
 }
 
-function processTemplates(row,log,today,jobKey,fullName,custPhone,ti){
+function processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti){
   if(ti>=TEMPLATES.length)return Promise.resolve();
   var tmpl=TEMPLATES[ti];
-  var jobNum=row["Job Number"]||jobKey; // use job number if available, else GUID
   var alreadySent=false;
   for(var i=0;i<log.length;i++){if(log[i].jobNum===jobKey&&log[i].template===tmpl.id){alreadySent=true;break;}}
-  if(alreadySent&&tmpl.id!=="T3"){stats.skipped++;return processTemplates(row,log,today,jobKey,fullName,custPhone,ti+1);}
-  if(!tmpl.check(row,today,log))return processTemplates(row,log,today,jobKey,fullName,custPhone,ti+1);
-
+  if(alreadySent&&tmpl.id!=="T3"){stats.skipped++;return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti+1);}
+  if(!tmpl.check(row,today,log))return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti+1);
   var msg=buildMsg(tmpl.id,row);
-  var recips=[custPhone].concat(FIXED_NUMBERS);
+  var recips=[custPhone];
+  if(custPhone2&&recips.indexOf(custPhone2)===-1)recips.push(custPhone2);
+  recips=recips.concat(FIXED_NUMBERS);
   var sp=spE164(row["Primary Salesperson"]);
   if(sp&&recips.indexOf(sp)===-1)recips.push(sp);
   var img=imageStore[tmpl.id]||null;
-
   var sendPromise;
   if(img){
     addLog("info","Sending "+tmpl.id+" text to "+fullName);
@@ -646,32 +596,29 @@ function processTemplates(row,log,today,jobKey,fullName,custPhone,ti){
     addLog("info","Sending "+tmpl.id+" to "+fullName);
     sendPromise=sendSMS(recips,msg);
   }
-
   return sendPromise.then(function(){
-    return logToAccuLynx(jobNum,msg,row["Job Number Url"]||"",row["Job Name Url"]||"",log).then(function(result){
-      addLog("success","AccuLynx updated — Job "+jobNum);
-      return {status:"logged",guid:result&&result.guid||"",messageId:result&&result.messageId||""};
+    return logToAccuLynx(jobKey,msg,row["Job Number Url"]||"",row["Job Name Url"]||"",log).then(function(result){
+      addLog("success","AccuLynx updated — Job "+jobKey);
+      return{status:"logged",guid:result&&result.guid||"",messageId:result&&result.messageId||""};
     }).catch(function(e){
-      addLog("warn","AccuLynx failed Job "+jobNum+": "+e.message);
-      return {status:"failed",guid:"",messageId:""};
+      addLog("warn","AccuLynx failed Job "+jobKey+": "+e.message);
+      return{status:"failed",guid:"",messageId:""};
     });
   }).then(function(alResult){
-    // For messageId, always use the first thread ID for this job if exists
     var threadId=alResult.messageId||"";
-    for(var li=0;li<log.length;li++){if(log[li].jobNum===jobNum&&log[li].messageId){threadId=log[li].messageId;break;}}
-    var entry={timestamp:new Date().toISOString(),jobNum:jobNum,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:threadId,runBy:currentUser||"Unknown"};
+    for(var li=0;li<log.length;li++){if(log[li].jobNum===jobKey&&log[li].messageId){threadId=log[li].messageId;break;}}
+    var entry={timestamp:new Date().toISOString(),jobNum:jobKey,name:fullName,phone:row["Phone Number"]||"",trigger:tmpl.trigger,template:tmpl.id,message:msg,acculynxLogged:alResult.status,status:"sent",jobGuid:alResult.guid||"",messageId:threadId,runBy:currentUser||"Unknown"};
     log.push(entry);stats.sent++;
-    addLog("success",tmpl.id+" sent — "+fullName+" | Job "+jobNum);
+    addLog("success",tmpl.id+" sent — "+fullName+" | Job "+jobKey);
     return appendSheetLog(entry);
-  }).then(function(){return sleep(800);}).then(function(){return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);})
-  .catch(function(e){stats.errors++;addLog("error",tmpl.id+" Job "+jobNum+": "+e.message);return processTemplates(row,log,today,jobNum,fullName,custPhone,ti+1);});
+  }).then(function(){return sleep(800);}).then(function(){return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti+1);})
+  .catch(function(e){stats.errors++;addLog("error",tmpl.id+" Job "+jobKey+": "+e.message);return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti+1);});
 }
 
 function parseWeatherNums(raw){return raw.split(/[\n,]+/).map(function(n){return toE164(n.trim());}).filter(Boolean);}
 function getWeatherMessage(){return store.get("weather_msg")||WEATHER_MESSAGE_DEFAULT;}
 function updateWeatherPreview(){
-  var msg=getWeatherMessage();
-  var el=document.getElementById("weather-msg-edit");if(el)el.value=msg;
+  var el=document.getElementById("weather-msg-edit");if(el)el.value=getWeatherMessage();
   var nums=parseWeatherNums((document.getElementById("weather-numbers")||{}).value||"");
   var c=document.getElementById("weather-count");if(c)c.textContent=nums.length>0?nums.length+" valid numbers detected":"";
 }
@@ -679,7 +626,7 @@ function sendWeatherBlast(){
   if(!isWithinTextingHours()){addWeatherLog("warn","Outside 8am-8pm CST");return;}
   var nums=parseWeatherNums(document.getElementById("weather-numbers").value||"");
   if(!nums.length){addWeatherLog("error","No valid numbers.");return;}
-  var weatherMsg = document.getElementById("weather-msg-edit").value || getWeatherMessage();
+  var weatherMsg=document.getElementById("weather-msg-edit").value||getWeatherMessage();
   if(!confirm("Send weather delay text to "+nums.length+" customer(s) + fixed group?"))return;
   var btn=document.getElementById("weather-send-btn");btn.disabled=true;
   setWeatherStatus("running","Sending to "+nums.length+" customers...");
@@ -711,16 +658,8 @@ document.addEventListener("click",function(e){
   if(t.classList.contains("tab")&&t.dataset.tab){document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");t.classList.add("active");return;}
   if(t.id==="run-btn"){runAutomation();return;}
   if(t.id==="clear-log-btn"){["log-box","log-box-2"].forEach(function(id){var b=document.getElementById(id);if(b)b.innerHTML="";});return;}
-  if(t.id==="weather-save-msg-btn"){
-    var msg=document.getElementById("weather-msg-edit").value;
-    store.set("weather_msg",msg);
-    alert("Weather message saved!");return;
-  }
-  if(t.id==="weather-reset-msg-btn"){
-    store.del("weather_msg");
-    document.getElementById("weather-msg-edit").value=WEATHER_MESSAGE_DEFAULT;
-    alert("Weather message reset to default!");return;
-  }
+  if(t.id==="weather-save-msg-btn"){store.set("weather_msg",document.getElementById("weather-msg-edit").value);alert("Weather message saved!");return;}
+  if(t.id==="weather-reset-msg-btn"){store.del("weather_msg");document.getElementById("weather-msg-edit").value=WEATHER_MESSAGE_DEFAULT;alert("Reset to default!");return;}
   if(t.id==="weather-send-btn"){sendWeatherBlast();return;}
   if(t.id==="weather-clear-btn"){var b=document.getElementById("weather-log");if(b)b.innerHTML="";return;}
   if(t.id==="save-rc-btn"){saveCred("rc_client_id",document.getElementById("rc-client-id").value);saveCred("rc_client_secret",document.getElementById("rc-client-secret").value);saveCred("rc_jwt",document.getElementById("rc-jwt").value);saveCred("rc_from",document.getElementById("rc-from").value);rcToken=null;alert("RingCentral credentials saved!");return;}
