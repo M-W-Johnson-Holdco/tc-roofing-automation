@@ -498,8 +498,14 @@ function logToAccuLynx(jobKey,msg,jobNumUrl,jobNameUrl,existingLog){
   var guid=extractGuid(jobNumUrl)||extractGuid(jobNameUrl);
   if(!guid){addLog("warn","No GUID found for Job "+jobKey+" — skipping AccuLynx log");return Promise.resolve({guid:"",messageId:""});}
   var threadMessageId="";var threadGuid="";
+  var jobGuidForThread=extractGuid(jobNumUrl)||extractGuid(jobNameUrl);
   for(var i=0;i<existingLog.length;i++){
-    if(existingLog[i].jobNum===jobKey&&existingLog[i].messageId){threadMessageId=existingLog[i].messageId;threadGuid=existingLog[i].jobGuid;break;}
+    var entry=existingLog[i];
+    if(entry.messageId){
+      if(entry.jobNum===jobKey||(jobGuidForThread&&(entry.jobNum===jobGuidForThread||entry.jobGuid===jobGuidForThread))){
+        threadMessageId=entry.messageId;threadGuid=entry.jobGuid;break;
+      }
+    }
   }
   return fetch(ACCULYNX_PROXY+"/api/v2/jobs/"+guid,{headers:{Authorization:"Bearer "+key,"Content-Type":"application/json"}})
   .then(function(r){if(!r.ok)throw new Error("Job fetch failed: "+r.status);return r.json();})
@@ -577,8 +583,17 @@ function processRows(rows,log,today){
 function processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti){
   if(ti>=TEMPLATES.length)return Promise.resolve();
   var tmpl=TEMPLATES[ti];
+  // Check duplicates against both job number AND guid in case job got a number after T1 was sent
+  var jobNum=row["Job Number"]||"";
+  var jobGuidFromUrl=extractGuid(row["Job Number Url"]||"")||extractGuid(row["Job Name Url"]||"");
   var alreadySent=false;
-  for(var i=0;i<log.length;i++){if(log[i].jobNum===jobKey&&log[i].template===tmpl.id){alreadySent=true;break;}}
+  for(var i=0;i<log.length;i++){
+    if(log[i].template===tmpl.id){
+      if((jobKey&&log[i].jobNum===jobKey)||(jobNum&&log[i].jobNum===jobNum)||(jobGuidFromUrl&&log[i].jobNum===jobGuidFromUrl)||(jobGuidFromUrl&&log[i].jobGuid===jobGuidFromUrl)){
+        alreadySent=true;break;
+      }
+    }
+  }
   if(alreadySent&&tmpl.id!=="T3"){stats.skipped++;return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti+1);}
   if(!tmpl.check(row,today,log))return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti+1);
   var msg=buildMsg(tmpl.id,row);
