@@ -306,7 +306,7 @@ var DEFAULT_BODIES = {
   T4: "Hi {{First Name}}! Congrats on your new roof! Do you have any questions or concerns regarding how your roof replacement went? Feel free to respond to this text or call Production directly at " + PRODUCTION_PHONE + ". Our Estimating Dept is submitting supplemental documentation to {{Insurance Company}}, so please keep an eye out for any funds released.\n\nNext steps: If you haven't had your final walk-through and attic inspection please reach out to {{Primary Salesperson}} to schedule.",
   T5: "Hi {{First Name}}! All work has now been completed with TC Roofing! Do you have any questions or concerns regarding work recently completed? Feel free to respond to this text or call Production directly at " + PRODUCTION_PHONE + ". Our Estimating Dept is submitting final documentation to {{Insurance Company}}, so please keep an eye out for any funds released.",
   T6: "TC Roofing & Restorations has an important update regarding your claim. Settlement on your claim with {{Insurance Company}} has been reached.",
-  T7: "Your adjustment appointment with {{Insurance Company}} has completed. It typically takes about 7-10 days for the first insurance estimate to be released post-adjustment. Please make sure to forward any email communication to our estimating department at " + ESTIMATING_EMAIL + ", so we can review and assist ASAP to keep your project moving. Feel free to respond to this text at any time with any questions. Thank you for choosing TC Roofing & Restorations!",
+  T7: "Your adjustment appointment with {{Insurance Company}} has completed. It typically takes about 3-5 days for the first insurance estimate to be released post-adjustment. Please make sure to forward any email communication to our estimating department at " + ESTIMATING_EMAIL + ", so we can review and assist ASAP to keep your project moving. Feel free to respond to this text at any time with any questions. Thank you for choosing TC Roofing & Restorations!",
   T8: "Hi {{First Name}}! EXCITING NEWS from TC Roofing! Your Work Order is officially COMPLETED, which means you are on the final path to your brand-new roof! We can't wait to get started! Let us know if you have any questions!"
 };
 
@@ -319,12 +319,14 @@ var TEMPLATES = [
    check:function(row,today){var d=pd(row["Submitted as Prospect Date"]);return d&&sd(d,today);}},
   {id:"T2",name:"LGIB Insurance Update",trigger:"Current Status = lgib — day of",
    check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;var d=pd(row["Current Status Date"]);return d&&sd(d,today);}},
-  {id:"T3",name:"LGIB Materials",trigger:"Current Status = lgib — 2 days after LGIB status date",
+  {id:"T3",name:"LGIB Materials",trigger:"Current Status = lgib — 2 days after LGIB status date (skips if T8 ready)",
    check:function(row,today){
      if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;
      var d=pd(row["Current Status Date"]);if(!d)return false;
      var dayAfter=new Date(d);dayAfter.setDate(dayAfter.getDate()+2);
-     return wc(dayAfter,today,1);
+     if(!wc(dayAfter,today,1))return false;
+     var t8d=pd(row["Submitted for Approval Date"]);if(t8d&&wc(t8d,today,2))return false;
+     return true;
    }},
   {id:"T4",name:"Roof Completed",trigger:"Completed Date — within 4 days",
    check:function(row,today){var d=pd(row["Completed Date"]);return d&&wc(d,today,4);}},
@@ -332,8 +334,8 @@ var TEMPLATES = [
    check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="other trade(s) completed")return false;var d=pd(row["Current Status Date"]);return d&&wc(d,today,4);}},
   {id:"T6",name:"Settlement Reached",trigger:"Invoiced Date — within 2 days",
    check:function(row,today){var d=pd(row["Invoiced Date"]);return d&&wc(d,today,2);}},
-  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — day after, 7 day catchup",
-   check:function(row,today){var d=pd(row["Met With Adjuster Date"]);if(!d)return false;var da=new Date(d);da.setDate(da.getDate()+1);return wc(da,today,7);}},
+  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — day after (skips if T2 ready)",
+   check:function(row,today){var d=pd(row["Met With Adjuster Date"]);if(!d)return false;var da=new Date(d);da.setDate(da.getDate()+1);if(!sd(da,today))return false;var t2d=pd(row["Current Status Date"]);if(t2d&&(row["Current Status"]||"").toLowerCase()==="lgib"&&sd(t2d,today))return false;return true;}},
   {id:"T8",name:"Work Order Approved",trigger:"Submitted for Approval Date — within 2 days",
    check:function(row,today){var d=pd(row["Submitted for Approval Date"]);return d&&wc(d,today,2);}}
 ];
