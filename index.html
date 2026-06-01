@@ -73,6 +73,55 @@
   .small{font-size:0.75rem;color:#64748b;margin-top:4px}
   hr{border:none;border-top:1px solid #2a3050;margin:16px 0}
   .modified-badge{background:#78350f;color:#fcd34d;font-size:0.65rem;padding:2px 6px;border-radius:8px;margin-left:6px}
+  /* Scheduler tab */
+  .sched-search-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:16px}
+  .sched-search-row input{flex:1}
+  .job-result-card{background:#0f1117;border:1px solid #2a3050;border-radius:10px;padding:16px;margin-bottom:14px}
+  .job-result-card h3{font-size:0.9rem;color:#8DC63F;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+  .job-result-card .meta{font-size:0.75rem;color:#64748b;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:12px}
+  .job-result-card .meta span{color:#94a3b8}
+  .cal-form{background:#0a0d14;border:1px solid #1e2640;border-radius:8px;padding:16px;margin-top:12px}
+  .cal-form.hidden{display:none}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .appt-type-select{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:0.85rem;outline:none}
+  .appt-type-select:focus{border-color:#4A90D9}
+  .cal-event-row{background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .cal-event-row .ev-info{flex:1;min-width:0}
+  .cal-event-row .ev-title{font-size:0.85rem;color:#e2e8f0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-event-row .ev-time{font-size:0.75rem;color:#64748b;margin-top:2px}
+  .cal-event-row .ev-actions{display:flex;gap:6px;flex-shrink:0}
+  .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:0.68rem;font-weight:600}
+  .pill-green{background:#1a2e1a;color:#8DC63F;border:1px solid #2a4a2a}
+  .pill-blue{background:#0c1a2e;color:#4A90D9;border:1px solid #1e3a5f}
+  .pill-yellow{background:#2d2008;color:#fcd34d;border:1px solid #854d0e}
+  .sched-log-box{background:#0a0d14;border:1px solid #1e2640;border-radius:8px;padding:14px;height:200px;overflow-y:auto;font-family:monospace;font-size:0.78rem;line-height:1.6}
+  .no-results{color:#64748b;font-size:0.82rem;padding:12px 0;text-align:center}
+  .reschedule-form{background:#0a0d14;border:1px solid #4A90D9;border-radius:8px;padding:14px;margin-top:10px}
+  .reschedule-form.hidden{display:none}
+  /* Bulk scheduler */
+  .bulk-mode-btn.active{background:#4A90D9;color:#fff;border-color:#4A90D9}
+  .bulk-job-row{background:#0f1117;border:1px solid #2a3050;border-radius:10px;padding:14px;margin-bottom:10px}
+  .bulk-job-row.found{border-left:3px solid #8DC63F}
+  .bulk-job-row.notfound{border-left:3px solid #fca5a5;opacity:0.65}
+  .bulk-job-row .bjr-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .bulk-job-row .bjr-name{font-size:0.88rem;color:#e2e8f0;font-weight:700}
+  .bulk-job-row .bjr-meta{font-size:0.72rem;color:#64748b;flex:1}
+  .bulk-job-row .bjr-fields{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 2fr;gap:8px;align-items:end}
+  .bulk-job-row .bjr-fields label{font-size:0.7rem;color:#94a3b8;margin-bottom:3px}
+  .bulk-job-row select{background:#0a0d14;border:1px solid #2a3050;border-radius:6px;padding:7px 8px;color:#e2e8f0;font-size:0.78rem;outline:none;width:100%}
+  .bulk-job-row select:focus{border-color:#4A90D9}
+  .bulk-job-row input[type=date],.bulk-job-row input[type=time],.bulk-job-row input[type=text]{font-size:0.78rem;padding:7px 8px}
+  .bulk-copy-bar{background:#0a0d14;border:1px solid #1e2640;border-radius:6px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:0.75rem;color:#94a3b8}
+  .bulk-copy-bar select{background:#0f1117;border:1px solid #2a3050;border-radius:6px;padding:5px 8px;color:#e2e8f0;font-size:0.75rem;outline:none}
+  .bulk-copy-bar input{background:#0f1117;border:1px solid #2a3050;border-radius:6px;padding:5px 8px;color:#e2e8f0;font-size:0.75rem;outline:none;width:auto}
+  /* Calendar invite templates */
+  .cal-tmpl-item{background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:14px;margin-bottom:10px}
+  .cal-tmpl-item h3{font-size:0.85rem;color:#8DC63F;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+  .cal-tmpl-body{font-size:0.78rem;color:#94a3b8;line-height:1.6;white-space:pre-wrap;margin-top:6px}
+  .cal-tmpl-edit{display:none;margin-top:10px}.cal-tmpl-edit.open{display:block}
+  .cal-var-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .cal-var-chip{background:#1a2a3f;color:#4A90D9;font-size:0.7rem;padding:3px 8px;border-radius:10px;cursor:pointer;border:1px solid #4A90D9;font-family:monospace}
+  .cal-var-chip:hover{background:#4A90D9;color:#fff}
 </style>
 </head>
 <body>
@@ -98,6 +147,7 @@
   <div class="section-tabs">
     <div class="tab active" data-tab="dashboard">Job Status Updates</div>
     <div class="tab" data-tab="weather">🌧️ Weather Blast</div>
+    <div class="tab" data-tab="scheduler">📅 Scheduler</div>
     <div class="tab" data-tab="templates">Text &amp; Image Templates</div>
     <div class="tab" data-tab="config">Configuration</div>
     <div class="tab" data-tab="logs">Run Logs</div>
@@ -131,8 +181,123 @@
     </div>
   </div>
 
-  <div class="section" id="tab-weather">
+  <!-- ===== SCHEDULER TAB ===== -->
+  <div class="section" id="tab-scheduler">
     <div class="card">
+      <h2>📅 Appointment Scheduler</h2>
+      <div class="alert alert-info">Look up a job by Job Number or GUID to schedule or reschedule an appointment. Sends a group SMS notification to the existing thread automatically.</div>
+      <div class="sched-search-row">
+        <div style="flex:1">
+          <label>Job Number or GUID</label>
+          <input type="text" id="sched-search-input" placeholder="e.g. 12345 or 3f8a1b2c-…">
+        </div>
+        <button class="btn btn-primary" id="sched-search-btn">🔍 Look Up Job</button>
+      </div>
+      <div id="sched-search-status" class="small" style="margin-bottom:8px;"></div>
+      <div id="sched-job-result"></div>
+    </div>
+
+    <div class="card" id="sched-existing-card" style="display:none">
+      <h2>Upcoming Appointments for Job</h2>
+      <div id="sched-existing-events"><div class="no-results">No upcoming appointments found.</div></div>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-secondary btn-sm" id="sched-refresh-events-btn">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="card" id="all-events-card">
+      <h2>🗓️ All Upcoming Appointments</h2>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px;">
+        <div style="flex:1;min-width:180px;">
+          <label>Filter by Appointment Type</label>
+          <select id="all-events-filter" class="appt-type-select">
+            <option value="">— All Types —</option>
+          </select>
+        </div>
+        <div>
+          <label>From</label>
+          <input type="date" id="all-events-from" style="width:140px;">
+        </div>
+        <div>
+          <label>To</label>
+          <input type="date" id="all-events-to" style="width:140px;">
+        </div>
+        <button class="btn btn-primary btn-sm" id="all-events-load-btn">Load Events</button>
+        <button class="btn btn-secondary btn-sm" id="all-events-refresh-btn">↻</button>
+      </div>
+      <div id="all-events-status" class="small" style="margin-bottom:8px;"></div>
+      <div id="all-events-list"><div class="no-results">Click Load Events to fetch all upcoming appointments.</div></div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Bulk Scheduler</h2>
+      <div class="alert alert-info">Enter job numbers or paste a CSV — each job gets its own appointment row where you set the type, date, and time individually.</div>
+
+      <!-- Input mode toggle -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button class="btn btn-secondary btn-sm bulk-mode-btn active" id="bulk-mode-list" data-bulk-mode="list">📝 Job Number List</button>
+        <button class="btn btn-secondary btn-sm bulk-mode-btn" id="bulk-mode-csv" data-bulk-mode="csv">📄 AccuLynx CSV</button>
+      </div>
+
+      <!-- List mode -->
+      <div id="bulk-input-list">
+        <label>Job Numbers / GUIDs <span style="color:#64748b;font-weight:400">(one per line)</span></label>
+        <textarea id="bulk-job-list" rows="5" placeholder="12345&#10;12346&#10;3f8a1b2c-0000-0000-0000-000000000000&#10;..."></textarea>
+        <div id="bulk-list-count" class="small" style="margin-top:4px;"></div>
+      </div>
+
+      <!-- CSV mode -->
+      <div id="bulk-input-csv" style="display:none">
+        <label>Paste AccuLynx CSV</label>
+        <textarea id="bulk-csv-input" rows="5" placeholder="Paste full CSV content here (including header row)..."></textarea>
+        <div id="bulk-csv-count" class="small" style="margin-top:4px;"></div>
+      </div>
+
+      <div class="btn-row" style="margin-top:12px;margin-bottom:4px;">
+        <button class="btn btn-secondary" id="bulk-resolve-btn">🔍 Resolve Jobs &amp; Build Schedule Grid</button>
+      </div>
+      <div id="bulk-resolve-status" class="small" style="margin-bottom:10px;"></div>
+
+      <!-- Per-job schedule grid — built dynamically -->
+      <div id="bulk-resolved-list"></div>
+
+      <!-- Send -->
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-primary" id="bulk-send-btn" disabled>📅 Schedule All &amp; Send SMS</button>
+        <button class="btn btn-secondary btn-sm" id="bulk-clear-btn">Clear</button>
+      </div>
+
+      <!-- Progress -->
+      <div class="status-bar idle" id="bulk-status-bar" style="margin-top:14px;display:none;">
+        <div class="dot" id="bulk-dot"></div><span id="bulk-status-text">Ready</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔔 Day-Before Appointment Reminders</h2>
+      <div class="alert alert-info">Scans all calendars for appointments tomorrow and sends a reminder SMS to each job's group thread. Run once each morning — already-sent reminders are tracked and won't double-send.</div>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;">
+        <div>
+          <label>Send Reminders For Date</label>
+          <input type="date" id="reminder-date" style="width:160px;">
+        </div>
+        <button class="btn btn-primary" id="reminder-run-btn">🔔 Send Reminders</button>
+        <button class="btn btn-secondary btn-sm" id="reminder-preview-btn">👁 Preview Only</button>
+      </div>
+      <div id="reminder-status" class="small" style="margin-bottom:8px;"></div>
+      <div class="status-bar idle" id="reminder-status-bar" style="display:none;">
+        <div class="dot" id="reminder-dot"></div><span id="reminder-status-text">Ready</span>
+      </div>
+      <div id="reminder-preview-list"></div>
+    </div>
+
+    <div class="card">
+      <h2>Scheduler Log</h2>
+      <div class="sched-log-box" id="sched-log-box"><div class="log-entry info">Ready.</div></div>
+    </div>
+  </div>
+
+  <div class="section" id="tab-weather">    <div class="card">
       <h2>Weather Blast</h2>
       <div class="alert alert-warn">⚠️ Sends immediately to all numbers plus fixed group. Double-check before sending.</div>
       <div class="status-bar idle" id="weather-status-bar"><div class="dot" id="weather-dot"></div><span id="weather-status-text">Ready</span></div>
@@ -179,6 +344,26 @@
         <div class="img-upload-box"><label>T8 — Work Order</label><input type="file" id="img-T8" accept="image/*"><div id="img-T8-preview"></div></div>
       </div>
     </div>
+    <div class="card">
+      <h2>📅 Calendar Event Body Templates</h2>
+      <div class="alert alert-info">Each appointment type has its own editable body — used as both the Google Calendar event description and the invite email sent to attendees. Supports <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Customer Name}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Job Number}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Date}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Time}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Address}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Salesperson}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Insurance Company}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Phone}}</code>. Changes save permanently.</div>
+      <div id="cal-templates-list"></div>
+    </div>
+    <div class="card">
+      <h2>💬 Scheduled Appointment SMS Templates</h2>
+      <div class="alert alert-info">One SMS template per appointment type — sent to the full group thread when an appointment is scheduled. Variables: <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{First Name}}</code> <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Appointment Type}}</code> <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Date}}</code> <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Time}}</code> <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Address}}</code>. Changes save permanently.</div>
+      <div id="sched-sms-templates-list"></div>
+    </div>
+    <div class="card">
+      <h2>💬 Rescheduled Appointment SMS Templates</h2>
+      <div class="alert alert-info">One SMS template per appointment type — sent to the full group thread when an appointment is rescheduled. Same variables available. Changes save permanently.</div>
+      <div id="resched-sms-templates-list"></div>
+    </div>
+    <div class="card">
+      <h2>🔔 Day-Before Reminder SMS Templates</h2>
+      <div class="alert alert-warn">⚠️ These templates are managed in Google Sheets — <strong>edit them directly in the "<span id="reminder-tmpl-tab-display">ReminderTemplates</span>" tab</strong> of your spreadsheet, not here. Changes in the sheet are picked up automatically by the reminder Worker on its next run. The previews below are read-only and reflect what was last synced from this device.</div>
+      <div id="reminder-sms-templates-list"></div>
+    </div>
   </div>
 
   <div class="section" id="tab-config">
@@ -199,30 +384,12 @@
       </div>
     </div>
     <div class="card">
-      <h2>RingCentral Credentials</h2>
-      <div class="grid2">
-        <div><label>Client ID</label><input type="text" id="rc-client-id"></div>
-        <div><label>Client Secret</label><input type="password" id="rc-client-secret"></div>
-        <div><label>JWT Token</label><input type="password" id="rc-jwt"></div>
-        <div><label>From Number</label><input type="text" id="rc-from"></div>
+      <h2>Reminder Template Sync</h2>
+      <div class="alert alert-info">Pushes all reminder templates to the Google Sheet tab so the auto-reminder Worker picks them up. Run after any template change.</div>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" id="sync-reminder-tmpl-btn">☁️ Sync Reminder Templates to Sheet</button>
       </div>
-      <div class="btn-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" id="save-rc-btn">Save RC Credentials</button></div>
-    </div>
-    <div class="card">
-      <h2>Google Sheets Credentials</h2>
-      <div class="grid2">
-        <div><label>OAuth Client ID</label><input type="text" id="gs-client-id"></div>
-        <div><label>OAuth Client Secret</label><input type="password" id="gs-client-secret"></div>
-        <div><label>Refresh Token</label><input type="password" id="gs-refresh-token"></div>
-        <div><label>Spreadsheet ID</label><input type="text" id="gs-sheet-id"></div>
-        <div><label>Sheet Tab Name</label><input type="text" id="gs-sheet-name"></div>
-      </div>
-      <div class="btn-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" id="save-gs-btn">Save Sheets Credentials</button></div>
-    </div>
-    <div class="card">
-      <h2>AccuLynx Credentials</h2>
-      <div><label>API Key</label><input type="password" id="acculynx-api-key"></div>
-      <div class="btn-row" style="margin-top:12px;"><button class="btn btn-primary btn-sm" id="save-al-btn">Save AccuLynx Credentials</button></div>
+      <div id="sync-tmpl-status" class="small" style="margin-top:6px;"></div>
     </div>
     <div class="card">
       <h2>Fixed Group Numbers</h2>
@@ -245,6 +412,24 @@
 <script>
 var PASSWORD = "hailyeah";
 var currentUser = "";
+
+// =====================================================================
+// HARDCODED CREDENTIALS — fill these in when editing in GitHub
+// =====================================================================
+var CRED_RC_CLIENT_ID     = "YOUR_RC_CLIENT_ID_HERE";
+var CRED_RC_CLIENT_SECRET = "YOUR_RC_CLIENT_SECRET_HERE";
+var CRED_RC_JWT           = "YOUR_RC_JWT_TOKEN_HERE";
+var CRED_RC_FROM          = "YOUR_RC_FROM_NUMBER_HERE";       // e.g. +12145551234
+
+var CRED_GS_CLIENT_ID     = "YOUR_GS_OAUTH_CLIENT_ID_HERE";
+var CRED_GS_CLIENT_SECRET = "YOUR_GS_OAUTH_CLIENT_SECRET_HERE";
+var CRED_GS_REFRESH_TOKEN = "YOUR_GS_REFRESH_TOKEN_HERE";
+var CRED_GS_SHEET_ID      = "YOUR_SPREADSHEET_ID_HERE";
+var CRED_GS_SHEET_NAME    = "YOUR_LOG_TAB_NAME_HERE";         // e.g. Log 2026
+var CRED_GS_TMPL_TAB      = "ReminderTemplates";
+
+var CRED_AL_API_KEY       = "YOUR_ACCULYNX_API_KEY_HERE";
+// =====================================================================
 
 var store = {
   get: function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
@@ -395,20 +580,6 @@ function parseCSV(text){
 
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
 
-function getCred(k,def){return store.get("cred_"+k)||def||"";}
-function saveCred(k,v){store.set("cred_"+k,v);}
-function loadCredentials(){
-  document.getElementById("rc-client-id").value=getCred("rc_client_id","");
-  document.getElementById("rc-client-secret").value=getCred("rc_client_secret","");
-  document.getElementById("rc-jwt").value=getCred("rc_jwt","");
-  document.getElementById("rc-from").value=getCred("rc_from","");
-  document.getElementById("gs-client-id").value=getCred("gs_client_id","");
-  document.getElementById("gs-client-secret").value=getCred("gs_client_secret","");
-  document.getElementById("gs-refresh-token").value=getCred("gs_refresh_token","");
-  document.getElementById("gs-sheet-id").value=getCred("gs_sheet_id","");
-  document.getElementById("gs-sheet-name").value=getCred("gs_sheet_name","");
-  document.getElementById("acculynx-api-key").value=getCred("al_api_key","");
-}
 
 function applyLogo(d){var l=document.getElementById("header-logo");var f=document.getElementById("header-fallback");l.src=d;l.style.display="block";f.style.display="none";}
 function renderLogoPreview(d){document.getElementById("logo-preview").innerHTML='<img src="'+d+'" style="max-height:60px;border-radius:6px;border:1px solid #2a3050;background:#0f1117;padding:6px;margin-top:8px;"><div class="small" style="margin-top:4px;">Logo saved</div><button class="btn btn-danger btn-sm" id="remove-logo-btn" style="margin-top:6px;">Remove</button>';var b=document.getElementById("remove-logo-btn");if(b)b.addEventListener("click",clearLogo);}
@@ -447,13 +618,13 @@ function renderTemplates(){
 var gsToken=null,gsExpiry=0;
 function getGSToken(){
   if(gsToken&&Date.now()<gsExpiry)return Promise.resolve(gsToken);
-  return fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"client_id="+encodeURIComponent(document.getElementById("gs-client-id").value)+"&client_secret="+encodeURIComponent(document.getElementById("gs-client-secret").value)+"&refresh_token="+encodeURIComponent(document.getElementById("gs-refresh-token").value)+"&grant_type=refresh_token"})
+  return fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"client_id="+encodeURIComponent(CRED_GS_CLIENT_ID)+"&client_secret="+encodeURIComponent(CRED_GS_CLIENT_SECRET)+"&refresh_token="+encodeURIComponent(CRED_GS_REFRESH_TOKEN)+"&grant_type=refresh_token"})
   .then(function(r){return r.json();}).then(function(d){if(!d.access_token)throw new Error("Google token failed");gsToken=d.access_token;gsExpiry=Date.now()+(d.expires_in-60)*1000;return gsToken;});
 }
 function getSheetLog(){
   return getGSToken().then(function(t){
-    var sid=document.getElementById("gs-sheet-id").value;
-    var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
+    var sid=CRED_GS_SHEET_ID;
+    var sn=encodeURIComponent(CRED_GS_SHEET_NAME);
     return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A:N",{headers:{Authorization:"Bearer "+t}});
   }).then(function(r){return r.json();}).then(function(d){
     if(!d.values)return[];
@@ -463,8 +634,8 @@ function getSheetLog(){
 }
 function appendSheetLog(e){
   return getGSToken().then(function(t){
-    var sid=document.getElementById("gs-sheet-id").value;
-    var sn=encodeURIComponent(document.getElementById("gs-sheet-name").value);
+    var sid=CRED_GS_SHEET_ID;
+    var sn=encodeURIComponent(CRED_GS_SHEET_NAME);
     var url="https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+sn+"!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
     return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[[e.timestamp,e.jobNum,e.name,e.phone,e.trigger,e.template,e.message,e.acculynxLogged,e.status,e.jobGuid||"",e.messageId||"",e.runBy||"",e.secondaryPhone||"",e.conversationId||""]]})});
   }).then(function(r){
@@ -476,13 +647,13 @@ function appendSheetLog(e){
 var rcToken=null,rcExpiry=0;
 function getRCToken(){
   if(rcToken&&Date.now()<rcExpiry)return Promise.resolve(rcToken);
-  var creds=btoa(document.getElementById("rc-client-id").value+":"+document.getElementById("rc-client-secret").value);
-  return fetch("https://platform.ringcentral.com/restapi/oauth/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Authorization":"Basic "+creds},body:"grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion="+encodeURIComponent(document.getElementById("rc-jwt").value)})
+  var creds=btoa(CRED_RC_CLIENT_ID+":"+CRED_RC_CLIENT_SECRET);
+  return fetch("https://platform.ringcentral.com/restapi/oauth/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Authorization":"Basic "+creds},body:"grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion="+encodeURIComponent(CRED_RC_JWT)})
   .then(function(r){return r.json();}).then(function(d){if(!d.access_token)throw new Error("RC auth failed: "+JSON.stringify(d));rcToken=d.access_token;rcExpiry=Date.now()+(d.expires_in-60)*1000;return rcToken;});
 }
 function sendSMS(to,msg){
   return getRCToken().then(function(t){
-    return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms",{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({from:{phoneNumber:document.getElementById("rc-from").value},to:to.map(function(n){return{phoneNumber:n};}),text:msg})});
+    return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/sms",{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({from:{phoneNumber:CRED_RC_FROM},to:to.map(function(n){return{phoneNumber:n};}),text:msg})});
   }).then(function(r){return r.json();}).then(function(d){
     if(d.errorCode)throw new Error("SMS failed: "+JSON.stringify(d));
     return d; // d.conversation.id is the conversation ID
@@ -491,7 +662,7 @@ function sendSMS(to,msg){
 function sendMMS(to,img){
   return getRCToken().then(function(t){
     var fd=new FormData();
-    fd.append("json",new Blob([JSON.stringify({from:{phoneNumber:document.getElementById("rc-from").value},to:to.map(function(n){return{phoneNumber:n};}),text:""})],{type:"application/json"}));
+    fd.append("json",new Blob([JSON.stringify({from:{phoneNumber:CRED_RC_FROM},to:to.map(function(n){return{phoneNumber:n};}),text:""})],{type:"application/json"}));
     var b64=img.dataUrl.split(",")[1];var bytes=atob(b64);var arr=new Uint8Array(bytes.length);for(var i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i);
     fd.append("attachment",new Blob([arr],{type:img.type}),img.name);
     return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/mms",{method:"POST",headers:{Authorization:"Bearer "+t},body:fd});
@@ -499,7 +670,7 @@ function sendMMS(to,img){
 }
 
 function logToAccuLynx(jobKey,msg,jobNumUrl,jobNameUrl,existingLog){
-  var key=document.getElementById("acculynx-api-key").value;
+  var key=CRED_AL_API_KEY;
   var guid=extractGuid(jobNumUrl)||extractGuid(jobNameUrl);
   if(!guid){addLog("warn","No GUID found for Job "+jobKey+" — skipping AccuLynx log");return Promise.resolve({guid:"",messageId:""});}
   var threadMessageId="";var threadGuid="";
@@ -689,9 +860,7 @@ document.addEventListener("click",function(e){
   if(t.id==="weather-reset-msg-btn"){store.del("weather_msg");document.getElementById("weather-msg-edit").value=WEATHER_MESSAGE_DEFAULT;alert("Reset to default!");return;}
   if(t.id==="weather-send-btn"){sendWeatherBlast();return;}
   if(t.id==="weather-clear-btn"){var b=document.getElementById("weather-log");if(b)b.innerHTML="";return;}
-  if(t.id==="save-rc-btn"){saveCred("rc_client_id",document.getElementById("rc-client-id").value);saveCred("rc_client_secret",document.getElementById("rc-client-secret").value);saveCred("rc_jwt",document.getElementById("rc-jwt").value);saveCred("rc_from",document.getElementById("rc-from").value);rcToken=null;alert("RingCentral credentials saved!");return;}
-  if(t.id==="save-gs-btn"){saveCred("gs_client_id",document.getElementById("gs-client-id").value);saveCred("gs_client_secret",document.getElementById("gs-client-secret").value);saveCred("gs_refresh_token",document.getElementById("gs-refresh-token").value);saveCred("gs_sheet_id",document.getElementById("gs-sheet-id").value);saveCred("gs_sheet_name",document.getElementById("gs-sheet-name").value);gsToken=null;alert("Google Sheets credentials saved!");return;}
-  if(t.id==="save-al-btn"){saveCred("al_api_key",document.getElementById("acculynx-api-key").value);alert("AccuLynx credentials saved!");return;}
+  if(t.id==="sync-reminder-tmpl-btn"){syncReminderTemplatesToSheet();return;}
   if(t.id==="register-webhook-btn"){
     setWebhookStatus("Authenticating...","#4A90D9");
     getRCToken().then(function(){return getExistingWebhook();}).then(function(ex){
@@ -719,7 +888,6 @@ document.addEventListener("change",function(e){
 
 document.addEventListener("input",function(e){if(e.target.id==="weather-numbers")updateWeatherPreview();});
 
-loadCredentials();
 loadTemplateBodies();
 renderTemplates();
 loadImages();
@@ -727,6 +895,1908 @@ loadLogo();
 updateWeatherPreview();
 updateNextRun();
 setInterval(updateNextRun,60000);
+
+// =====================================================================
+// SCHEDULER — Google Calendar + SMS notifications
+// =====================================================================
+
+// ---- HARDCODED CREDENTIALS (fill these in GitHub) ----
+var GCAL_CLIENT_ID     = "YOUR_GCAL_OAUTH_CLIENT_ID_HERE";
+var GCAL_CLIENT_SECRET = "YOUR_GCAL_OAUTH_CLIENT_SECRET_HERE";
+var GCAL_REFRESH_TOKEN = "YOUR_GCAL_REFRESH_TOKEN_HERE";
+
+// ---- Per-appointment-type Calendar IDs ----
+// Each appointment type can route to a different Google Calendar.
+// Replace each placeholder with the Calendar ID for that type.
+// If a type isn't listed here it falls back to GCAL_CALENDAR_DEFAULT.
+var GCAL_CALENDAR_DEFAULT = "YOUR_DEFAULT_CALENDAR_ID_HERE";
+var GCAL_CALENDAR_MAP = {
+  "Re-inspection Adjustment":           "YOUR_CALENDAR_ID_RE_INSPECTION_HERE",
+  "Insurance Adjustment":               "YOUR_CALENDAR_ID_INSURANCE_ADJUSTMENT_HERE",
+  "Interior Only Insurance Adjustment": "YOUR_CALENDAR_ID_INTERIOR_INS_ADJ_HERE",
+  "Forensic Inspection":                "YOUR_CALENDAR_ID_FORENSIC_HERE",
+  "Engineer Inspection":                "YOUR_CALENDAR_ID_ENGINEER_HERE",
+  "On-Roof Inspection":                 "YOUR_CALENDAR_ID_ON_ROOF_HERE",
+  "Interior Only Inspection":           "YOUR_CALENDAR_ID_INTERIOR_INSP_HERE",
+  "Shingle Pull":                       "YOUR_CALENDAR_ID_SHINGLE_PULL_HERE",
+  "Video Repair":                       "YOUR_CALENDAR_ID_VIDEO_REPAIR_HERE",
+  "2nd Video Repair":                   "YOUR_CALENDAR_ID_2ND_VIDEO_REPAIR_HERE",
+  "Leak Source":                        "YOUR_CALENDAR_ID_LEAK_SOURCE_HERE"
+};
+
+function getCalendarId(apptType) {
+  return (apptType && GCAL_CALENDAR_MAP[apptType]) || GCAL_CALENDAR_DEFAULT;
+}
+
+// Returns array of all unique calendar IDs across the map (for "load all" queries)
+function getAllCalendarIds() {
+  var ids = [GCAL_CALENDAR_DEFAULT];
+  Object.keys(GCAL_CALENDAR_MAP).forEach(function(k){
+    var id = GCAL_CALENDAR_MAP[k];
+    if (id && ids.indexOf(id) === -1) ids.push(id);
+  });
+  return ids;
+}
+// Note: Google Sheets creds + RingCentral creds for SMS are reused from existing stored credentials above
+// -------------------------------------------------------
+
+var gcalToken = null;
+var gcalTokenExpiry = 0;
+var schedJobContext = null; // { jobNum, jobGuid, name, phone, phone2, salesperson, logEntries }
+
+var APPT_TYPES = [
+  "Re-inspection Adjustment",
+  "Insurance Adjustment",
+  "Interior Only Insurance Adjustment",
+  "Forensic Inspection",
+  "Engineer Inspection",
+  "On-Roof Inspection",
+  "Interior Only Inspection",
+  "Shingle Pull",
+  "Video Repair",
+  "2nd Video Repair",
+  "Leak Source"
+];
+
+// -- Auth --
+function getGCalToken() {
+  if (gcalToken && Date.now() < gcalTokenExpiry) return Promise.resolve(gcalToken);
+  return fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "client_id=" + encodeURIComponent(GCAL_CLIENT_ID) +
+          "&client_secret=" + encodeURIComponent(GCAL_CLIENT_SECRET) +
+          "&refresh_token=" + encodeURIComponent(GCAL_REFRESH_TOKEN) +
+          "&grant_type=refresh_token"
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (!d.access_token) throw new Error("GCal token failed: " + JSON.stringify(d));
+    gcalToken = d.access_token;
+    gcalTokenExpiry = Date.now() + (d.expires_in - 60) * 1000;
+    return gcalToken;
+  });
+}
+
+// -- Logging --
+function schedLog(type, msg) {
+  var box = document.getElementById("sched-log-box");
+  if (!box) return;
+  var d = document.createElement("div");
+  d.className = "log-entry " + type;
+  d.textContent = "[" + new Date().toLocaleTimeString() + "] " + msg;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+// -- Search sheet log for job --
+function searchSheetForJob(query) {
+  query = (query || "").trim();
+  if (!query) return Promise.reject(new Error("Enter a Job Number or GUID"));
+  schedLog("info", "Looking up job: " + query);
+  return getGSToken().then(function(t) {
+    var sid = CRED_GS_SHEET_ID;
+    var sn = encodeURIComponent(CRED_GS_SHEET_NAME);
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/" + sid + "/values/" + sn + "!A:N",
+      { headers: { Authorization: "Bearer " + t } });
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (!d.values || d.values.length < 2) return [];
+    var rows = d.values.slice(1).map(function(r){
+      return {
+        timestamp: r[0]||"", jobNum: r[1]||"", name: r[2]||"", phone: r[3]||"",
+        trigger: r[4]||"", template: r[5]||"", message: r[6]||"",
+        acculynxLogged: r[7]||"", status: r[8]||"", jobGuid: r[9]||"",
+        messageId: r[10]||"", runBy: r[11]||"", secondaryPhone: r[12]||"",
+        conversationId: r[13]||""
+      };
+    });
+    var ql = query.toLowerCase();
+    var matches = rows.filter(function(r){
+      return r.jobNum.toLowerCase() === ql || r.jobGuid.toLowerCase() === ql ||
+             r.jobNum.toLowerCase().indexOf(ql) > -1;
+    });
+    return matches;
+  });
+}
+
+function renderJobResult(entries) {
+  var container = document.getElementById("sched-job-result");
+  if (!entries || !entries.length) {
+    container.innerHTML = '<div class="no-results">No matching job found in sheet log. Has a text been sent for this job yet?</div>';
+    document.getElementById("sched-existing-card").style.display = "none";
+    return;
+  }
+
+  // Dedupe to unique job key
+  var seen = {};
+  var jobs = [];
+  entries.forEach(function(e){
+    var key = e.jobNum || e.jobGuid;
+    if (!seen[key]) { seen[key] = true; jobs.push(e); }
+  });
+
+  // Build salesperson from entries (look for any entry with phone from SALESPERSON_MAP)
+  var salesperson = "";
+  for (var i = 0; i < entries.length; i++) {
+    if (entries[i].template) { /* check message for salesperson name */ }
+  }
+
+  var html = jobs.map(function(j){
+    var jobKey = j.jobNum || j.jobGuid;
+    var allEntries = entries.filter(function(e){ return (e.jobNum||e.jobGuid) === jobKey; });
+    var templates = [...new Set(allEntries.map(function(e){ return e.template; }).filter(Boolean))].join(", ");
+    var sp = extractSalespersonFromEntries(allEntries);
+    var spPhone = sp ? spE164(sp) : null;
+
+    return '<div class="job-result-card">' +
+      '<h3>📋 ' + (j.name || "Unknown") + ' <span class="pill pill-blue">' + jobKey + '</span></h3>' +
+      '<div class="meta">' +
+        '<div>📱 Primary: <span>' + (j.phone || "—") + '</span></div>' +
+        (j.secondaryPhone ? '<div>📱 Secondary: <span>' + j.secondaryPhone + '</span></div>' : '') +
+        '<div>🏷️ Templates sent: <span>' + (templates || "none") + '</span></div>' +
+        (sp ? '<div>👤 Salesperson: <span>' + sp + '</span></div>' : '') +
+      '</div>' +
+      '<div id="sched-form-' + jobKey + '" class="cal-form">' +
+        '<label>Appointment Type</label>' +
+        '<select class="appt-type-select" id="appt-type-' + jobKey + '">' +
+          APPT_TYPES.map(function(a){ return '<option>' + a + '</option>'; }).join("") +
+        '</select>' +
+        '<div class="grid3" style="margin-top:12px;">' +
+          '<div><label>Date</label><input type="date" id="appt-date-' + jobKey + '"></div>' +
+          '<div><label>Start Time</label><input type="time" id="appt-start-' + jobKey + '"></div>' +
+          '<div><label>End Time</label><input type="time" id="appt-end-' + jobKey + '"></div>' +
+        '</div>' +
+        '<div style="margin-top:12px;">' +
+          '<label>Notes / Location (optional)</label>' +
+          '<input type="text" id="appt-notes-' + jobKey + '" placeholder="e.g. 123 Main St, Homeowner will be home">' +
+        '</div>' +
+        '<div style="margin-top:12px;">' +
+          '<label>Invite Emails <span style="color:#64748b;font-weight:400">(comma separated — Google will email each person a calendar invite)</span></label>' +
+          '<input type="text" id="appt-emails-' + jobKey + '" placeholder="homeowner@email.com, adjuster@ins.com, rep@tcroofing.com">' +
+        '</div>' +
+        '<div style="margin-top:12px;">' +
+          '<label>Extra Notes for Email Body <span style="color:#64748b;font-weight:400">(appended to invite email — not the SMS)</span></label>' +
+          '<textarea id="appt-extranotes-' + jobKey + '" rows="3" placeholder="e.g. Please bring your policy documents. Gate code is 1234."></textarea>' +
+        '</div>' +
+        '<div style="margin-top:12px;">' +
+          '<label>SMS Preview <span style="color:#64748b;font-weight:400">(auto-built — edit if needed)</span></label>' +
+          '<textarea id="appt-sms-' + jobKey + '" rows="4" style="font-family:sans-serif;"></textarea>' +
+        '</div>' +
+        '<div class="btn-row" style="margin-top:10px;">' +
+          '<button class="btn btn-primary btn-sm" data-sched-book="' + jobKey + '">📅 Schedule &amp; Send SMS</button>' +
+          '<button class="btn btn-secondary btn-sm" data-sched-preview="' + jobKey + '">↻ Preview SMS</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+
+  container.innerHTML = html;
+
+  // Store context and wire up live preview
+  var firstEntry = entries[0];
+  var jobKey = firstEntry.jobNum || firstEntry.jobGuid;
+  var sp2 = extractSalespersonFromEntries(entries);
+  schedJobContext = {
+    jobNum: firstEntry.jobNum,
+    jobGuid: firstEntry.jobGuid,
+    jobKey: jobKey,
+    name: firstEntry.name,
+    phone: toE164(firstEntry.phone),
+    phone2: firstEntry.secondaryPhone ? toE164(firstEntry.secondaryPhone) : null,
+    salesperson: sp2,
+    spPhone: sp2 ? spE164(sp2) : null,
+    conversationId: firstEntry.conversationId,
+    logEntries: entries
+  };
+
+  // Wire live preview on change
+  ["appt-type-" + jobKey, "appt-date-" + jobKey, "appt-start-" + jobKey, "appt-end-" + jobKey, "appt-notes-" + jobKey].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener("change", function(){ buildSmsPreview(jobKey); });
+  });
+
+  buildSmsPreview(jobKey);
+
+  // Show existing events card
+  document.getElementById("sched-existing-card").style.display = "block";
+  loadExistingEventsForJob(jobKey, firstEntry.name);
+  schedLog("success", "Found job: " + firstEntry.name + " | " + jobKey);
+}
+
+function extractSalespersonFromEntries(entries) {
+  // Try to pull salesperson name from message body by matching SALESPERSON_MAP keys
+  var keys = Object.keys(SALESPERSON_MAP);
+  for (var i = 0; i < entries.length; i++) {
+    var msg = entries[i].message || "";
+    for (var k = 0; k < keys.length; k++) {
+      if (msg.indexOf(keys[k]) > -1) return keys[k];
+    }
+  }
+  return "";
+}
+
+function buildSmsPreview(jobKey) {
+  var type  = (document.getElementById("appt-type-"  + jobKey) || {}).value || "";
+  var date  = (document.getElementById("appt-date-"  + jobKey) || {}).value || "";
+  var start = (document.getElementById("appt-start-" + jobKey) || {}).value || "";
+  var notes = (document.getElementById("appt-notes-" + jobKey) || {}).value || "";
+  var ta = document.getElementById("appt-sms-" + jobKey);
+  if (!ta) return;
+  var ctx = schedJobContext;
+  var firstName = ctx ? (ctx.name || "").split(" ")[0] : "";
+  var spPhone = ctx && ctx.spPhone ? spDisplay(ctx.salesperson) : "";
+  ta.value = buildSchedSms(type, firstName, date ? formatDateNice(date) : "[date]", start ? formatTimeNice(start) : "[time]", notes, ctx ? (ctx.jobNum||ctx.jobGuid||"") : "", spPhone);
+}
+
+function buildRescheduleSmsPreview(jobKey) {
+  var type  = (document.getElementById("resched-type-"  + jobKey) || {}).value || "";
+  var date  = (document.getElementById("resched-date-"  + jobKey) || {}).value || "";
+  var start = (document.getElementById("resched-start-" + jobKey) || {}).value || "";
+  var notes = (document.getElementById("resched-notes-" + jobKey) || {}).value || "";
+  var ta = document.getElementById("resched-sms-" + jobKey);
+  if (!ta) return;
+  var ctx = schedJobContext;
+  var firstName = ctx ? (ctx.name || "").split(" ")[0] : "";
+  var spPhone = ctx && ctx.salesperson ? spDisplay(ctx.salesperson) : "";
+  ta.value = buildReschedSms(type, firstName, date ? formatDateNice(date) : "[date]", start ? formatTimeNice(start) : "[time]", notes, ctx ? (ctx.jobNum||ctx.jobGuid||"") : "", spPhone);
+}
+
+function formatDateNice(d) {
+  if (!d) return "";
+  var parts = d.split("-");
+  var dt = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  return dt.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+}
+function formatTimeNice(t) {
+  if (!t) return "";
+  var parts = t.split(":");
+  var h = parseInt(parts[0]), m = parseInt(parts[1]);
+  var ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return h + ":" + (m < 10 ? "0" + m : m) + " " + ampm + " CST";
+}
+
+// -- Create Calendar Event --
+function createCalendarEvent(jobKey, isReschedule, oldEventId) {
+  var prefix = isReschedule ? "resched" : "appt";
+  var type = document.getElementById(prefix + "-type-" + jobKey).value;
+  var date = document.getElementById(prefix + "-date-" + jobKey).value;
+  var start = document.getElementById(prefix + "-start-" + jobKey).value;
+  var end = document.getElementById(prefix + "-end-" + jobKey).value;
+  var notes = document.getElementById(prefix + "-notes-" + jobKey).value;
+  var emailsRaw = (document.getElementById(prefix + "-emails-" + jobKey) || {}).value || "";
+  var extraNotes = (document.getElementById(prefix + "-extranotes-" + jobKey) || {}).value || "";
+  var smsMsg = document.getElementById(prefix + "-sms-" + jobKey).value;
+
+  if (!date || !start || !end) {
+    alert("Please fill in date, start time, and end time.");
+    return;
+  }
+  if (!smsMsg.trim()) {
+    alert("SMS message is empty.");
+    return;
+  }
+  if (!confirm((isReschedule ? "Reschedule" : "Schedule") + " appointment and send SMS to group thread?")) return;
+
+  var ctx = schedJobContext;
+  if (!ctx) { schedLog("error", "No job context. Look up a job first."); return; }
+
+  var startDt = date + "T" + start + ":00";
+  var endDt = date + "T" + end + ":00";
+  var title = type + " — " + (ctx.name || ctx.jobKey) + " (Job " + (ctx.jobNum || ctx.jobGuid) + ")";
+
+  var attendees = emailsRaw.split(",").map(function(e){ return e.trim(); })
+    .filter(function(e){ return e.indexOf("@") > -1; })
+    .map(function(e){ return { email: e }; });
+
+  var calEvBody = buildCalEventBody(type, ctx.name, ctx.jobNum||ctx.jobGuid, formatDateNice(date), formatTimeNice(start), notes);
+
+  var eventBody = {
+    summary: title,
+    description: calEvBody,
+    start: { dateTime: startDt, timeZone: "America/Chicago" },
+    end: { dateTime: endDt, timeZone: "America/Chicago" }
+  };
+  if (attendees.length) {
+    eventBody.attendees = attendees;
+    eventBody.sendUpdates = "all";
+  }
+
+  schedLog("info", (isReschedule ? "Rescheduling" : "Creating") + " calendar event for " + ctx.name + "...");
+
+  // If rescheduling, delete old event first — use old type's calendar
+  var deletePromise = (isReschedule && oldEventId)
+    ? getGCalToken().then(function(t){
+        return fetch("https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(getCalendarId(type)) + "/events/" + oldEventId,
+          { method: "DELETE", headers: { Authorization: "Bearer " + t } });
+      }).then(function(){ schedLog("info", "Old event deleted"); })
+    : Promise.resolve();
+
+  deletePromise
+    .then(function(){ return getGCalToken(); })
+    .then(function(t){
+      return fetch("https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(getCalendarId(type)) + "/events", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + t, "Content-Type": "application/json" },
+        body: JSON.stringify(eventBody)
+      });
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(ev){
+      if (ev.error) throw new Error("Calendar API: " + JSON.stringify(ev.error));
+      schedLog("success", "Event created: " + ev.summary + " | ID: " + ev.id);
+
+      // Build recipient list from context, same as main SMS system
+      var recips = [];
+      if (ctx.phone) recips.push(ctx.phone);
+      if (ctx.phone2 && recips.indexOf(ctx.phone2) === -1) recips.push(ctx.phone2);
+      FIXED_NUMBERS.forEach(function(n){ if (recips.indexOf(n) === -1) recips.push(n); });
+      if (ctx.spPhone && recips.indexOf(ctx.spPhone) === -1) recips.push(ctx.spPhone);
+
+      schedLog("info", "Sending SMS to " + recips.length + " recipients...");
+      return sendSMS(recips, smsMsg).then(function(d){
+        var convId = (d && d.conversation && d.conversation.id) || "";
+        schedLog("success", "SMS sent! Conv ID: " + (convId || "n/a"));
+
+        // Log to AccuLynx
+        var existingLog = ctx.logEntries || [];
+        return logToAccuLynx(ctx.jobKey, smsMsg, "", "", existingLog).then(function(alRes){
+          schedLog("success", "AccuLynx updated — MsgID: " + (alRes.messageId || "n/a"));
+        }).catch(function(e){
+          schedLog("warn", "AccuLynx log failed: " + e.message);
+        }).then(function(){
+          // Append to Google Sheet
+          var entry = {
+            timestamp: new Date().toISOString(),
+            jobNum: ctx.jobNum || ctx.jobGuid,
+            name: ctx.name,
+            phone: ctx.phone,
+            trigger: (isReschedule ? "Rescheduled — " : "Scheduled — ") + type,
+            template: "SCHED",
+            message: smsMsg,
+            acculynxLogged: "logged",
+            status: "sent",
+            jobGuid: ctx.jobGuid || "",
+            messageId: "",
+            runBy: currentUser || "Unknown",
+            secondaryPhone: ctx.phone2 || "",
+            conversationId: convId || ""
+          };
+          return appendSheetLog(entry).then(function(){
+            schedLog("success", "Sheet log updated.");
+            // Refresh events list
+            loadExistingEventsForJob(ctx.jobKey, ctx.name);
+            // Collapse the form
+            if (isReschedule) {
+              var rf = document.getElementById("reschedule-form-" + oldEventId);
+              if (rf) rf.classList.add("hidden");
+            }
+          });
+        });
+      });
+    })
+    .catch(function(e){
+      schedLog("error", (isReschedule ? "Reschedule" : "Schedule") + " failed: " + e.message);
+    });
+}
+
+// -- Load upcoming calendar events for a job --
+function loadExistingEventsForJob(jobKey, name) {
+  var container = document.getElementById("sched-existing-events");
+  if (!container) return;
+  container.innerHTML = '<div class="no-results">Loading…</div>';
+
+  var searchStr = (name || jobKey || "").toLowerCase();
+  var now = new Date().toISOString();
+  var sixMonths = new Date(Date.now() + 180 * 86400000).toISOString();
+
+  getGCalToken().then(function(t){
+    // Query all calendars since job events may span multiple types/calendars
+    var calIds = getAllCalendarIds();
+    var promises = calIds.map(function(calId){
+      return fetch("https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(calId) +
+        "/events?timeMin=" + encodeURIComponent(now) +
+        "&timeMax=" + encodeURIComponent(sixMonths) +
+        "&q=" + encodeURIComponent(jobKey || name) +
+        "&singleEvents=true&orderBy=startTime&maxResults=50",
+        { headers: { Authorization: "Bearer " + t } })
+        .then(function(r){ return r.json(); })
+        .then(function(d){ return d.items || []; })
+        .catch(function(){ return []; });
+    });
+    return Promise.all(promises);
+  }).then(function(results){
+    // Merge and dedupe by event id
+    var seen = {};
+    var allItems = [];
+    results.forEach(function(items){
+      items.forEach(function(ev){
+        if (!seen[ev.id]) { seen[ev.id] = true; allItems.push(ev); }
+      });
+    });
+    // Sort by start time
+    allItems.sort(function(a,b){
+      var at = a.start&&a.start.dateTime ? new Date(a.start.dateTime) : 0;
+      var bt = b.start&&b.start.dateTime ? new Date(b.start.dateTime) : 0;
+      return at - bt;
+    });
+    return allItems;
+  })
+  .then(function(allItems){
+    var items = allItems.filter(function(ev){
+      var s = (ev.summary || "").toLowerCase();
+      return s.indexOf(searchStr) > -1 || s.indexOf((jobKey || "").toLowerCase()) > -1;
+    });
+
+    if (!items.length) {
+      container.innerHTML = '<div class="no-results">No upcoming appointments found for this job.</div>';
+      return;
+    }
+
+    container.innerHTML = items.map(function(ev){
+      var start = ev.start && ev.start.dateTime ? new Date(ev.start.dateTime) : null;
+      var end   = ev.end   && ev.end.dateTime   ? new Date(ev.end.dateTime)   : null;
+      var timeStr = start ? start.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}) + " " +
+        start.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Chicago"}) +
+        " – " + (end ? end.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Chicago"}) : "") + " CST" : "All day";
+
+      // Pre-fill values from original event
+      var origType = "";
+      for (var ai = 0; ai < APPT_TYPES.length; ai++) {
+        if ((ev.summary||"").indexOf(APPT_TYPES[ai]) > -1) { origType = APPT_TYPES[ai]; break; }
+      }
+      var origDate  = start ? start.toLocaleDateString("en-CA",{timeZone:"America/Chicago"}) : ""; // YYYY-MM-DD
+      var origStart = start ? start.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"America/Chicago"}) : "";
+      var origEnd   = end   ? end.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"America/Chicago"})   : "";
+      var origNotes = ev.description ? ev.description.split("\n")[0] : "";
+      var origEmails = ev.attendees ? ev.attendees.map(function(a){ return a.email; }).join(", ") : "";
+      var attendeeCount = ev.attendees ? ev.attendees.length : 0;
+
+      return '<div class="cal-event-row">' +
+        '<div class="ev-info">' +
+          '<div class="ev-title">' + (ev.summary || "Untitled") + '</div>' +
+          '<div class="ev-time">📅 ' + timeStr +
+            (attendeeCount ? ' &nbsp;·&nbsp; 👥 ' + attendeeCount + ' invite' + (attendeeCount > 1 ? 's' : '') : '') +
+          '</div>' +
+          (origNotes ? '<div class="ev-time" style="margin-top:2px;color:#64748b;">📝 ' + origNotes + '</div>' : '') +
+        '</div>' +
+        '<div class="ev-actions">' +
+          '<span class="pill pill-green">Upcoming</span>' +
+          '<button class="btn btn-warn btn-sm" data-sched-reschedule-ev="' + ev.id + '" data-sched-reschedule-title="' + encodeURIComponent(ev.summary||"") + '">Reschedule</button>' +
+          '<button class="btn btn-danger btn-sm" data-sched-delete-ev="' + ev.id + '">Cancel</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="reschedule-form hidden" id="reschedule-form-' + ev.id + '">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+          '<div style="font-size:0.8rem;color:#4A90D9;font-weight:600;">Rescheduling: ' + (ev.summary||"") + '</div>' +
+          '<button class="btn btn-secondary btn-sm" data-resched-clear="' + ev.id + '" style="font-size:0.7rem;">🗑 Clear All Fields</button>' +
+        '</div>' +
+        '<label>Appointment Type</label>' +
+        '<select class="appt-type-select" id="resched-type-' + ev.id + '">' +
+          APPT_TYPES.map(function(a){ return '<option value="'+a+'"'+(a===origType?' selected':'')+'>'+a+'</option>'; }).join("") +
+        '</select>' +
+        '<div class="grid3" style="margin-top:10px;">' +
+          '<div><label>Date</label><input type="date" id="resched-date-' + ev.id + '" value="' + origDate + '"></div>' +
+          '<div><label>Start Time</label><input type="time" id="resched-start-' + ev.id + '" value="' + origStart + '"></div>' +
+          '<div><label>End Time</label><input type="time" id="resched-end-' + ev.id + '" value="' + origEnd + '"></div>' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Notes / Location</label>' +
+          '<input type="text" id="resched-notes-' + ev.id + '" value="' + origNotes.replace(/"/g,'&quot;') + '" placeholder="Location or notes">' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+            '<label style="margin:0;">Invite Emails <span style="color:#64748b;font-weight:400">(comma separated — edit, add, or remove any)</span></label>' +
+            '<button class="btn btn-danger btn-sm" data-resched-clear-emails="' + ev.id + '" style="font-size:0.68rem;padding:2px 8px;">Clear Emails</button>' +
+          '</div>' +
+          '<textarea id="resched-emails-' + ev.id + '" rows="3" placeholder="homeowner@email.com, adjuster@ins.com" style="font-family:monospace;font-size:0.78rem;">' + origEmails + '</textarea>' +
+          (attendeeCount ? '<div class="small" style="margin-top:3px;color:#64748b;">' + attendeeCount + ' original attendee' + (attendeeCount > 1 ? 's' : '') + ' pre-filled above — edit freely</div>' : '') +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Extra Notes for Email Body <span style="color:#64748b;font-weight:400">(appended to invite email)</span></label>' +
+          '<textarea id="resched-extranotes-' + ev.id + '" rows="3" placeholder="e.g. Time has changed. Gate code is 1234."></textarea>' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>SMS Preview <span style="color:#64748b;font-weight:400">(auto-built — edit if needed)</span></label>' +
+          '<textarea id="resched-sms-' + ev.id + '" rows="4" style="font-family:sans-serif;"></textarea>' +
+        '</div>' +
+        '<div class="btn-row" style="margin-top:10px;">' +
+          '<button class="btn btn-primary btn-sm" data-sched-confirm-reschedule="' + ev.id + '">✅ Confirm Reschedule &amp; Send SMS</button>' +
+          '<button class="btn btn-secondary btn-sm" data-sched-cancel-reschedule="' + ev.id + '">Cancel</button>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+
+    schedLog("info", items.length + " upcoming event(s) loaded");
+  }).catch(function(e){
+    container.innerHTML = '<div class="no-results" style="color:#fca5a5;">Error loading events: ' + e.message + '</div>';
+    schedLog("error", "Load events failed: " + e.message);
+  });
+}
+
+// -- Scheduler click handlers --
+document.addEventListener("click", function(e){
+  var t = e.target;
+
+  if (t.id === "sched-search-btn") {
+    var q = (document.getElementById("sched-search-input") || {}).value || "";
+    var statusEl = document.getElementById("sched-search-status");
+    if (statusEl) statusEl.textContent = "Searching…";
+    searchSheetForJob(q).then(function(entries){
+      if (statusEl) statusEl.textContent = entries.length ? entries.length + " log row(s) found." : "No match found.";
+      renderJobResult(entries);
+    }).catch(function(err){
+      if (statusEl) statusEl.textContent = "Error: " + err.message;
+      schedLog("error", err.message);
+    });
+    return;
+  }
+
+  if (t.id === "sched-refresh-events-btn") {
+    if (schedJobContext) loadExistingEventsForJob(schedJobContext.jobKey, schedJobContext.name);
+    return;
+  }
+
+  if (t.dataset.schedBook) {
+    createCalendarEvent(t.dataset.schedBook, false, null);
+    return;
+  }
+
+  if (t.dataset.schedPreview) {
+    buildSmsPreview(t.dataset.schedPreview);
+    return;
+  }
+
+  if (t.dataset.reschedClear) {
+    var cid = t.dataset.reschedClear;
+    var typeEl = document.getElementById("resched-type-"       + cid);
+    if (typeEl) typeEl.selectedIndex = 0;
+    ["resched-date-","resched-start-","resched-end-","resched-notes-","resched-extranotes-"].forEach(function(p){
+      var el = document.getElementById(p + cid); if (el) el.value = "";
+    });
+    var ea = document.getElementById("resched-emails-" + cid); if (ea) ea.value = "";
+    var sm = document.getElementById("resched-sms-"    + cid); if (sm) sm.value = "";
+    return;
+  }
+
+  if (t.dataset.reschedClearEmails) {
+    var ea2 = document.getElementById("resched-emails-" + t.dataset.reschedClearEmails);
+    if (ea2) ea2.value = "";
+    return;
+  }
+
+  if (t.dataset.schedRescheduleEv) {
+    var evId = t.dataset.schedRescheduleEv;
+    var form = document.getElementById("reschedule-form-" + evId);
+    if (form) {
+      form.classList.toggle("hidden");
+      if (!form.classList.contains("hidden")) {
+        // Wire live SMS preview on any field change
+        ["resched-type-"+evId,"resched-date-"+evId,"resched-start-"+evId,"resched-end-"+evId,"resched-notes-"+evId].forEach(function(id){
+          var el = document.getElementById(id);
+          if (el) el.addEventListener("change", function(){ buildRescheduleSmsPreview(evId); });
+        });
+        buildRescheduleSmsPreview(evId);
+      }
+    }
+    return;
+  }
+
+  if (t.dataset.schedConfirmReschedule) {
+    var evId2 = t.dataset.schedConfirmReschedule;
+    createCalendarEvent(evId2, true, evId2);
+    return;
+  }
+
+  if (t.dataset.schedCancelReschedule) {
+    var form2 = document.getElementById("reschedule-form-" + t.dataset.schedCancelReschedule);
+    if (form2) form2.classList.add("hidden");
+    return;
+  }
+
+  if (t.dataset.schedDeleteEv) {
+    var evId3 = t.dataset.schedDeleteEv;
+    if (!confirm("Cancel and delete this appointment? This will NOT send an SMS — notify the customer separately if needed.")) return;
+    deleteEventFromAnyCalendar(evId3).then(function(ok){
+      if (ok) {
+        schedLog("success", "Event deleted: " + evId3);
+        if (schedJobContext) loadExistingEventsForJob(schedJobContext.jobKey, schedJobContext.name);
+      } else {
+        schedLog("warn", "Event not found in any calendar: " + evId3);
+      }
+    }).catch(function(e){ schedLog("error", e.message); });
+    return;
+  }
+});
+
+// Allow Enter key in scheduler search
+(function(){
+  var inp = document.getElementById("sched-search-input");
+  if (inp) inp.addEventListener("keydown", function(e){
+    if (e.key === "Enter") document.getElementById("sched-search-btn").click();
+  });
+})();
+
+// =====================================================================
+// BULK SCHEDULER
+// =====================================================================
+
+var bulkMode = "list";
+var bulkResolvedJobs = [];
+
+// Mode toggle
+document.querySelectorAll(".bulk-mode-btn").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    bulkMode = btn.dataset.bulkMode;
+    document.querySelectorAll(".bulk-mode-btn").forEach(function(b){ b.classList.remove("active"); });
+    btn.classList.add("active");
+    document.getElementById("bulk-input-list").style.display = bulkMode === "list" ? "" : "none";
+    document.getElementById("bulk-input-csv").style.display  = bulkMode === "csv"  ? "" : "none";
+  });
+});
+
+// Live count
+document.addEventListener("input", function(e){
+  if (e.target.id === "bulk-job-list") {
+    var lines = e.target.value.split(/\n/).map(function(l){ return l.trim(); }).filter(Boolean);
+    var el = document.getElementById("bulk-list-count");
+    if (el) el.textContent = lines.length ? lines.length + " job(s) entered" : "";
+  }
+  if (e.target.id === "bulk-csv-input") {
+    try {
+      var rows = parseCSV(e.target.value);
+      var el2 = document.getElementById("bulk-csv-count");
+      if (el2) el2.textContent = rows.length ? rows.length + " rows parsed from CSV" : "";
+    } catch(x){}
+  }
+});
+
+function fetchAllSheetRows() {
+  return getGSToken().then(function(t) {
+    var sid = CRED_GS_SHEET_ID;
+    var sn  = encodeURIComponent(CRED_GS_SHEET_NAME);
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/" + sid + "/values/" + sn + "!A:N",
+      { headers: { Authorization: "Bearer " + t } });
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (!d.values || d.values.length < 2) return [];
+    return d.values.slice(1).map(function(r){
+      return { timestamp:r[0]||"",jobNum:r[1]||"",name:r[2]||"",phone:r[3]||"",
+               trigger:r[4]||"",template:r[5]||"",message:r[6]||"",acculynxLogged:r[7]||"",
+               status:r[8]||"",jobGuid:r[9]||"",messageId:r[10]||"",runBy:r[11]||"",
+               secondaryPhone:r[12]||"",conversationId:r[13]||"" };
+    });
+  });
+}
+
+function findEntriesForKey(allRows, query) {
+  var ql = (query || "").toLowerCase().trim();
+  if (!ql) return [];
+  return allRows.filter(function(r){
+    return r.jobNum.toLowerCase() === ql || r.jobGuid.toLowerCase() === ql ||
+           r.jobNum.toLowerCase().indexOf(ql) > -1;
+  });
+}
+
+function buildJobContext(entries) {
+  if (!entries || !entries.length) return null;
+  var first = entries[0];
+  var sp = extractSalespersonFromEntries(entries);
+  return { jobNum:first.jobNum, jobGuid:first.jobGuid, jobKey:first.jobNum||first.jobGuid,
+           name:first.name, phone:toE164(first.phone),
+           phone2:first.secondaryPhone?toE164(first.secondaryPhone):null,
+           salesperson:sp, spPhone:sp?spE164(sp):null,
+           conversationId:first.conversationId, logEntries:entries };
+}
+
+function apptTypeOptions() {
+  return APPT_TYPES.map(function(a){ return '<option value="'+a+'">'+a+'</option>'; }).join("");
+}
+
+// Render per-job grid after resolving — first 3 rows visible, rest collapsed
+function renderBulkGrid(jobs) {
+  var listEl = document.getElementById("bulk-resolved-list");
+  if (!jobs.length) { listEl.innerHTML = '<div class="no-results">No jobs to display.</div>'; return; }
+
+  var foundJobs = jobs.filter(function(j){ return j.found; });
+  var copyBar = foundJobs.length > 1
+    ? '<div class="bulk-copy-bar">' +
+        '⚡ <strong style="color:#e2e8f0;">Fill all rows:</strong>&nbsp;&nbsp;' +
+        '<select id="bulk-fill-type" style="min-width:180px;">' + apptTypeOptions() + '</select>' +
+        '&nbsp;<input type="date" id="bulk-fill-date" style="width:130px;">' +
+        '&nbsp;<input type="time" id="bulk-fill-start" style="width:105px;" placeholder="Start">' +
+        '&nbsp;<input type="time" id="bulk-fill-end"   style="width:105px;" placeholder="End">' +
+        '&nbsp;<button class="btn btn-secondary btn-sm" id="bulk-fill-all-btn">Apply to All</button>' +
+      '</div>'
+    : '';
+
+  function buildRow(job, idx) {
+    if (!job.found || !job.ctx) {
+      return '<div class="bulk-job-row notfound">' +
+        '<div class="bjr-header">' +
+          '<span class="pill" style="background:#2d1515;color:#fca5a5;border:1px solid #7f1d1d;">Not Found</span>' +
+          '<span class="bjr-name" style="color:#fca5a5;">' + job.query + '</span>' +
+          '<span class="bjr-meta">Not in sheet log — no texts sent yet for this job</span>' +
+        '</div></div>';
+    }
+    var ctx = job.ctx;
+    var templates = (function(){
+      var seen = {};
+      return ctx.logEntries.map(function(e){ return e.template; })
+        .filter(function(t){ if(!t||seen[t])return false; seen[t]=true; return true; }).join(", ");
+    })();
+    return '<div class="bulk-job-row found" id="bulk-row-'+idx+'">' +
+      '<div class="bjr-header">' +
+        '<input type="checkbox" class="bulk-checkbox" checked id="bulk-chk-'+idx+'">' +
+        '<span class="bjr-name">'+(ctx.name||"Unknown")+'</span>' +
+        '<span class="pill pill-blue">'+ctx.jobKey+'</span>' +
+        '<span class="bjr-meta">📱 '+(ctx.phone||"—")+
+          (ctx.phone2?' / '+ctx.phone2:'')+
+          (ctx.salesperson?' &nbsp;·&nbsp; 👤 '+ctx.salesperson:'')+
+          ' &nbsp;·&nbsp; Sent: '+(templates||'none')+
+        '</span>' +
+        '<span class="pill pill-green" style="margin-left:auto;">Found</span>' +
+      '</div>' +
+      '<div class="bjr-fields">' +
+        '<div><label>Appointment Type</label><select id="bulk-type-'+idx+'">'+apptTypeOptions()+'</select></div>' +
+        '<div><label>Date</label><input type="date" id="bulk-date-'+idx+'"></div>' +
+        '<div><label>Start Time</label><input type="time" id="bulk-start-'+idx+'"></div>' +
+        '<div><label>End Time</label><input type="time" id="bulk-end-'+idx+'"></div>' +
+        '<div><label>Notes / Location</label><input type="text" id="bulk-notes-'+idx+'" placeholder="optional"></div>' +
+      '</div>' +
+      '<div style="margin-top:8px;">' +
+        '<label style="font-size:0.7rem;color:#94a3b8;margin-bottom:3px;display:block;">Invite Emails <span style="color:#64748b;font-weight:400">(comma separated — Google sends calendar invite to each)</span></label>' +
+        '<input type="text" id="bulk-emails-'+idx+'" placeholder="homeowner@email.com, adjuster@ins.com" style="font-size:0.78rem;padding:7px 8px;">' +
+      '</div>' +
+      '<div style="margin-top:8px;">' +
+        '<label style="font-size:0.7rem;color:#94a3b8;margin-bottom:3px;display:block;">Extra Notes for Email Body <span style="color:#64748b;font-weight:400">(appended to invite email)</span></label>' +
+        '<textarea id="bulk-extranotes-'+idx+'" rows="2" placeholder="e.g. Gate code is 1234. Please have policy docs available." style="font-size:0.78rem;padding:7px 8px;"></textarea>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var visibleRows  = jobs.slice(0, 3).map(function(j, i){ return buildRow(j, i); }).join("");
+  var hiddenRows   = jobs.slice(3).map(function(j, i){ return buildRow(j, i + 3); }).join("");
+  var hiddenCount  = jobs.length - 3;
+  var showMoreBtn  = hiddenCount > 0
+    ? '<div id="bulk-show-more-wrap" style="text-align:center;margin:6px 0 10px;">' +
+        '<button class="btn btn-secondary btn-sm" id="bulk-show-more-btn">▼ Show ' + hiddenCount + ' more job' + (hiddenCount > 1 ? 's' : '') + '</button>' +
+      '</div>' +
+      '<div id="bulk-hidden-rows" style="display:none;">' + hiddenRows + '</div>'
+    : '';
+
+  listEl.innerHTML = copyBar + visibleRows + showMoreBtn;
+}
+
+// Resolve jobs from sheet
+function bulkResolveJobs() {
+  var btn = document.getElementById("bulk-resolve-btn");
+  var statusEl = document.getElementById("bulk-resolve-status");
+  var sendBtn = document.getElementById("bulk-send-btn");
+  btn.disabled = true;
+  if (statusEl) statusEl.textContent = "Fetching sheet log…";
+  document.getElementById("bulk-resolved-list").innerHTML = "";
+  if (sendBtn) sendBtn.disabled = true;
+  bulkResolvedJobs = [];
+
+  fetchAllSheetRows().then(function(allRows){
+    var queries = [];
+    if (bulkMode === "list") {
+      queries = (document.getElementById("bulk-job-list").value || "")
+        .split(/\n/).map(function(l){ return l.trim(); }).filter(Boolean);
+    } else {
+      try {
+        var csvRows = parseCSV(document.getElementById("bulk-csv-input").value || "");
+        csvRows.forEach(function(row){
+          var jn = (row["Job Number"]||"").trim();
+          var guid = extractGuid(row["Job Number Url"]||"")||extractGuid(row["Job Name Url"]||"");
+          var key = jn||guid;
+          if (key && queries.indexOf(key)===-1) queries.push(key);
+        });
+      } catch(e) {
+        if (statusEl) statusEl.textContent = "CSV parse error: " + e.message;
+        btn.disabled = false; return;
+      }
+    }
+
+    if (!queries.length) {
+      if (statusEl) statusEl.textContent = "No jobs entered.";
+      btn.disabled = false; return;
+    }
+
+    var found = 0; var notFound = 0;
+    queries.forEach(function(q){
+      var entries = findEntriesForKey(allRows, q);
+      if (entries.length) { bulkResolvedJobs.push({ query:q, ctx:buildJobContext(entries), found:true }); found++; }
+      else                { bulkResolvedJobs.push({ query:q, ctx:null, found:false }); notFound++; }
+    });
+
+    renderBulkGrid(bulkResolvedJobs);
+    if (statusEl) statusEl.textContent = found + " job(s) resolved" +
+      (notFound ? ", " + notFound + " not found in sheet" : "") +
+      " — fill in each row below, then click Schedule All.";
+    if (sendBtn) sendBtn.disabled = found === 0;
+    schedLog("info", "Bulk resolve: " + found + " found, " + notFound + " not found");
+    btn.disabled = false;
+  }).catch(function(e){
+    if (statusEl) statusEl.textContent = "Error: " + e.message;
+    schedLog("error", "Bulk resolve: " + e.message);
+    btn.disabled = false;
+  });
+}
+
+// Run bulk schedule — each row has its own type/date/time
+function runBulkSchedule() {
+  var toSend = [];
+  var missing = [];
+
+  bulkResolvedJobs.forEach(function(job, idx){
+    if (!job.found || !job.ctx) return;
+    var chk = document.getElementById("bulk-chk-" + idx);
+    if (chk && !chk.checked) return;
+    var type  = (document.getElementById("bulk-type-"  + idx)||{}).value || "";
+    var date  = (document.getElementById("bulk-date-"  + idx)||{}).value || "";
+    var start = (document.getElementById("bulk-start-" + idx)||{}).value || "";
+    var end   = (document.getElementById("bulk-end-"   + idx)||{}).value || "";
+    var notes = (document.getElementById("bulk-notes-" + idx)||{}).value || "";
+    var emailsRaw = (document.getElementById("bulk-emails-" + idx)||{}).value || "";
+    var extraNotes = (document.getElementById("bulk-extranotes-" + idx)||{}).value || "";
+    if (!date || !start || !end) {
+      missing.push(job.ctx.name || job.query);
+    } else {
+      toSend.push({ job:job, idx:idx, type:type, date:date, start:start, end:end, notes:notes, emailsRaw:emailsRaw, extraNotes:extraNotes });
+    }
+  });
+
+  if (missing.length) {
+    alert(missing.length + " row(s) are missing date, start time, or end time:\n\n" +
+      missing.map(function(n){ return "• " + n; }).join("\n") +
+      "\n\nPlease fill in all fields before scheduling.");
+    return;
+  }
+  if (!toSend.length) { alert("No jobs selected."); return; }
+  if (!confirm("Schedule " + toSend.length + " appointment(s) with individual dates and times, and send group SMS to each?")) return;
+
+  var sendBtn = document.getElementById("bulk-send-btn");
+  var resolveBtn = document.getElementById("bulk-resolve-btn");
+  sendBtn.disabled = true; resolveBtn.disabled = true;
+
+  var statusBar  = document.getElementById("bulk-status-bar");
+  var statusText = document.getElementById("bulk-status-text");
+  var dot        = document.getElementById("bulk-dot");
+  if (statusBar) { statusBar.style.display = "flex"; statusBar.className = "status-bar running"; }
+  if (dot) dot.className = "dot pulse";
+  if (statusText) statusText.textContent = "Processing 0 / " + toSend.length + "…";
+
+  var i = 0; var sent = 0; var failed = 0;
+
+  function processNext() {
+    if (i >= toSend.length) {
+      if (statusBar) statusBar.className = "status-bar done";
+      if (dot) dot.className = "dot";
+      if (statusText) statusText.textContent = "Done — " + sent + " scheduled, " + failed + " failed";
+      schedLog("success", "Bulk complete. Sent:" + sent + " Failed:" + failed);
+      sendBtn.disabled = false; resolveBtn.disabled = false;
+      return;
+    }
+    var item = toSend[i]; i++;
+    var ctx = item.job.ctx;
+    if (statusText) statusText.textContent = "Processing " + i + " / " + toSend.length + " — " + ctx.name + "…";
+
+    var firstName = (ctx.name||"").split(" ")[0];
+    var spPhone = ctx.spPhone ? spDisplay(ctx.salesperson) : "";
+    var smsMsg = buildSchedSms(item.type, firstName, formatDateNice(item.date), formatTimeNice(item.start), item.notes, ctx.jobNum||ctx.jobGuid||"", spPhone);
+
+    var bulkCalEvBody = buildCalEventBody(item.type, ctx.name, ctx.jobNum||ctx.jobGuid, formatDateNice(item.date), formatTimeNice(item.start), item.notes, item.extraNotes||"");
+    var eventBody = {
+      summary: item.type + " — " + ctx.name + " (Job " + ctx.jobKey + ")",
+      description: bulkCalEvBody,
+      start: { dateTime: item.date + "T" + item.start + ":00", timeZone: "America/Chicago" },
+      end:   { dateTime: item.date + "T" + item.end   + ":00", timeZone: "America/Chicago" }
+    };
+    var bulkAttendees = (item.emailsRaw||"").split(",").map(function(e){ return e.trim(); })
+      .filter(function(e){ return e.indexOf("@") > -1; })
+      .map(function(e){ return { email: e }; });
+    if (bulkAttendees.length) { eventBody.attendees = bulkAttendees; eventBody.sendUpdates = "all"; }
+
+    schedLog("info", "["+i+"/"+toSend.length+"] "+ctx.name+" — "+item.type+" on "+formatDateNice(item.date)+" at "+formatTimeNice(item.start));
+
+    getGCalToken().then(function(t){
+      return fetch("https://www.googleapis.com/calendar/v3/calendars/"+encodeURIComponent(getCalendarId(item.type))+"/events",{
+        method:"POST", headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},
+        body:JSON.stringify(eventBody)
+      });
+    }).then(function(r){ return r.json(); })
+    .then(function(ev){
+      if (ev.error) throw new Error("Calendar: "+JSON.stringify(ev.error));
+      schedLog("success","Event created — "+ctx.name+" ("+item.type+")");
+      var recips = [];
+      if (ctx.phone) recips.push(ctx.phone);
+      if (ctx.phone2 && recips.indexOf(ctx.phone2)===-1) recips.push(ctx.phone2);
+      FIXED_NUMBERS.forEach(function(n){ if(recips.indexOf(n)===-1) recips.push(n); });
+      if (ctx.spPhone && recips.indexOf(ctx.spPhone)===-1) recips.push(ctx.spPhone);
+      return sendSMS(recips, smsMsg).then(function(d){
+        var convId = (d&&d.conversation&&d.conversation.id)||"";
+        schedLog("success","SMS sent — "+ctx.name);
+        return logToAccuLynx(ctx.jobKey,smsMsg,"","",ctx.logEntries||[])
+          .catch(function(e){ schedLog("warn","AccuLynx failed "+ctx.jobKey+": "+e.message); return{}; })
+          .then(function(){
+            return appendSheetLog({
+              timestamp:new Date().toISOString(), jobNum:ctx.jobNum||ctx.jobGuid, name:ctx.name,
+              phone:ctx.phone, trigger:"Bulk Scheduled — "+item.type, template:"SCHED",
+              message:smsMsg, acculynxLogged:"logged", status:"sent", jobGuid:ctx.jobGuid||"",
+              messageId:"", runBy:currentUser||"Unknown", secondaryPhone:ctx.phone2||"",
+              conversationId:convId||""
+            });
+          });
+      });
+    })
+    .then(function(){ sent++; })
+    .catch(function(e){ failed++; schedLog("error","Failed "+ctx.jobKey+": "+e.message); })
+    .then(function(){ return sleep(900); })
+    .then(processNext);
+  }
+  processNext();
+}
+
+// =====================================================================
+// CALENDAR EVENT BODY TEMPLATES
+// One template per appointment type — used as both the Google Calendar
+// event body AND the invite email body sent to attendees.
+// =====================================================================
+
+var CAL_TEMPLATE_VARS = ["{{Customer Name}}","{{Job Number}}","{{Date}}","{{Time}}","{{Address}}","{{Salesperson}}","{{Insurance Company}}","{{Phone}}"];
+
+var CAL_EVBODY_DEFAULTS = {
+  "Re-inspection Adjustment":           "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "Insurance Adjustment":               "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "Interior Only Insurance Adjustment": "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "Forensic Inspection":                "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "Engineer Inspection":                "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "On-Roof Inspection":                 "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "Interior Only Inspection":           "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "Shingle Pull":                       "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "Video Repair":                       "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "2nd Video Repair":                   "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}",
+  "Leak Source":                        "Customer: {{Customer Name}}\nJob #: {{Job Number}}\nPhone: {{Phone}}\nAddress: {{Address}}\nDate: {{Date}} at {{Time}}\nSalesperson: {{Salesperson}}\nInsurance: {{Insurance Company}}"
+};
+
+var calEvBodies = {};
+Object.keys(CAL_EVBODY_DEFAULTS).forEach(function(k){ calEvBodies[k] = CAL_EVBODY_DEFAULTS[k]; });
+
+function loadCalTemplateBodies() {
+  Object.keys(CAL_EVBODY_DEFAULTS).forEach(function(k){
+    var v = store.get("cal_evbody_" + k); if (v) calEvBodies[k] = v;
+  });
+}
+function saveCalEvBody(k, body)  { calEvBodies[k] = body; store.set("cal_evbody_" + k, body); }
+function resetCalEvBody(k)       { calEvBodies[k] = CAL_EVBODY_DEFAULTS[k]; store.del("cal_evbody_" + k); }
+function isCalEvBodyModified(k)  { return calEvBodies[k] !== CAL_EVBODY_DEFAULTS[k]; }
+
+function applyCalVars(body, customerName, jobNum, dateStr, timeStr, address, salesperson, insuranceCo, phone) {
+  return (body||"")
+    .replace(/{{Customer Name}}/g,    customerName  || "")
+    .replace(/{{Job Number}}/g,       jobNum        || "")
+    .replace(/{{Date}}/g,             dateStr       || "")
+    .replace(/{{Time}}/g,             timeStr       || "")
+    .replace(/{{Address}}/g,          address       || "")
+    .replace(/{{Salesperson}}/g,      salesperson   || "")
+    .replace(/{{Insurance Company}}/g,insuranceCo   || "")
+    .replace(/{{Phone}}/g,            phone         || "");
+}
+
+// Single builder — used for both the calendar event description AND the invite email body
+function buildCalEventBody(apptType, customerName, jobNum, dateStr, timeStr, address, extraNotes, salesperson, insuranceCo, phone) {
+  var body = calEvBodies[apptType] || ("Customer: " + (customerName||"") + "\nJob #: " + (jobNum||"") + "\nDate: " + (dateStr||"") + " at " + (timeStr||"") + (address ? "\nAddress: " + address : ""));
+  body = applyCalVars(body, customerName, jobNum, dateStr, timeStr, address, salesperson, insuranceCo, phone);
+  if (extraNotes && extraNotes.trim()) body += "\n\nNotes: " + extraNotes.trim();
+  return body;
+}
+
+function renderCalTemplates() {
+  var el = document.getElementById("cal-templates-list");
+  if (!el) return;
+  el.innerHTML = APPT_TYPES.map(function(apptType){
+    var mod    = isCalEvBodyModified(apptType);
+    var safeId = apptType.replace(/[^a-zA-Z0-9]/g, "_");
+    var varChips = CAL_TEMPLATE_VARS.map(function(v){
+      return '<span class="cal-var-chip" data-calev-var="' + v + '" data-calev-tmpl="' + safeId + '">' + v + '</span>';
+    }).join("");
+    return '<div class="cal-tmpl-item">' +
+      '<h3>' +
+        '<span>' + apptType + (mod ? '<span class="modified-badge">MODIFIED</span>' : '') + '</span>' +
+        '<div style="display:flex;gap:6px;">' +
+          '<button class="btn btn-secondary btn-sm" data-calev-edit="' + safeId + '" data-calev-key="' + apptType + '">Edit</button>' +
+          (mod ? '<button class="btn btn-warn btn-sm" data-calev-reset="' + apptType + '">Reset</button>' : '') +
+        '</div>' +
+      '</h3>' +
+      '<div class="cal-tmpl-body">' + (calEvBodies[apptType]||"").substring(0,200) + (calEvBodies[apptType]&&calEvBodies[apptType].length>200?"…":"") + '</div>' +
+      '<div class="cal-tmpl-edit" id="calev-edit-area-' + safeId + '">' +
+        '<hr><label>Insert Variable:</label>' +
+        '<div class="cal-var-chips">' + varChips + '</div>' +
+        '<textarea id="calev-edit-ta-' + safeId + '" rows="9" style="font-family:monospace;font-size:0.78rem;">' + (calEvBodies[apptType]||"") + '</textarea>' +
+        '<div class="btn-row" style="margin-top:8px;">' +
+          '<button class="btn btn-primary btn-sm" data-calev-save="' + safeId + '" data-calev-key="' + apptType + '">Save</button>' +
+          '<button class="btn btn-secondary btn-sm" data-calev-cancel="' + safeId + '">Cancel</button>' +
+          (mod ? '<button class="btn btn-warn btn-sm" data-calev-reset="' + apptType + '">Reset to Default</button>' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+}
+
+// Cal template click handlers — merged into main document click listener
+document.addEventListener("click", function(e){
+  var t = e.target;
+
+  // Bulk scheduler buttons
+  if (t.id === "bulk-resolve-btn") { bulkResolveJobs(); return; }
+  if (t.id === "bulk-send-btn")    { runBulkSchedule(); return; }
+  if (t.id === "bulk-show-more-btn") {
+    var hidden = document.getElementById("bulk-hidden-rows");
+    var wrap   = document.getElementById("bulk-show-more-wrap");
+    if (hidden) hidden.style.display = "";
+    if (wrap)   wrap.style.display   = "none";
+    return;
+  }
+  if (t.id === "bulk-fill-all-btn") {
+    var fillType  = (document.getElementById("bulk-fill-type") ||{}).value||"";
+    var fillDate  = (document.getElementById("bulk-fill-date") ||{}).value||"";
+    var fillStart = (document.getElementById("bulk-fill-start")||{}).value||"";
+    var fillEnd   = (document.getElementById("bulk-fill-end")  ||{}).value||"";
+    bulkResolvedJobs.forEach(function(job, idx){
+      if (!job.found) return;
+      if (fillType)  { var s=document.getElementById("bulk-type-" +idx); if(s) s.value=fillType; }
+      if (fillDate)  { var s=document.getElementById("bulk-date-" +idx); if(s) s.value=fillDate; }
+      if (fillStart) { var s=document.getElementById("bulk-start-"+idx); if(s) s.value=fillStart; }
+      if (fillEnd)   { var s=document.getElementById("bulk-end-"  +idx); if(s) s.value=fillEnd; }
+    });
+    return;
+  }
+  if (t.id === "bulk-clear-btn") {
+    document.getElementById("bulk-job-list").value="";
+    document.getElementById("bulk-csv-input").value="";
+    document.getElementById("bulk-resolved-list").innerHTML="";
+    document.getElementById("bulk-resolve-status").textContent="";
+    document.getElementById("bulk-list-count").textContent="";
+    document.getElementById("bulk-csv-count").textContent="";
+    var sb=document.getElementById("bulk-status-bar"); if(sb) sb.style.display="none";
+    document.getElementById("bulk-send-btn").disabled=true;
+    bulkResolvedJobs=[];
+    return;
+  }
+
+  // Cal event body buttons
+  if (t.dataset.calevEdit) {
+    var areaEv = document.getElementById("calev-edit-area-" + t.dataset.calevEdit);
+    var taEv   = document.getElementById("calev-edit-ta-"   + t.dataset.calevEdit);
+    if (areaEv && taEv) { taEv.value = calEvBodies[t.dataset.calevKey] || ""; areaEv.classList.add("open"); }
+    return;
+  }
+  if (t.dataset.calevSave) {
+    var taEv2 = document.getElementById("calev-edit-ta-" + t.dataset.calevSave);
+    if (taEv2) { saveCalEvBody(t.dataset.calevKey, taEv2.value); document.getElementById("calev-edit-area-" + t.dataset.calevSave).classList.remove("open"); renderCalTemplates(); }
+    return;
+  }
+  if (t.dataset.calevCancel) {
+    var areaEv2 = document.getElementById("calev-edit-area-" + t.dataset.calevCancel);
+    if (areaEv2) areaEv2.classList.remove("open");
+    return;
+  }
+  if (t.dataset.calevReset) {
+    if (confirm("Reset event body for \"" + t.dataset.calevReset + "\" to default?")) { resetCalEvBody(t.dataset.calevReset); renderCalTemplates(); }
+    return;
+  }
+  if (t.dataset.calevVar && t.dataset.calevTmpl) {
+    var taEv3 = document.getElementById("calev-edit-ta-" + t.dataset.calevTmpl);
+    if (!taEv3) return;
+    var sEv = taEv3.selectionStart, enEv = taEv3.selectionEnd;
+    taEv3.value = taEv3.value.slice(0,sEv) + t.dataset.calevVar + taEv3.value.slice(enEv);
+    taEv3.selectionStart = taEv3.selectionEnd = sEv + t.dataset.calevVar.length;
+    taEv3.focus();
+    return;
+  }
+});
+
+// =====================================================================
+// ALL UPCOMING EVENTS — STANDALONE VIEW
+// =====================================================================
+
+// Helper: delete an event — tries known calendarId first, then falls back to all calendars
+function deleteEventFromAnyCalendar(evId, knownCalId) {
+  var tryIds = knownCalId
+    ? [knownCalId]
+    : getAllCalendarIds();
+  return getGCalToken().then(function(tok){
+    var i = 0;
+    function tryNext() {
+      if (i >= tryIds.length) return Promise.resolve(false);
+      var calId = tryIds[i++];
+      return fetch("https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(calId) + "/events/" + evId,
+        { method: "DELETE", headers: { Authorization: "Bearer " + tok } })
+      .then(function(r){
+        if (r.ok || r.status === 204) return true;
+        if (r.status === 404) return tryNext(); // not on this calendar, try next
+        return r.text().then(function(txt){ throw new Error("Delete failed (" + calId + "): " + r.status + " " + txt); });
+      });
+    }
+    return tryNext();
+  });
+}
+
+var allEventsCache = []; // raw GCal event objects
+
+// Populate type filter from APPT_TYPES
+(function(){
+  var sel = document.getElementById("all-events-filter");
+  if (!sel) return;
+  APPT_TYPES.forEach(function(a){
+    var o = document.createElement("option"); o.value = a; o.textContent = a; sel.appendChild(o);
+  });
+})();
+
+// Set default date range: today → +90 days
+(function(){
+  var now = new Date();
+  var future = new Date(Date.now() + 90 * 86400000);
+  function fmt(d){ return d.toISOString().slice(0,10); }
+  var f = document.getElementById("all-events-from");
+  var t = document.getElementById("all-events-to");
+  if (f) f.value = fmt(now);
+  if (t) t.value = fmt(future);
+})();
+
+function loadAllEvents() {
+  var statusEl = document.getElementById("all-events-status");
+  var listEl   = document.getElementById("all-events-list");
+  var fromVal  = (document.getElementById("all-events-from")||{}).value || "";
+  var toVal    = (document.getElementById("all-events-to")||{}).value || "";
+
+  var timeMin = fromVal ? new Date(fromVal).toISOString() : new Date().toISOString();
+  var timeMax = toVal   ? new Date(toVal + "T23:59:59").toISOString()
+                        : new Date(Date.now() + 90 * 86400000).toISOString();
+
+  if (statusEl) statusEl.textContent = "Loading…";
+  if (listEl)   listEl.innerHTML = '<div class="no-results">Loading…</div>';
+
+  getGCalToken().then(function(t){
+    // Query every calendar in the map and merge results
+    var calIds = getAllCalendarIds();
+    var promises = calIds.map(function(calId){
+      return fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(calId) +
+        "/events?timeMin=" + encodeURIComponent(timeMin) +
+        "&timeMax=" + encodeURIComponent(timeMax) +
+        "&singleEvents=true&orderBy=startTime&maxResults=250",
+        { headers: { Authorization: "Bearer " + t } }
+      ).then(function(r){ return r.json(); })
+       .then(function(d){ return (d.items||[]).map(function(ev){ ev._calendarId = calId; return ev; }); })
+       .catch(function(){ return []; });
+    });
+    return Promise.all(promises);
+  }).then(function(results){
+    var seen = {};
+    var merged = [];
+    results.forEach(function(items){
+      items.forEach(function(ev){
+        if (!seen[ev.id]) { seen[ev.id] = true; merged.push(ev); }
+      });
+    });
+    merged.sort(function(a,b){
+      var at = a.start&&a.start.dateTime ? new Date(a.start.dateTime) : 0;
+      var bt = b.start&&b.start.dateTime ? new Date(b.start.dateTime) : 0;
+      return at - bt;
+    });
+    allEventsCache = merged;
+    if (statusEl) statusEl.textContent = allEventsCache.length + " event(s) loaded across " + getAllCalendarIds().length + " calendar(s).";
+    renderAllEvents();
+    schedLog("info", "All events loaded: " + allEventsCache.length);
+  }).catch(function(e){
+    if (statusEl) statusEl.textContent = "Error: " + e.message;
+    if (listEl) listEl.innerHTML = '<div class="no-results" style="color:#fca5a5;">Failed to load: ' + e.message + '</div>';
+    schedLog("error", "Load all events: " + e.message);
+  });
+}
+
+function renderAllEvents() {
+  var listEl   = document.getElementById("all-events-list");
+  var filterVal = (document.getElementById("all-events-filter")||{}).value || "";
+  var statusEl  = document.getElementById("all-events-status");
+
+  var items = allEventsCache.filter(function(ev){
+    if (!filterVal) return true;
+    return (ev.summary || "").indexOf(filterVal) > -1;
+  });
+
+  if (statusEl) statusEl.textContent = items.length + " event(s)" + (filterVal ? ' matching "' + filterVal + '"' : "") + " shown.";
+
+  if (!items.length) {
+    listEl.innerHTML = '<div class="no-results">' + (filterVal ? 'No events matching "' + filterVal + '".' : 'No upcoming events found.') + '</div>';
+    return;
+  }
+
+  // Group by date
+  var groups = {};
+  var order  = [];
+  items.forEach(function(ev){
+    var dt = ev.start && ev.start.dateTime ? new Date(ev.start.dateTime) : null;
+    var dateKey = dt ? dt.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric",timeZone:"America/Chicago"}) : "All Day";
+    if (!groups[dateKey]) { groups[dateKey] = []; order.push(dateKey); }
+    groups[dateKey].push(ev);
+  });
+
+  var html = order.map(function(dateKey){
+    var evs = groups[dateKey];
+    var evRows = evs.map(function(ev){
+      var start = ev.start && ev.start.dateTime ? new Date(ev.start.dateTime) : null;
+      var end   = ev.end   && ev.end.dateTime   ? new Date(ev.end.dateTime)   : null;
+      var timeStr = start
+        ? start.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Chicago"}) +
+          (end ? " – " + end.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Chicago"}) : "") + " CST"
+        : "All day";
+
+      // Extract appointment type from summary (format: "Type — Name (Job X)")
+      var apptType = "";
+      var titleMatch = (ev.summary || "").match(/^([^—]+)/);
+      if (titleMatch) apptType = titleMatch[1].trim();
+
+      // Extract customer/job info from summary
+      var custMatch = (ev.summary || "").match(/—\s*(.+?)\s*\(Job\s*([^)]+)\)/);
+      var custName  = custMatch ? custMatch[1] : "";
+      var jobNum    = custMatch ? custMatch[2] : "";
+
+      var attendeeCount = ev.attendees ? ev.attendees.length : 0;
+
+      // Pre-fill values from original event
+      var origDate  = start ? start.toLocaleDateString("en-CA",{timeZone:"America/Chicago"}) : "";
+      var origStart = start ? start.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"America/Chicago"}) : "";
+      var origEnd   = end   ? end.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"America/Chicago"})   : "";
+
+      return '<div class="cal-event-row" id="all-ev-row-' + ev.id + '">' +
+        '<div class="ev-info" style="flex:1;">' +
+          '<div class="ev-title">' + (ev.summary || "Untitled") + '</div>' +
+          '<div class="ev-time">🕐 ' + timeStr +
+            (attendeeCount ? ' &nbsp;·&nbsp; 👥 ' + attendeeCount + ' invite' + (attendeeCount > 1 ? 's' : '') : '') +
+          '</div>' +
+          (ev.description ? '<div class="ev-time" style="margin-top:2px;color:#64748b;">📝 ' + ev.description.split("\n")[0] + '</div>' : '') +
+        '</div>' +
+        '<div class="ev-actions">' +
+          '<span class="pill pill-green">Upcoming</span>' +
+          '<button class="btn btn-warn btn-sm" data-allev-reschedule="' + ev.id + '" data-allev-title="' + encodeURIComponent(ev.summary||"") + '" data-allev-type="' + encodeURIComponent(apptType) + '">Reschedule</button>' +
+          '<button class="btn btn-danger btn-sm" data-allev-delete="' + ev.id + '">Cancel</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="reschedule-form hidden" id="allev-resched-form-' + ev.id + '">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">' +
+          '<div style="font-size:0.8rem;color:#4A90D9;font-weight:600;">Rescheduling: ' + (ev.summary||"") + '</div>' +
+          '<button class="btn btn-secondary btn-sm" data-allev-clear="' + ev.id + '" style="font-size:0.7rem;">🗑 Clear All Fields</button>' +
+        '</div>' +
+        '<label>Appointment Type</label>' +
+        '<select class="appt-type-select" id="allev-type-' + ev.id + '">' + APPT_TYPES.map(function(a){ return '<option value="'+a+'"'+(a===apptType?' selected':'')+'>'+a+'</option>'; }).join("") + '</select>' +
+        '<div class="grid3" style="margin-top:10px;">' +
+          '<div><label>Date</label><input type="date" id="allev-date-' + ev.id + '" value="' + origDate + '"></div>' +
+          '<div><label>Start Time</label><input type="time" id="allev-start-' + ev.id + '" value="' + origStart + '"></div>' +
+          '<div><label>End Time</label><input type="time" id="allev-end-' + ev.id + '" value="' + origEnd + '"></div>' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Notes / Location</label>' +
+          '<input type="text" id="allev-notes-' + ev.id + '" placeholder="Location or notes" value="' + (ev.description ? ev.description.split("\n")[0].replace(/"/g,"&quot;") : "") + '">' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+            '<label style="margin:0;">Invite Emails <span style="color:#64748b;font-weight:400">(edit, add, or remove any)</span></label>' +
+            '<button class="btn btn-danger btn-sm" data-allev-clear-emails="' + ev.id + '" style="font-size:0.68rem;padding:2px 8px;">Clear Emails</button>' +
+          '</div>' +
+          '<textarea id="allev-emails-' + ev.id + '" rows="3" placeholder="homeowner@email.com, adjuster@ins.com" style="font-family:monospace;font-size:0.78rem;">' +
+            (ev.attendees ? ev.attendees.map(function(a){ return a.email; }).join(", ") : "") +
+          '</textarea>' +
+          (attendeeCount ? '<div class="small" style="margin-top:3px;color:#64748b;">' + attendeeCount + ' original attendee' + (attendeeCount > 1 ? 's' : '') + ' pre-filled — edit freely</div>' : '') +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Extra Notes for Email Body</label>' +
+          '<textarea id="allev-extranotes-' + ev.id + '" rows="2" placeholder="Additional notes appended to invite email"></textarea>' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Job # or GUID for SMS <span style="color:#64748b;font-weight:400">(optional — sends reschedule SMS to group thread)</span></label>' +
+          '<input type="text" id="allev-jobkey-' + ev.id + '" placeholder="Job # or GUID" value="' + (jobNum||"") + '">' +
+        '</div>' +
+        '<div class="btn-row" style="margin-top:10px;">' +
+          '<button class="btn btn-primary btn-sm" data-allev-confirm-resched="' + ev.id + '">✅ Confirm Reschedule</button>' +
+          '<button class="btn btn-secondary btn-sm" data-allev-cancel-resched="' + ev.id + '">Cancel</button>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+
+    return '<div style="margin-bottom:18px;">' +
+      '<div style="font-size:0.78rem;font-weight:700;color:#4A90D9;text-transform:uppercase;letter-spacing:0.06em;padding:6px 0 8px;border-bottom:1px solid #2a3050;margin-bottom:8px;">' + dateKey + '</div>' +
+      evRows +
+    '</div>';
+  }).join("");
+
+  listEl.innerHTML = html;
+}
+
+// All-events reschedule/cancel handlers
+document.addEventListener("click", function(e){
+  var t = e.target;
+
+  if (t.id === "all-events-load-btn" || t.id === "all-events-refresh-btn") {
+    loadAllEvents(); return;
+  }
+
+  if (t.dataset.allevReschedule) {
+    var evId = t.dataset.allevReschedule;
+    var form = document.getElementById("allev-resched-form-" + evId);
+    if (form) form.classList.toggle("hidden");
+    return;
+  }
+
+  if (t.dataset.allevClear) {
+    var cid2 = t.dataset.allevClear;
+    var typeEl2 = document.getElementById("allev-type-" + cid2);
+    if (typeEl2) typeEl2.selectedIndex = 0;
+    ["allev-date-","allev-start-","allev-end-","allev-notes-","allev-extranotes-","allev-jobkey-"].forEach(function(p){
+      var el = document.getElementById(p + cid2); if (el) el.value = "";
+    });
+    var ea3 = document.getElementById("allev-emails-" + cid2); if (ea3) ea3.value = "";
+    return;
+  }
+
+  if (t.dataset.allevClearEmails) {
+    var ea4 = document.getElementById("allev-emails-" + t.dataset.allevClearEmails);
+    if (ea4) ea4.value = "";
+    return;
+  }
+
+  if (t.dataset.allevCancelResched) {
+    var form2 = document.getElementById("allev-resched-form-" + t.dataset.allevCancelResched);
+    if (form2) form2.classList.add("hidden");
+    return;
+  }
+
+  if (t.dataset.allevConfirmResched) {
+    var evId2    = t.dataset.allevConfirmResched;
+    var newType  = (document.getElementById("allev-type-"       + evId2)||{}).value || "";
+    var newDate  = (document.getElementById("allev-date-"       + evId2)||{}).value || "";
+    var newStart = (document.getElementById("allev-start-"      + evId2)||{}).value || "";
+    var newEnd   = (document.getElementById("allev-end-"        + evId2)||{}).value || "";
+    var newNotes = (document.getElementById("allev-notes-"      + evId2)||{}).value || "";
+    var newEmails= (document.getElementById("allev-emails-"     + evId2)||{}).value || "";
+    var extraN   = (document.getElementById("allev-extranotes-" + evId2)||{}).value || "";
+    var jobKey   = (document.getElementById("allev-jobkey-"     + evId2)||{}).value.trim() || "";
+
+    if (!newDate || !newStart || !newEnd) { alert("Please fill in new date, start time, and end time."); return; }
+
+    // Find original event for customer name
+    var origEv = null;
+    for (var i = 0; i < allEventsCache.length; i++) { if (allEventsCache[i].id === evId2) { origEv = allEventsCache[i]; break; } }
+    var custMatch2 = origEv ? (origEv.summary||"").match(/—\s*(.+?)\s*\(Job\s*([^)]+)\)/) : null;
+    var custName2  = custMatch2 ? custMatch2[1] : "";
+    var jobNum2    = custMatch2 ? custMatch2[2] : (jobKey || "");
+
+    if (!confirm("Reschedule this appointment to " + formatDateNice(newDate) + " at " + formatTimeNice(newStart) + "?")) return;
+
+    var newTitle  = newType + " — " + custName2 + (jobNum2 ? " (Job " + jobNum2 + ")" : "");
+    var startDt   = newDate + "T" + newStart + ":00";
+    var endDt     = newDate + "T" + newEnd   + ":00";
+    var calEvBody2 = buildCalEventBody(newType, custName2, jobNum2, formatDateNice(newDate), formatTimeNice(newStart), newNotes, extraN);
+
+    var attendees2 = newEmails.split(",").map(function(e){ return e.trim(); })
+      .filter(function(e){ return e.indexOf("@") > -1; })
+      .map(function(e){ return { email: e }; });
+
+    var newEventBody = {
+      summary: newTitle,
+      description: calEvBody2,
+      start: { dateTime: startDt, timeZone: "America/Chicago" },
+      end:   { dateTime: endDt,   timeZone: "America/Chicago" }
+    };
+    if (attendees2.length) { newEventBody.attendees = attendees2; newEventBody.sendUpdates = "all"; }
+
+    schedLog("info", "Rescheduling " + (origEv ? origEv.summary : evId2) + "…");
+
+    // Delete old from its original calendar, create new on new type's calendar
+    deleteEventFromAnyCalendar(evId2, origEv ? origEv._calendarId : null)
+    .then(function(){
+      return getGCalToken();
+    }).then(function(tok){
+      return fetch("https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(getCalendarId(newType)) + "/events", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" },
+        body: JSON.stringify(newEventBody)
+      });
+    }).then(function(r){ return r.json(); })
+    .then(function(ev){
+      if (ev.error) throw new Error("Calendar: " + JSON.stringify(ev.error));
+      schedLog("success", "Rescheduled: " + ev.summary);
+
+      // Optional SMS if job key provided
+      if (jobKey) {
+        return fetchAllSheetRows().then(function(allRows){
+          var entries = findEntriesForKey(allRows, jobKey);
+          if (!entries.length) { schedLog("warn", "Job " + jobKey + " not found in sheet — SMS skipped"); return; }
+          var ctx = buildJobContext(entries);
+          var smsMsg = buildReschedSms(newType, (ctx.name||"").split(" ")[0], formatDateNice(newDate), formatTimeNice(newStart), newNotes, ctx.jobNum||ctx.jobGuid||"", ctx.spPhone ? spDisplay(ctx.salesperson) : "");
+          var recips = [];
+          if (ctx.phone) recips.push(ctx.phone);
+          if (ctx.phone2 && recips.indexOf(ctx.phone2)===-1) recips.push(ctx.phone2);
+          FIXED_NUMBERS.forEach(function(n){ if(recips.indexOf(n)===-1) recips.push(n); });
+          if (ctx.spPhone && recips.indexOf(ctx.spPhone)===-1) recips.push(ctx.spPhone);
+          return sendSMS(recips, smsMsg).then(function(d){
+            var convId = (d&&d.conversation&&d.conversation.id)||"";
+            schedLog("success", "Reschedule SMS sent — " + ctx.name);
+            return appendSheetLog({
+              timestamp:new Date().toISOString(), jobNum:ctx.jobNum||ctx.jobGuid, name:ctx.name,
+              phone:ctx.phone, trigger:"Rescheduled — "+newType, template:"SCHED",
+              message:smsMsg, acculynxLogged:"", status:"sent", jobGuid:ctx.jobGuid||"",
+              messageId:"", runBy:currentUser||"Unknown", secondaryPhone:ctx.phone2||"",
+              conversationId:convId||""
+            });
+          });
+        });
+      }
+    })
+    .then(function(){ loadAllEvents(); })
+    .catch(function(e){ schedLog("error", "Reschedule failed: " + e.message); });
+    return;
+  }
+
+  if (t.dataset.allevDelete) {
+    var evId3 = t.dataset.allevDelete;
+    var origEv3 = null;
+    for (var j = 0; j < allEventsCache.length; j++) { if (allEventsCache[j].id === evId3) { origEv3 = allEventsCache[j]; break; } }
+    var label = origEv3 ? origEv3.summary : evId3;
+    if (!confirm("Cancel and delete \"" + label + "\"?\n\nThis will NOT send an SMS — notify the customer separately if needed.")) return;
+    deleteEventFromAnyCalendar(evId3, origEv3 ? origEv3._calendarId : null).then(function(ok){
+      if (ok) { schedLog("success", "Event deleted: " + label); loadAllEvents(); }
+      else { schedLog("warn", "Event not found in any calendar: " + label); }
+    }).catch(function(e){ schedLog("error", e.message); });
+    return;
+  }
+});
+
+// Filter dropdown live re-render
+document.addEventListener("change", function(e){
+  if (e.target.id === "all-events-filter" && allEventsCache.length) renderAllEvents();
+});
+
+// =====================================================================
+// SCHEDULED & RESCHEDULED SMS TEMPLATES (per appointment type)
+// =====================================================================
+
+var SMS_TMPL_VARS = ["{{First Name}}","{{Appointment Type}}","{{Date}}","{{Time}}","{{Address}}","{{Job Number}}","{{Salesperson Phone}}"];
+
+var SCHED_SMS_DEFAULTS = {};
+var RESCHED_SMS_DEFAULTS = {};
+APPT_TYPES.forEach(function(t){
+  SCHED_SMS_DEFAULTS[t]  = "Hi {{First Name}}! This is TC Roofing & Restorations. Your {{Appointment Type}} has been scheduled for {{Date}} at {{Time}}. Reply to this message with any questions. Thank you!";
+  RESCHED_SMS_DEFAULTS[t] = "Hi {{First Name}}! TC Roofing & Restorations needs to reschedule your {{Appointment Type}}. Your new appointment is {{Date}} at {{Time}}. We apologize for any inconvenience. Reply with any questions. Thank you!";
+});
+
+var schedSmsBodies   = {};
+var reschedSmsBodies = {};
+APPT_TYPES.forEach(function(t){ schedSmsBodies[t]   = SCHED_SMS_DEFAULTS[t]; });
+APPT_TYPES.forEach(function(t){ reschedSmsBodies[t] = RESCHED_SMS_DEFAULTS[t]; });
+
+function loadSchedSmsTemplates() {
+  APPT_TYPES.forEach(function(t){
+    var v = store.get("sched_sms_" + t);   if (v) schedSmsBodies[t]   = v;
+    var r = store.get("resched_sms_" + t); if (r) reschedSmsBodies[t] = r;
+  });
+}
+function saveSchedSms(t, body)   { schedSmsBodies[t]   = body; store.set("sched_sms_"  + t, body); }
+function saveReschedSms(t, body) { reschedSmsBodies[t] = body; store.set("resched_sms_"+ t, body); }
+function resetSchedSms(t)   { schedSmsBodies[t]   = SCHED_SMS_DEFAULTS[t];  store.del("sched_sms_"  + t); }
+function resetReschedSms(t) { reschedSmsBodies[t] = RESCHED_SMS_DEFAULTS[t]; store.del("resched_sms_"+ t); }
+function isSchedSmsModified(t)   { return schedSmsBodies[t]   !== SCHED_SMS_DEFAULTS[t]; }
+function isReschedSmsModified(t) { return reschedSmsBodies[t] !== RESCHED_SMS_DEFAULTS[t]; }
+
+function applySmsTmplVars(body, firstName, apptType, dateStr, timeStr, address, jobNum, spPhone) {
+  return (body||"")
+    .replace(/{{First Name}}/g,       firstName || "")
+    .replace(/{{Appointment Type}}/g, apptType  || "")
+    .replace(/{{Date}}/g,             dateStr   || "")
+    .replace(/{{Time}}/g,             timeStr   || "")
+    .replace(/{{Address}}/g,          address   || "")
+    .replace(/{{Job Number}}/g,       jobNum    || "")
+    .replace(/{{Salesperson Phone}}/g,spPhone   || "");
+}
+
+function buildSchedSms(apptType, firstName, dateStr, timeStr, address, jobNum, spPhone) {
+  return applySmsTmplVars(schedSmsBodies[apptType] || SCHED_SMS_DEFAULTS[apptType] || "", firstName, apptType, dateStr, timeStr, address, jobNum, spPhone);
+}
+function buildReschedSms(apptType, firstName, dateStr, timeStr, address, jobNum, spPhone) {
+  return applySmsTmplVars(reschedSmsBodies[apptType] || RESCHED_SMS_DEFAULTS[apptType] || "", firstName, apptType, dateStr, timeStr, address, jobNum, spPhone);
+}
+
+function renderSmsTmplList(containerId, bodies, defaults, storePrefix, saveFunc, resetFunc, isModifiedFunc) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = APPT_TYPES.map(function(apptType){
+    var mod    = isModifiedFunc(apptType);
+    var safeId = storePrefix + "_" + apptType.replace(/[^a-zA-Z0-9]/g,"_");
+    var chips  = SMS_TMPL_VARS.map(function(v){
+      return '<span class="cal-var-chip" data-smstmpl-var="'+v+'" data-smstmpl-id="'+safeId+'">'+v+'</span>';
+    }).join("");
+    return '<div class="cal-tmpl-item">' +
+      '<h3>' +
+        '<span>'+apptType+(mod?'<span class="modified-badge">MODIFIED</span>':'')+'</span>' +
+        '<div style="display:flex;gap:6px;">' +
+          '<button class="btn btn-secondary btn-sm" data-smstmpl-edit="'+safeId+'" data-smstmpl-key="'+apptType+'" data-smstmpl-prefix="'+storePrefix+'">Edit</button>' +
+          (mod?'<button class="btn btn-warn btn-sm" data-smstmpl-reset="'+apptType+'" data-smstmpl-prefix="'+storePrefix+'">Reset</button>':'') +
+        '</div>' +
+      '</h3>' +
+      '<div class="cal-tmpl-body">'+(bodies[apptType]||"").substring(0,180)+((bodies[apptType]||"").length>180?"…":"")+'</div>' +
+      '<div class="cal-tmpl-edit" id="smstmpl-edit-area-'+safeId+'">' +
+        '<hr><label>Insert Variable:</label>' +
+        '<div class="cal-var-chips">'+chips+'</div>' +
+        '<textarea id="smstmpl-ta-'+safeId+'" rows="4" style="font-family:sans-serif;font-size:0.82rem;">'+(bodies[apptType]||"")+'</textarea>' +
+        '<div class="btn-row" style="margin-top:8px;">' +
+          '<button class="btn btn-primary btn-sm" data-smstmpl-save="'+safeId+'" data-smstmpl-key="'+apptType+'" data-smstmpl-prefix="'+storePrefix+'">Save</button>' +
+          '<button class="btn btn-secondary btn-sm" data-smstmpl-cancel="'+safeId+'">Cancel</button>' +
+          (mod?'<button class="btn btn-warn btn-sm" data-smstmpl-reset="'+apptType+'" data-smstmpl-prefix="'+storePrefix+'">Reset to Default</button>':'') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+}
+
+function renderAllSmsTmplLists() {
+  renderSmsTmplList("sched-sms-templates-list",   schedSmsBodies,   SCHED_SMS_DEFAULTS,  "sched",  saveSchedSms,   resetSchedSms,   isSchedSmsModified);
+  renderSmsTmplList("resched-sms-templates-list", reschedSmsBodies, RESCHED_SMS_DEFAULTS,"resched", saveReschedSms, resetReschedSms, isReschedSmsModified);
+}
+
+function renderReminderSmsTmplList() {
+  var el = document.getElementById("reminder-sms-templates-list");
+  if (!el) return;
+  // Update the tab name display in the alert
+  var tabDisplay = document.getElementById("reminder-tmpl-tab-display");
+  if (tabDisplay) tabDisplay.textContent = CRED_GS_TMPL_TAB;
+
+  el.innerHTML = APPT_TYPES.map(function(apptType){
+    var body = reminderSmsBodies[apptType] || REMINDER_SMS_DEFAULTS[apptType] || "";
+    return '<div class="cal-tmpl-item" style="opacity:0.85;">' +
+      '<h3>' +
+        '<span>' + apptType + '</span>' +
+        '<span class="pill pill-blue" style="font-size:0.65rem;padding:2px 8px;font-weight:600;">Edit in Google Sheets</span>' +
+      '</h3>' +
+      '<div class="cal-tmpl-body" style="color:#64748b;">' + body.substring(0,220) + (body.length > 220 ? "…" : "") + '</div>' +
+    '</div>';
+  }).join("");
+}
+
+// SMS template click handlers
+document.addEventListener("click", function(e){
+  var t = e.target;
+  if (t.dataset.smstmplEdit) {
+    var area = document.getElementById("smstmpl-edit-area-" + t.dataset.smstmplEdit);
+    var ta   = document.getElementById("smstmpl-ta-"        + t.dataset.smstmplEdit);
+    var bodies = t.dataset.smstmplPrefix === "sched" ? schedSmsBodies : (t.dataset.smstmplPrefix === "resched" ? reschedSmsBodies : reminderSmsBodies);
+    if (area && ta) { ta.value = bodies[t.dataset.smstmplKey] || ""; area.classList.add("open"); }
+    return;
+  }
+  if (t.dataset.smstmplSave) {
+    var ta2 = document.getElementById("smstmpl-ta-" + t.dataset.smstmplSave);
+    if (ta2) {
+      if (t.dataset.smstmplPrefix === "sched")        saveSchedSms(t.dataset.smstmplKey, ta2.value);
+      else if (t.dataset.smstmplPrefix === "resched") saveReschedSms(t.dataset.smstmplKey, ta2.value);
+      else { saveReminderSms(t.dataset.smstmplKey, ta2.value); syncReminderTemplatesToSheet(); }
+      document.getElementById("smstmpl-edit-area-" + t.dataset.smstmplSave).classList.remove("open");
+      renderAllSmsTmplLists();
+      renderReminderSmsTmplList();
+    }
+    return;
+  }
+  if (t.dataset.smstmplCancel) {
+    var area2 = document.getElementById("smstmpl-edit-area-" + t.dataset.smstmplCancel);
+    if (area2) area2.classList.remove("open");
+    return;
+  }
+  if (t.dataset.smstmplReset) {
+    if (confirm("Reset \"" + t.dataset.smstmplReset + "\" SMS template to default?")) {
+      if (t.dataset.smstmplPrefix === "sched")        resetSchedSms(t.dataset.smstmplReset);
+      else if (t.dataset.smstmplPrefix === "resched") resetReschedSms(t.dataset.smstmplReset);
+      else { resetReminderSms(t.dataset.smstmplReset); syncReminderTemplatesToSheet(); }
+      renderAllSmsTmplLists();
+      renderReminderSmsTmplList();
+    }
+    return;
+  }
+  if (t.dataset.smstmplVar && t.dataset.smstmplId) {
+    var ta3 = document.getElementById("smstmpl-ta-" + t.dataset.smstmplId);
+    if (!ta3) return;
+    var s = ta3.selectionStart, en = ta3.selectionEnd;
+    ta3.value = ta3.value.slice(0,s) + t.dataset.smstmplVar + ta3.value.slice(en);
+    ta3.selectionStart = ta3.selectionEnd = s + t.dataset.smstmplVar.length;
+    ta3.focus();
+    return;
+  }
+});
+
+// =====================================================================
+// DAY-BEFORE REMINDER SMS TEMPLATES
+// =====================================================================
+
+var REMINDER_SMS_DEFAULTS = {};
+APPT_TYPES.forEach(function(t){
+  REMINDER_SMS_DEFAULTS[t] = "Hi {{First Name}}! This is a reminder from TC Roofing & Restorations that your {{Appointment Type}} is scheduled for tomorrow, {{Date}} at {{Time}}. Reply to this message with any questions. Thank you!";
+});
+
+var reminderSmsBodies = {};
+APPT_TYPES.forEach(function(t){ reminderSmsBodies[t] = REMINDER_SMS_DEFAULTS[t]; });
+
+function loadReminderSmsTemplates() {
+  APPT_TYPES.forEach(function(t){
+    var v = store.get("reminder_sms_" + t); if (v) reminderSmsBodies[t] = v;
+  });
+}
+function saveReminderSms(t, body)  { reminderSmsBodies[t] = body; store.set("reminder_sms_" + t, body); }
+function resetReminderSms(t)       { reminderSmsBodies[t] = REMINDER_SMS_DEFAULTS[t]; store.del("reminder_sms_" + t); }
+function isReminderSmsModified(t)  { return reminderSmsBodies[t] !== REMINDER_SMS_DEFAULTS[t]; }
+
+function buildReminderSms(apptType, firstName, dateStr, timeStr, address, jobNum, spPhone) {
+  return applySmsTmplVars(reminderSmsBodies[apptType] || REMINDER_SMS_DEFAULTS[apptType] || "", firstName, apptType, dateStr, timeStr, address, jobNum, spPhone);
+}
+
+// -- Sync reminder templates to Google Sheet tab so the Worker can read them --
+function syncReminderTemplatesToSheet() {
+  var tmplTab = CRED_GS_TMPL_TAB;
+  var sid = CRED_GS_SHEET_ID;
+  var statusEl = document.getElementById("sync-tmpl-status");
+  if (!sid) { if(statusEl) statusEl.textContent = "Error: Spreadsheet ID not set."; return; }
+  if (!tmplTab) { if(statusEl) statusEl.textContent = "Error: Template Tab Name not set in config."; return; }
+  if(statusEl) statusEl.textContent = "Syncing…";
+
+  // Build rows: header + one row per type
+  var rows = [["AppointmentType", "Template"]];
+  APPT_TYPES.forEach(function(t){ rows.push([t, reminderSmsBodies[t] || REMINDER_SMS_DEFAULTS[t] || ""]); });
+
+  getGSToken().then(function(tok){
+    var sn = encodeURIComponent(tmplTab);
+    // Clear then write — use batchUpdate to clear first then values.update
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/" + sid + "/values/" + sn + "!A1:B" + rows.length + "?valueInputOption=RAW",{
+      method: "PUT",
+      headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" },
+      body: JSON.stringify({ range: tmplTab + "!A1:B" + rows.length, majorDimension: "ROWS", values: rows })
+    });
+  }).then(function(r){
+    if (!r.ok) return r.text().then(function(t){ throw new Error("Sheet write failed: " + t); });
+    return r.json();
+  }).then(function(){
+    if(statusEl) statusEl.textContent = "✓ " + APPT_TYPES.length + " templates synced to \"" + (CRED_GS_TMPL_TAB||"ReminderTemplates") + "\" tab at " + new Date().toLocaleTimeString();
+  }).catch(function(e){
+    if(statusEl) statusEl.textContent = "Error: " + e.message;
+  });
+}
+
+// Dedup: store sent reminder keys as "reminder_sent_EVID_DATE" in localStorage
+function reminderAlreadySent(evId, date) {
+  return store.get("reminder_sent_" + evId + "_" + date) === "1";
+}
+function markReminderSent(evId, date) {
+  store.set("reminder_sent_" + evId + "_" + date, "1");
+}
+
+// Set default reminder date to tomorrow CST
+(function(){
+  var inp = document.getElementById("reminder-date");
+  if (!inp) return;
+  var cst = new Date(new Date().toLocaleString("en-US",{timeZone:"America/Chicago"}));
+  cst.setDate(cst.getDate() + 1);
+  inp.value = cst.toLocaleDateString("en-CA"); // YYYY-MM-DD
+})();
+
+function runReminderCheck(previewOnly) {
+  var dateVal = (document.getElementById("reminder-date")||{}).value || "";
+  if (!dateVal) { alert("Please select a date."); return; }
+
+  var statusEl  = document.getElementById("reminder-status");
+  var previewEl = document.getElementById("reminder-preview-list");
+  var bar       = document.getElementById("reminder-status-bar");
+  var barDot    = document.getElementById("reminder-dot");
+  var barText   = document.getElementById("reminder-status-text");
+
+  if (statusEl) statusEl.textContent = "Fetching calendar events for " + formatDateNice(dateVal) + "…";
+  if (previewEl) previewEl.innerHTML = "";
+  if (bar) { bar.style.display = "flex"; bar.className = "status-bar running"; }
+  if (barDot) barDot.className = "dot pulse";
+  if (barText) barText.textContent = previewOnly ? "Loading preview…" : "Sending reminders…";
+
+  // Fetch all events on the target date across all calendars
+  var dayStart = new Date(dateVal + "T00:00:00-05:00").toISOString();
+  var dayEnd   = new Date(dateVal + "T23:59:59-05:00").toISOString();
+
+  getGCalToken().then(function(tok){
+    var calIds = getAllCalendarIds();
+    var promises = calIds.map(function(calId){
+      return fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(calId) +
+        "/events?timeMin=" + encodeURIComponent(dayStart) +
+        "&timeMax=" + encodeURIComponent(dayEnd) +
+        "&singleEvents=true&orderBy=startTime&maxResults=100",
+        { headers: { Authorization: "Bearer " + tok } }
+      ).then(function(r){ return r.json(); })
+       .then(function(d){ return (d.items||[]).map(function(ev){ ev._calendarId = calId; return ev; }); })
+       .catch(function(){ return []; });
+    });
+    return Promise.all(promises);
+  }).then(function(results){
+    var seen = {}; var events = [];
+    results.forEach(function(items){
+      items.forEach(function(ev){
+        if (!seen[ev.id]) { seen[ev.id] = true; events.push(ev); }
+      });
+    });
+    events.sort(function(a,b){
+      var at = a.start&&a.start.dateTime ? new Date(a.start.dateTime) : 0;
+      var bt = b.start&&b.start.dateTime ? new Date(b.start.dateTime) : 0;
+      return at - bt;
+    });
+
+    if (!events.length) {
+      if (statusEl) statusEl.textContent = "No appointments found for " + formatDateNice(dateVal) + ".";
+      if (bar) bar.className = "status-bar idle";
+      if (barDot) barDot.className = "dot";
+      if (barText) barText.textContent = "No events found";
+      if (previewEl) previewEl.innerHTML = '<div class="no-results">No appointments on ' + formatDateNice(dateVal) + '.</div>';
+      return;
+    }
+
+    schedLog("info", "Reminder check: " + events.length + " event(s) on " + formatDateNice(dateVal));
+
+    if (previewOnly) {
+      // Just show what would be sent
+      if (previewEl) previewEl.innerHTML = events.map(function(ev){
+        var alreadySent = reminderAlreadySent(ev.id, dateVal);
+        var apptType = ""; for(var i=0;i<APPT_TYPES.length;i++){ if((ev.summary||"").indexOf(APPT_TYPES[i])>-1){apptType=APPT_TYPES[i];break;} }
+        var custMatch = (ev.summary||"").match(/—\s*(.+?)\s*\(Job\s*([^)]+)\)/);
+        var custName = custMatch ? custMatch[1] : (ev.summary||"");
+        var start = ev.start&&ev.start.dateTime ? new Date(ev.start.dateTime) : null;
+        var timeStr = start ? start.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Chicago"}) + " CST" : "";
+        var previewMsg = buildReminderSms(apptType, custName.split(" ")[0], formatDateNice(dateVal), timeStr, "", "", "");
+        return '<div class="bulk-job-row ' + (alreadySent?"notfound":"found") + '" style="margin-bottom:8px;">' +
+          '<div class="bjr-header">' +
+            '<span class="bjr-name">' + (ev.summary||"Untitled") + '</span>' +
+            (alreadySent ? '<span class="pill pill-yellow" style="margin-left:auto;">Already Sent</span>' : '<span class="pill pill-green" style="margin-left:auto;">Will Send</span>') +
+          '</div>' +
+          '<div class="bjr-meta" style="font-size:0.75rem;color:#64748b;margin-top:4px;padding-left:0;">📱 Preview: ' + previewMsg + '</div>' +
+        '</div>';
+      }).join("");
+      if (statusEl) statusEl.textContent = events.length + " event(s) found — " + events.filter(function(ev){ return !reminderAlreadySent(ev.id,dateVal); }).length + " unsent.";
+      if (bar) bar.className = "status-bar done";
+      if (barDot) barDot.className = "dot";
+      if (barText) barText.textContent = "Preview complete";
+      return;
+    }
+
+    // Actually send
+    return fetchAllSheetRows().then(function(allRows){
+      var toSend = events.filter(function(ev){ return !reminderAlreadySent(ev.id, dateVal); });
+      if (!toSend.length) {
+        if (statusEl) statusEl.textContent = "All reminders for this date already sent.";
+        if (bar) bar.className = "status-bar done";
+        if (barDot) barDot.className = "dot";
+        if (barText) barText.textContent = "Nothing to send";
+        return;
+      }
+
+      var sent = 0; var skipped = 0; var failed = 0;
+      var i = 0;
+
+      function nextReminder() {
+        if (i >= toSend.length) {
+          if (bar) bar.className = "status-bar done";
+          if (barDot) barDot.className = "dot";
+          if (barText) barText.textContent = "Done — " + sent + " sent, " + skipped + " skipped, " + failed + " failed";
+          if (statusEl) statusEl.textContent = sent + " reminder(s) sent for " + formatDateNice(dateVal) + ".";
+          schedLog("success", "Reminders complete. Sent:" + sent + " Skipped:" + skipped + " Failed:" + failed);
+          return;
+        }
+
+        var ev = toSend[i++];
+        if (barText) barText.textContent = "Sending " + i + "/" + toSend.length + " — " + (ev.summary||"");
+
+        // Extract appt type and job info from event title
+        var apptType = ""; for(var ai=0;ai<APPT_TYPES.length;ai++){ if((ev.summary||"").indexOf(APPT_TYPES[ai])>-1){apptType=APPT_TYPES[ai];break;} }
+        var custMatch = (ev.summary||"").match(/—\s*(.+?)\s*\(Job\s*([^)]+)\)/);
+        var jobKey = custMatch ? custMatch[2].trim() : "";
+        var custName = custMatch ? custMatch[1].trim() : "";
+
+        var start = ev.start&&ev.start.dateTime ? new Date(ev.start.dateTime) : null;
+        var timeStr = start ? start.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Chicago"}) + " CST" : "";
+
+        // Try to find job in sheet for full context (phone, salesperson etc)
+        var entries = jobKey ? findEntriesForKey(allRows, jobKey) : [];
+        var ctx = entries.length ? buildJobContext(entries) : null;
+
+        var firstName = ctx ? (ctx.name||"").split(" ")[0] : custName.split(" ")[0];
+        var spPhone   = ctx && ctx.salesperson ? spDisplay(ctx.salesperson) : "";
+        var jobNum    = ctx ? (ctx.jobNum||ctx.jobGuid||jobKey) : jobKey;
+
+        var smsMsg = buildReminderSms(apptType, firstName, formatDateNice(dateVal), timeStr, "", jobNum, spPhone);
+
+        if (!ctx || !ctx.phone) {
+          schedLog("warn", "No phone found for " + (ev.summary||"") + " — skipping");
+          skipped++;
+          return sleep(200).then(nextReminder);
+        }
+
+        var recips = [];
+        if (ctx.phone) recips.push(ctx.phone);
+        if (ctx.phone2 && recips.indexOf(ctx.phone2)===-1) recips.push(ctx.phone2);
+        FIXED_NUMBERS.forEach(function(n){ if(recips.indexOf(n)===-1) recips.push(n); });
+        if (ctx.spPhone && recips.indexOf(ctx.spPhone)===-1) recips.push(ctx.spPhone);
+
+        schedLog("info", "Sending reminder to " + (ctx.name||custName) + " — " + apptType);
+
+        sendSMS(recips, smsMsg).then(function(d){
+          var convId = (d&&d.conversation&&d.conversation.id)||"";
+          markReminderSent(ev.id, dateVal);
+          schedLog("success", "Reminder sent — " + (ctx.name||custName));
+          sent++;
+          return appendSheetLog({
+            timestamp: new Date().toISOString(),
+            jobNum: ctx.jobNum||ctx.jobGuid||jobKey,
+            name: ctx.name||custName,
+            phone: ctx.phone,
+            trigger: "Day-Before Reminder — " + apptType,
+            template: "REMINDER",
+            message: smsMsg,
+            acculynxLogged: "",
+            status: "sent",
+            jobGuid: ctx.jobGuid||"",
+            messageId: "",
+            runBy: currentUser||"Unknown",
+            secondaryPhone: ctx.phone2||"",
+            conversationId: convId||""
+          });
+        }).catch(function(e){
+          schedLog("error", "Reminder failed " + (ev.summary||"") + ": " + e.message);
+          failed++;
+        }).then(function(){ return sleep(800); }).then(nextReminder);
+      }
+
+      nextReminder();
+    });
+  }).catch(function(e){
+    if (statusEl) statusEl.textContent = "Error: " + e.message;
+    if (bar) bar.className = "status-bar error";
+    if (barDot) barDot.className = "dot";
+    if (barText) barText.textContent = e.message;
+    schedLog("error", "Reminder check failed: " + e.message);
+  });
+}
+
+// Reminder runner click handlers
+document.addEventListener("click", function(e){
+  var t = e.target;
+  if (t.id === "reminder-run-btn")     { if(confirm("Send day-before reminders for " + formatDateNice((document.getElementById("reminder-date")||{}).value||"") + " to all jobs? Already-sent reminders will be skipped.")) runReminderCheck(false); return; }
+  if (t.id === "reminder-preview-btn") { runReminderCheck(true); return; }
+});
+
+loadCalTemplateBodies();
+renderCalTemplates();
+loadSchedSmsTemplates();
+loadReminderSmsTemplates();
+renderAllSmsTmplLists();
+renderReminderSmsTmplList();
 </script>
 </body>
 </html>
