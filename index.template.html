@@ -7,17 +7,11 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
-  #pw-screen{position:fixed;inset:0;background:#0f1117;display:flex;align-items:center;justify-content:center;z-index:9999}
-  #pw-box{background:#1a1f2e;border:1px solid #2a3050;border-radius:16px;padding:40px;text-align:center;width:320px}
-  #pw-box h2{color:#4A90D9;font-size:1.1rem;margin-bottom:6px;font-weight:700}
-  #pw-box p{color:#64748b;font-size:0.8rem;margin-bottom:16px}
-  #pw-name{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:10px 14px;color:#e2e8f0;font-size:1rem;outline:none;text-align:center;margin-bottom:10px}
-  #pw-name:focus{border-color:#8DC63F}
-  #pw-input{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:10px 14px;color:#e2e8f0;font-size:1rem;outline:none;text-align:center;letter-spacing:0.1em;margin-bottom:12px}
-  #pw-input:focus{border-color:#4A90D9}
-  #pw-error{color:#fca5a5;font-size:0.78rem;margin-bottom:10px;display:none}
-  #pw-btn{width:100%;background:#4A90D9;color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:0.95rem;cursor:pointer}
-  #pw-btn:hover{background:#357abd}
+  #login-screen{position:fixed;inset:0;background:#0f1117;display:flex;align-items:center;justify-content:center;z-index:9999}
+  #login-box{background:#1a1f2e;border:1px solid #2a3050;border-radius:16px;padding:40px;text-align:center;width:340px}
+  #login-box h2{color:#4A90D9;font-size:1.1rem;margin-bottom:6px;font-weight:700}
+  #login-box p{color:#64748b;font-size:0.8rem;margin-bottom:20px}
+  #google-signin-btn{display:flex;justify-content:center;margin-top:4px}
   header{background:#1a1f2e;border-bottom:3px solid #4A90D9;padding:14px 28px;display:flex;align-items:center;gap:16px}
   header img{height:52px;width:auto;display:none}
   #header-fallback{font-size:1.3rem;font-weight:800;color:#4A90D9}
@@ -123,17 +117,17 @@
   .cal-var-chip{background:#1a2a3f;color:#4A90D9;font-size:0.7rem;padding:3px 8px;border-radius:10px;cursor:pointer;border:1px solid #4A90D9;font-family:monospace}
   .cal-var-chip:hover{background:#4A90D9;color:#fff}
 </style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-<div id="pw-screen">
-  <div id="pw-box">
+<div id="login-screen">
+  <div id="login-box">
     <h2>TC Roofing Automation</h2>
-    <p>Enter your name and password to continue</p>
-    <input type="text" id="pw-name" placeholder="Your Name">
-    <input type="password" id="pw-input" placeholder="Password">
-    <div id="pw-error">Incorrect password or missing name. Try again.</div>
-    <button id="pw-btn">Unlock</button>
+    <p>Sign in with your Google account to continue</p>
+    <div id="login-error" style="display:none;color:#fca5a5;font-size:0.78rem;margin-bottom:10px;"></div>
+    <div id="google-signin-btn"></div>
+    <div id="login-loading" style="display:none;color:#64748b;font-size:0.82rem;margin-top:12px;">Checking permissions…</div>
   </div>
 </div>
 
@@ -428,7 +422,9 @@ var CRED_GS_SHEET_ID      = "%%GS_SHEET_ID%%";
 var CRED_GS_SHEET_NAME    = "%%GS_SHEET_NAME%%";         // e.g. Log 2026
 var CRED_GS_TMPL_TAB      = "ReminderTemplates";
 
-var CRED_AL_API_KEY       = "%%AL_API_KEY%%";
+var CRED_AL_API_KEY           = "%%AL_API_KEY%%";
+var CRED_GOOGLE_OAUTH_CLIENT_ID = "%%GOOGLE_OAUTH_CLIENT_ID%%"; // for login
+var CRED_GS_PERMS_TAB         = "UserPermissions"; // sheet tab for user roles
 // =====================================================================
 
 var store = {
@@ -437,35 +433,217 @@ var store = {
   del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
 };
 
-function checkPw(){
-  var name = document.getElementById("pw-name").value.trim();
-  var val = document.getElementById("pw-input").value;
-  if(val === PASSWORD && name.length > 0){
-    currentUser = name;
-    document.getElementById("pw-screen").style.display = "none";
-    store.set("pw_unlocked","1");
-    store.set("current_user", name);
-    var badge = document.querySelector("header .badge");
-    if(badge) badge.textContent = "👤 " + name;
-  } else {
-    document.getElementById("pw-error").style.display = "block";
-    document.getElementById("pw-input").value = "";
-    if(!name) document.getElementById("pw-name").focus();
-    else document.getElementById("pw-input").focus();
+// =====================================================================
+// GOOGLE LOGIN + ROLE-BASED PERMISSIONS
+// =====================================================================
+
+// Tab visibility per role — true = visible
+var ROLE_TABS = {
+  admin:     { dashboard:true,  weather:true,  scheduler:true, templates:true,  config:true,  logs:true  },
+  scheduler: { dashboard:false, weather:true,  scheduler:true, templates:false, config:false, logs:true  },
+  run:       { dashboard:true,  weather:false, scheduler:false,templates:false, config:false, logs:true  },
+  viewer:    { dashboard:false, weather:false, scheduler:false,templates:false, config:false, logs:true  }
+};
+
+var currentUserEmail = "";
+var currentUserRole  = "";
+
+function showLoginError(msg) {
+  var el = document.getElementById("login-error");
+  var loading = document.getElementById("login-loading");
+  if (el) { el.textContent = msg; el.style.display = "block"; }
+  if (loading) loading.style.display = "none";
+}
+
+function applyRolePermissions(role) {
+  var perms = ROLE_TABS[role] || ROLE_TABS["viewer"];
+  var tabMap = {
+    dashboard: "dashboard", weather: "weather", scheduler: "scheduler",
+    templates: "templates", config: "config", logs: "logs"
+  };
+  // Find first visible tab to activate
+  var firstVisible = null;
+  Object.keys(tabMap).forEach(function(key) {
+    var tabEl  = document.querySelector(".tab[data-tab='" + tabMap[key] + "']");
+    var sectEl = document.getElementById("tab-" + tabMap[key]);
+    if (perms[key]) {
+      if (tabEl)  tabEl.style.display  = "";
+      if (sectEl) sectEl.style.display = "";
+      if (!firstVisible) firstVisible = tabMap[key];
+    } else {
+      if (tabEl)  tabEl.style.display  = "none";
+      if (sectEl) sectEl.style.display = "none";
+    }
+  });
+  // Activate the first visible tab
+  if (firstVisible) {
+    document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); });
+    document.querySelectorAll(".section").forEach(function(s){ s.classList.remove("active"); });
+    var activeTab  = document.querySelector(".tab[data-tab='" + firstVisible + "']");
+    var activeSect = document.getElementById("tab-" + firstVisible);
+    if (activeTab)  activeTab.classList.add("active");
+    if (activeSect) activeSect.classList.add("active");
   }
 }
 
-document.getElementById("pw-btn").addEventListener("click", checkPw);
-document.getElementById("pw-input").addEventListener("keydown", function(e){ if(e.key==="Enter") checkPw(); });
-document.getElementById("pw-name").addEventListener("keydown", function(e){ if(e.key==="Enter") document.getElementById("pw-input").focus(); });
+function fetchUserRole(email, gsToken) {
+  var sn  = encodeURIComponent(CRED_GS_PERMS_TAB);
+  var sid = CRED_GS_SHEET_ID;
+  return fetch("https://sheets.googleapis.com/v4/spreadsheets/" + sid + "/values/" + sn + "!A:C", {
+    headers: { Authorization: "Bearer " + gsToken }
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (!d.values || d.values.length < 2) return null;
+    var rows = d.values.slice(1); // skip header
+    for (var i = 0; i < rows.length; i++) {
+      var rowEmail = (rows[i][0] || "").trim().toLowerCase();
+      var rowRole  = (rows[i][1] || "").trim().toLowerCase();
+      var rowName  = (rows[i][2] || "").trim();
+      if (rowEmail === email.toLowerCase()) {
+        return { role: rowRole, name: rowName };
+      }
+    }
+    return null; // not found
+  });
+}
 
-if(store.get("pw_unlocked") === "1"){
-  currentUser = store.get("current_user") || "Unknown";
-  document.getElementById("pw-screen").style.display = "none";
-  var badge = document.querySelector("header .badge");
-  if(badge) badge.textContent = "👤 " + currentUser;
+function completeLogin(googleEmail, googleName, gsToken) {
+  var loading = document.getElementById("login-loading");
+  if (loading) loading.style.display = "block";
+
+  fetchUserRole(googleEmail, gsToken).then(function(result) {
+    if (!result) {
+      showLoginError("Access denied. Your account (" + googleEmail + ") is not authorized. Contact your administrator.");
+      return;
+    }
+    currentUserEmail = googleEmail;
+    currentUserRole  = result.role;
+    currentUser      = result.name || googleName || googleEmail;
+
+    // Cache for session
+    store.set("auth_email",  currentUserEmail);
+    store.set("auth_role",   currentUserRole);
+    store.set("auth_name",   currentUser);
+    store.set("auth_token",  gsToken);
+    store.set("auth_expiry", String(Date.now() + 3500000)); // ~58 min
+
+    // Hide login, show app
+    document.getElementById("login-screen").style.display = "none";
+    var badge = document.querySelector("header .badge");
+    if (badge) badge.textContent = "👤 " + currentUser + " (" + currentUserRole + ")";
+
+    applyRolePermissions(currentUserRole);
+    addSignOutButton();
+
+  }).catch(function(e) {
+    showLoginError("Error checking permissions: " + e.message);
+  });
+}
+
+function addSignOutButton() {
+  var header = document.querySelector("header");
+  if (!header || document.getElementById("signout-btn")) return;
+  var btn = document.createElement("button");
+  btn.id = "signout-btn";
+  btn.textContent = "Sign Out";
+  btn.className = "btn btn-secondary btn-sm";
+  btn.style.marginLeft = "10px";
+  btn.addEventListener("click", function() {
+    store.del("auth_email"); store.del("auth_role");
+    store.del("auth_name");  store.del("auth_token");
+    store.del("auth_expiry");
+    google.accounts.id.disableAutoSelect();
+    location.reload();
+  });
+  header.appendChild(btn);
+}
+
+function initGoogleAuth() {
+  // Check cached session first
+  var cachedEmail  = store.get("auth_email");
+  var cachedRole   = store.get("auth_role");
+  var cachedName   = store.get("auth_name");
+  var cachedToken  = store.get("auth_token");
+  var cachedExpiry = parseInt(store.get("auth_expiry") || "0");
+
+  if (cachedEmail && cachedRole && cachedToken && Date.now() < cachedExpiry) {
+    // Valid cached session — restore immediately without re-fetching sheet
+    currentUserEmail = cachedEmail;
+    currentUserRole  = cachedRole;
+    currentUser      = cachedName || cachedEmail;
+    // Refresh GS token in background for sheet operations
+    refreshGSToken().then(function(newToken) {
+      store.set("auth_token",  newToken);
+      store.set("auth_expiry", String(Date.now() + 3500000));
+    }).catch(function(){});
+    document.getElementById("login-screen").style.display = "none";
+    var badge = document.querySelector("header .badge");
+    if (badge) badge.textContent = "👤 " + currentUser + " (" + currentUserRole + ")";
+    applyRolePermissions(currentUserRole);
+    addSignOutButton();
+    return;
+  }
+
+  // Initialize Google Identity Services
+  google.accounts.id.initialize({
+    client_id: CRED_GOOGLE_OAUTH_CLIENT_ID,
+    callback: handleGoogleCredential,
+    auto_select: false,
+    cancel_on_tap_outside: false
+  });
+  google.accounts.id.renderButton(document.getElementById("google-signin-btn"), {
+    theme: "filled_blue", size: "large", shape: "rectangular",
+    text: "signin_with", logo_alignment: "left", width: 260
+  });
+}
+
+function handleGoogleCredential(response) {
+  var loading = document.getElementById("login-loading");
+  if (loading) loading.style.display = "block";
+
+  // Decode the JWT id_token to get email and name (no verify needed — Google already verified it)
+  var payload = JSON.parse(atob(response.credential.split(".")[1]));
+  var email   = payload.email || "";
+  var name    = payload.name  || "";
+
+  if (!email) { showLoginError("Could not read your Google account email. Try again."); return; }
+
+  // Get a Google Sheets access token using the id_token to call the sheets API
+  // We use the GS OAuth refresh token flow — separate from the id_token
+  refreshGSToken().then(function(gsToken) {
+    completeLogin(email, name, gsToken);
+  }).catch(function(e) {
+    showLoginError("Could not connect to Google Sheets: " + e.message);
+  });
+}
+
+function refreshGSToken() {
+  return fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "client_id=" + encodeURIComponent(CRED_GS_CLIENT_ID) +
+          "&client_secret=" + encodeURIComponent(CRED_GS_CLIENT_SECRET) +
+          "&refresh_token=" + encodeURIComponent(CRED_GS_REFRESH_TOKEN) +
+          "&grant_type=refresh_token"
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if (!d.access_token) throw new Error("GS token failed");
+    return d.access_token;
+  });
+}
+
+// Boot — wait for GSI library to load then init
+if (typeof google !== "undefined" && google.accounts) {
+  initGoogleAuth();
 } else {
-  document.getElementById("pw-name").focus();
+  window.addEventListener("load", function() {
+    var tries = 0;
+    var interval = setInterval(function() {
+      if (typeof google !== "undefined" && google.accounts) {
+        clearInterval(interval);
+        initGoogleAuth();
+      }
+      if (++tries > 20) clearInterval(interval);
+    }, 200);
+  });
 }
 
 var SALESPERSON_MAP = {
