@@ -107,8 +107,8 @@ jobs:
           # Copy generated index.html into a clean deploy folder
           mkdir -p deploy
           cp index.html deploy/index.html
-          # Copy any other assets that should be served (images etc)
-          # The template and workflow files are intentionally excluded
+          # Copy logo and other static assets
+          cp "TC_White_Logo_2025__2_.png" deploy/ 2>/dev/null || true
 
           cd deploy
           git init
