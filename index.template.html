@@ -407,7 +407,7 @@
     <style>
 :root{--bg:#0f0e0c;--surf:#1a1917;--surf2:#222120;--surf3:#2c2b29;--bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.13);--txt:#f0ede8;--txt2:#a09890;--txt3:#6a6560;--gold:#c9a24a;--gold-bg:rgba(201,162,74,0.12);--gold-bdr:rgba(201,162,74,0.3);--green:#4dab5a;--green-bg:rgba(77,171,90,0.11);--green-bdr:rgba(77,171,90,0.3);--red:#e05252;--red-bg:rgba(224,82,82,0.1);--red-bdr:rgba(224,82,82,0.3);--blue:#5a8de0;--blue-bg:rgba(90,141,224,0.1);--amber:#d48c3a;--amber-bg:rgba(212,140,58,0.12);--r:12px;--rsm:8px;--rlg:16px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Karla',sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+
 h1,h2,h3{font-family:'Syne',sans-serif}
 input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--surf3);border-radius:2px}
@@ -467,7 +467,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 .mat-hd{padding:9px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr)}
 .mat-hd-name{font-size:11px;font-weight:700;color:var(--txt2);letter-spacing:.05em;text-transform:uppercase}
 .mat-hd-cost{font-size:11px;color:var(--txt3);font-family:monospace}
-.mat-body{padding:10px 12px}
+.mat-
 .mat-sel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .mat-opt{padding:6px 11px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr2);background:var(--surf);color:var(--txt2);transition:all .12s;white-space:nowrap}
 .mat-opt:active{transform:scale(.97)}
@@ -515,7 +515,7 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
 @media print{
   @page{size:letter portrait;margin:12mm 11mm}
   :root{--bg:#fff;--surf:#fff;--surf2:#f4f4f1;--surf3:#eaeaea;--bdr:rgba(0,0,0,.12);--bdr2:rgba(0,0,0,.18);--txt:#111;--txt2:#444;--txt3:#777;--gold:#7a5c1e;--green:#285e28;--red:#b01c1c;--blue:#1a468a;--amber:#7a4e00}
-  body{background:#fff;font-size:10px}
+  
   .scr{display:block!important;min-height:unset}
   #s-auth,.topbar,.bnav,.no-print{display:none!important}
   #s-app{display:block!important}
@@ -552,7 +552,12 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
 .slider-charge{font-size:13px;font-weight:700;font-family:'Syne',sans-serif;color:var(--txt)}
 .slider-comm{font-size:12px;font-weight:700;font-family:'Syne',sans-serif;color:var(--gold)}
 #ph,#psig,#pnotes{display:none}
-    </style>
+    
+/* Hide internal commissions header/nav — main app provides navigation */
+#comm-app-wrapper .topbar { display: none !important; }
+#comm-app-wrapper .bnav   { display: none !important; }
+#comm-app-wrapper .scr    { background: transparent; }
+</style>
 <div id="comm-app-wrapper">
 <div class="scr on" id="s-app">
   <div class="topbar">
