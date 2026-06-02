@@ -8,7 +8,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
   #login-screen{position:fixed;inset:0;background:#0f1117;display:flex;align-items:center;justify-content:center;z-index:9999}
-  #login-box{background:#1a1f2e;border:1px solid #2a3050;border-radius:16px;padding:40px;text-align:center;width:340px}
+  #login-box{background:#1a1f2e;border:1px solid #2a3050;border-radius:16px;padding:40px;text-align:center;width:340px;display:flex;flex-direction:column;align-items:center}
   #login-box h2{color:#4A90D9;font-size:1.1rem;margin-bottom:6px;font-weight:700}
   #login-box p{color:#64748b;font-size:0.8rem;margin-bottom:20px}
   #google-signin-btn{display:flex;justify-content:center;margin-top:4px}
@@ -123,7 +123,8 @@
 
 <div id="login-screen">
   <div id="login-box">
-    <h2>TC Roofing Automation</h2>
+    <img src="TC_White_Logo_2025__2_.png" alt="TC Roofing & Restorations" style="width:220px;margin-bottom:20px;">
+    <h2>Employee Portal</h2>
     <p>Sign in with your Google account to continue</p>
     <div id="login-error" style="display:none;color:#fca5a5;font-size:0.78rem;margin-bottom:10px;"></div>
     <div id="google-signin-btn"></div>
