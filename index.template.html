@@ -405,6 +405,13 @@
 
   <div class="section" id="tab-commissions">
     <style>
+      /* Remove white frame from commissions app */
+      #comm-app-wrapper,
+      #comm-app-wrapper #s-app,
+      #comm-app-wrapper .scr.on {
+        background: transparent !important;
+      }
+
 :root{--bg:#0f0e0c;--surf:#1a1917;--surf2:#222120;--surf3:#2c2b29;--bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.13);--txt:#f0ede8;--txt2:#a09890;--txt3:#6a6560;--gold:#c9a24a;--gold-bg:rgba(201,162,74,0.12);--gold-bdr:rgba(201,162,74,0.3);--green:#4dab5a;--green-bg:rgba(77,171,90,0.11);--green-bdr:rgba(77,171,90,0.3);--red:#e05252;--red-bg:rgba(224,82,82,0.1);--red-bdr:rgba(224,82,82,0.3);--blue:#5a8de0;--blue-bg:rgba(90,141,224,0.1);--amber:#d48c3a;--amber-bg:rgba(212,140,58,0.12);--r:12px;--rsm:8px;--rlg:16px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 
@@ -1632,6 +1639,31 @@ async function fetchJobData(){
 
   <div class="section" id="tab-workorder">
     <style>
+      /* Match work order outer wrapper to app background */
+      #tab-workorder {
+        background: #0f1117;
+      }
+      #tab-workorder .wo-frame-wrap {
+        background: #e0e0e0;
+      }
+
+      /* Reset main app styles inside work order frame */
+      #tab-workorder .wo-frame-wrap,
+      #tab-workorder .wo-frame-wrap * {
+        color: #000;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      #tab-workorder .wo-frame-wrap input,
+      #tab-workorder .wo-frame-wrap textarea,
+      #tab-workorder .wo-frame-wrap select {
+        color: #000;
+        background: #fff;
+        border-color: #000;
+      }
+      #tab-workorder .wo-frame-wrap .page {
+        background: #fff;
+      }
+
       /* Work Order scoped styles */
       #tab-workorder .wo-toolbar {
         background:#1a1f2e;border:1px solid #2a3050;border-radius:10px;
