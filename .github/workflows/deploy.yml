@@ -16,6 +16,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Debug - list files
+        run: |
+          ls -la
+          echo "Template size: $(wc -c < index.template.html) bytes"
+          echo "inject.py exists: $(test -f inject.py && echo YES || echo NO)"
+
       - name: Inject credentials
         env:
           RC_CLIENT_ID: ${{ secrets.RC_CLIENT_ID }}
@@ -44,7 +50,10 @@ jobs:
           GCAL_ID_2ND_VIDEO_REPAIR: ${{ secrets.GCAL_ID_2ND_VIDEO_REPAIR }}
           GCAL_ID_LEAK_SOURCE: ${{ secrets.GCAL_ID_LEAK_SOURCE }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
-        run: python3 inject.py
+        run: |
+          python3 inject.py
+          echo "Exit code: $?"
+          echo "index.html size after inject: $(wc -c < index.html 2>/dev/null || echo 'file not found')"
 
       - name: Verify output size
         run: |
