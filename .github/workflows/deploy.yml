@@ -103,9 +103,17 @@ jobs:
           echo "OK: All placeholders filled"
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-pages
-          exclude_assets: '.github,index.template.html,README.md'
+        run: |
+          # Copy generated index.html into a clean deploy folder
+          mkdir -p deploy
+          cp index.html deploy/index.html
+          # Copy any other assets that should be served (images etc)
+          # The template and workflow files are intentionally excluded
+
+          cd deploy
+          git init
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Deploy: inject credentials and publish [skip ci]"
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:gh-pages
