@@ -63,6 +63,7 @@ jobs:
           GCAL_ID_VIDEO_REPAIR:     ${{ secrets.GCAL_ID_VIDEO_REPAIR }}
           GCAL_ID_2ND_VIDEO_REPAIR: ${{ secrets.GCAL_ID_2ND_VIDEO_REPAIR }}
           GCAL_ID_LEAK_SOURCE:      ${{ secrets.GCAL_ID_LEAK_SOURCE }}
+          GOOGLE_OAUTH_CLIENT_ID:    ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
         run: |
           cp index.template.html index.html
           sed -i "s|%%RC_CLIENT_ID%%|${RC_CLIENT_ID}|g" index.html
@@ -90,6 +91,7 @@ jobs:
           sed -i "s|%%GCAL_ID_VIDEO_REPAIR%%|${GCAL_ID_VIDEO_REPAIR}|g" index.html
           sed -i "s|%%GCAL_ID_2ND_VIDEO_REPAIR%%|${GCAL_ID_2ND_VIDEO_REPAIR}|g" index.html
           sed -i "s|%%GCAL_ID_LEAK_SOURCE%%|${GCAL_ID_LEAK_SOURCE}|g" index.html
+          sed -i "s|%%GOOGLE_OAUTH_CLIENT_ID%%|${GOOGLE_OAUTH_CLIENT_ID}|g" index.html
 
       - name: Verify no placeholders remain
         run: |
