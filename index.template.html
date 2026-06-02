@@ -989,19 +989,18 @@ function refreshGSToken() {
 }
 
 // Boot — wait for GSI library to load then init
-if (typeof google !== "undefined" && google.accounts) {
-  initGoogleAuth();
+function tryInitGoogleAuth() {
+  if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+    initGoogleAuth();
+  } else {
+    setTimeout(tryInitGoogleAuth, 250);
+  }
+}
+// Use window.onload to ensure DOM and scripts are ready
+if (document.readyState === "complete") {
+  tryInitGoogleAuth();
 } else {
-  window.addEventListener("load", function() {
-    var tries = 0;
-    var interval = setInterval(function() {
-      if (typeof google !== "undefined" && google.accounts) {
-        clearInterval(interval);
-        initGoogleAuth();
-      }
-      if (++tries > 20) clearInterval(interval);
-    }, 200);
-  });
+  window.addEventListener("load", tryInitGoogleAuth);
 }
 
 var SALESPERSON_MAP = {
