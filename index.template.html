@@ -1616,7 +1616,7 @@ function renderJobResult(entries) {
           '<textarea id="appt-sms-' + jobKey + '" rows="4" style="font-family:sans-serif;"></textarea>' +
         '</div>' +
         '<div class="btn-row" style="margin-top:10px;">' +
-          '<button class="btn btn-primary btn-sm" data-sched-book="' + jobKey + '">📅 Schedule &amp; Send SMS</button>' +
+          '<button class="btn btn-primary btn-sm" data-sched-book="' + jobKey + '">📅 Schedule & Send SMS</button>' +
           '<button class="btn btn-secondary btn-sm" data-sched-preview="' + jobKey + '">↻ Preview SMS</button>' +
         '</div>' +
       '</div>' +
@@ -1909,7 +1909,7 @@ function loadExistingEventsForJob(jobKey, name) {
         '<div class="ev-info">' +
           '<div class="ev-title">' + (ev.summary || "Untitled") + '</div>' +
           '<div class="ev-time">📅 ' + timeStr +
-            (attendeeCount ? ' &nbsp;·&nbsp; 👥 ' + attendeeCount + ' invite' + (attendeeCount > 1 ? 's' : '') : '') +
+            (attendeeCount ? '  ·  👥 ' + attendeeCount + ' invite' + (attendeeCount > 1 ? 's' : '') : '') +
           '</div>' +
           (origNotes ? '<div class="ev-time" style="margin-top:2px;color:#64748b;">📝 ' + origNotes + '</div>' : '') +
         '</div>' +
@@ -1935,7 +1935,7 @@ function loadExistingEventsForJob(jobKey, name) {
         '</div>' +
         '<div style="margin-top:10px;">' +
           '<label>Notes / Location</label>' +
-          '<input type="text" id="resched-notes-' + ev.id + '" value="' + origNotes.replace(/"/g,'&quot;') + '" placeholder="Location or notes">' +
+          '<input type="text" id="resched-notes-' + ev.id + '" value="' + origNotes.replace(/"/g,'"') + '" placeholder="Location or notes">' +
         '</div>' +
         '<div style="margin-top:10px;">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
@@ -1954,7 +1954,7 @@ function loadExistingEventsForJob(jobKey, name) {
           '<textarea id="resched-sms-' + ev.id + '" rows="4" style="font-family:sans-serif;"></textarea>' +
         '</div>' +
         '<div class="btn-row" style="margin-top:10px;">' +
-          '<button class="btn btn-primary btn-sm" data-sched-confirm-reschedule="' + ev.id + '">✅ Confirm Reschedule &amp; Send SMS</button>' +
+          '<button class="btn btn-primary btn-sm" data-sched-confirm-reschedule="' + ev.id + '">✅ Confirm Reschedule & Send SMS</button>' +
           '<button class="btn btn-secondary btn-sm" data-sched-cancel-reschedule="' + ev.id + '">Cancel</button>' +
         '</div>' +
       '</div>';
@@ -2153,12 +2153,12 @@ function renderBulkGrid(jobs) {
   var foundJobs = jobs.filter(function(j){ return j.found; });
   var copyBar = foundJobs.length > 1
     ? '<div class="bulk-copy-bar">' +
-        '⚡ <strong style="color:#e2e8f0;">Fill all rows:</strong>&nbsp;&nbsp;' +
+        '⚡ <strong style="color:#e2e8f0;">Fill all rows:</strong>  ' +
         '<select id="bulk-fill-type" style="min-width:180px;">' + apptTypeOptions() + '</select>' +
-        '&nbsp;<input type="date" id="bulk-fill-date" style="width:130px;">' +
-        '&nbsp;<input type="time" id="bulk-fill-start" style="width:105px;" placeholder="Start">' +
-        '&nbsp;<input type="time" id="bulk-fill-end"   style="width:105px;" placeholder="End">' +
-        '&nbsp;<button class="btn btn-secondary btn-sm" id="bulk-fill-all-btn">Apply to All</button>' +
+        ' <input type="date" id="bulk-fill-date" style="width:130px;">' +
+        ' <input type="time" id="bulk-fill-start" style="width:105px;" placeholder="Start">' +
+        ' <input type="time" id="bulk-fill-end"   style="width:105px;" placeholder="End">' +
+        ' <button class="btn btn-secondary btn-sm" id="bulk-fill-all-btn">Apply to All</button>' +
       '</div>'
     : '';
 
@@ -2184,8 +2184,8 @@ function renderBulkGrid(jobs) {
         '<span class="pill pill-blue">'+ctx.jobKey+'</span>' +
         '<span class="bjr-meta">📱 '+(ctx.phone||"—")+
           (ctx.phone2?' / '+ctx.phone2:'')+
-          (ctx.salesperson?' &nbsp;·&nbsp; 👤 '+ctx.salesperson:'')+
-          ' &nbsp;·&nbsp; Sent: '+(templates||'none')+
+          (ctx.salesperson?'  ·  👤 '+ctx.salesperson:'')+
+          '  ·  Sent: '+(templates||'none')+
         '</span>' +
         '<span class="pill pill-green" style="margin-left:auto;">Found</span>' +
       '</div>' +
@@ -2708,7 +2708,7 @@ function renderAllEvents() {
         '<div class="ev-info" style="flex:1;">' +
           '<div class="ev-title">' + (ev.summary || "Untitled") + '</div>' +
           '<div class="ev-time">🕐 ' + timeStr +
-            (attendeeCount ? ' &nbsp;·&nbsp; 👥 ' + attendeeCount + ' invite' + (attendeeCount > 1 ? 's' : '') : '') +
+            (attendeeCount ? '  ·  👥 ' + attendeeCount + ' invite' + (attendeeCount > 1 ? 's' : '') : '') +
           '</div>' +
           (ev.description ? '<div class="ev-time" style="margin-top:2px;color:#64748b;">📝 ' + ev.description.split("\n")[0] + '</div>' : '') +
         '</div>' +
@@ -2732,7 +2732,7 @@ function renderAllEvents() {
         '</div>' +
         '<div style="margin-top:10px;">' +
           '<label>Notes / Location</label>' +
-          '<input type="text" id="allev-notes-' + ev.id + '" placeholder="Location or notes" value="' + (ev.description ? ev.description.split("\n")[0].replace(/"/g,"&quot;") : "") + '">' +
+          '<input type="text" id="allev-notes-' + ev.id + '" placeholder="Location or notes" value="' + (ev.description ? ev.description.split("\n")[0].replace(/"/g,'&quot;') : "") + '">' +
         '</div>' +
         '<div style="margin-top:10px;">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
