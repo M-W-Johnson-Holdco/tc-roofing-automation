@@ -1,29 +1,9 @@
-# =====================================================================
-# TC Roofing Automation — GitHub Actions Deploy Workflow
-#
-# Runs on every push to main. Reads credentials from GitHub Secrets,
-# injects them into index.template.html, and deploys the result to
-# GitHub Pages as index.html. The source template never contains
-# real credentials.
-#
-# SETUP — add these secrets in GitHub:
-#   Repo → Settings → Secrets and variables → Actions → New repository secret
-#
-#   RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT, RC_FROM
-#   GS_CLIENT_ID, GS_CLIENT_SECRET, GS_REFRESH_TOKEN, GS_SHEET_ID, GS_SHEET_NAME
-#   AL_API_KEY
-#   GCAL_CLIENT_ID, GCAL_CLIENT_SECRET, GCAL_REFRESH_TOKEN, GCAL_CALENDAR_DEFAULT
-#   GCAL_ID_RE_INSPECTION, GCAL_ID_INSURANCE_ADJUSTMENT, GCAL_ID_INTERIOR_INS_ADJ
-#   GCAL_ID_FORENSIC, GCAL_ID_ENGINEER, GCAL_ID_ON_ROOF, GCAL_ID_INTERIOR_INSP
-#   GCAL_ID_SHINGLE_PULL, GCAL_ID_VIDEO_REPAIR, GCAL_ID_2ND_VIDEO_REPAIR, GCAL_ID_LEAK_SOURCE
-# =====================================================================
-
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # allows manual trigger from Actions tab
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -63,53 +43,66 @@ jobs:
           GCAL_ID_VIDEO_REPAIR:     ${{ secrets.GCAL_ID_VIDEO_REPAIR }}
           GCAL_ID_2ND_VIDEO_REPAIR: ${{ secrets.GCAL_ID_2ND_VIDEO_REPAIR }}
           GCAL_ID_LEAK_SOURCE:      ${{ secrets.GCAL_ID_LEAK_SOURCE }}
-          GOOGLE_OAUTH_CLIENT_ID:    ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_ID:   ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
         run: |
-          cp index.template.html index.html
-          sed -i "s|%%RC_CLIENT_ID%%|${RC_CLIENT_ID}|g" index.html
-          sed -i "s|%%RC_CLIENT_SECRET%%|${RC_CLIENT_SECRET}|g" index.html
-          sed -i "s|%%RC_JWT%%|${RC_JWT}|g" index.html
-          sed -i "s|%%RC_FROM%%|${RC_FROM}|g" index.html
-          sed -i "s|%%GS_CLIENT_ID%%|${GS_CLIENT_ID}|g" index.html
-          sed -i "s|%%GS_CLIENT_SECRET%%|${GS_CLIENT_SECRET}|g" index.html
-          sed -i "s|%%GS_REFRESH_TOKEN%%|${GS_REFRESH_TOKEN}|g" index.html
-          sed -i "s|%%GS_SHEET_ID%%|${GS_SHEET_ID}|g" index.html
-          sed -i "s|%%GS_SHEET_NAME%%|${GS_SHEET_NAME}|g" index.html
-          sed -i "s|%%AL_API_KEY%%|${AL_API_KEY}|g" index.html
-          sed -i "s|%%GCAL_CLIENT_ID%%|${GCAL_CLIENT_ID}|g" index.html
-          sed -i "s|%%GCAL_CLIENT_SECRET%%|${GCAL_CLIENT_SECRET}|g" index.html
-          sed -i "s|%%GCAL_REFRESH_TOKEN%%|${GCAL_REFRESH_TOKEN}|g" index.html
-          sed -i "s|%%GCAL_CALENDAR_DEFAULT%%|${GCAL_CALENDAR_DEFAULT}|g" index.html
-          sed -i "s|%%GCAL_ID_RE_INSPECTION%%|${GCAL_ID_RE_INSPECTION}|g" index.html
-          sed -i "s|%%GCAL_ID_INSURANCE_ADJUSTMENT%%|${GCAL_ID_INSURANCE_ADJUSTMENT}|g" index.html
-          sed -i "s|%%GCAL_ID_INTERIOR_INS_ADJ%%|${GCAL_ID_INTERIOR_INS_ADJ}|g" index.html
-          sed -i "s|%%GCAL_ID_FORENSIC%%|${GCAL_ID_FORENSIC}|g" index.html
-          sed -i "s|%%GCAL_ID_ENGINEER%%|${GCAL_ID_ENGINEER}|g" index.html
-          sed -i "s|%%GCAL_ID_ON_ROOF%%|${GCAL_ID_ON_ROOF}|g" index.html
-          sed -i "s|%%GCAL_ID_INTERIOR_INSP%%|${GCAL_ID_INTERIOR_INSP}|g" index.html
-          sed -i "s|%%GCAL_ID_SHINGLE_PULL%%|${GCAL_ID_SHINGLE_PULL}|g" index.html
-          sed -i "s|%%GCAL_ID_VIDEO_REPAIR%%|${GCAL_ID_VIDEO_REPAIR}|g" index.html
-          sed -i "s|%%GCAL_ID_2ND_VIDEO_REPAIR%%|${GCAL_ID_2ND_VIDEO_REPAIR}|g" index.html
-          sed -i "s|%%GCAL_ID_LEAK_SOURCE%%|${GCAL_ID_LEAK_SOURCE}|g" index.html
-          sed -i "s|%%GOOGLE_OAUTH_CLIENT_ID%%|${GOOGLE_OAUTH_CLIENT_ID}|g" index.html
+          python3 << 'PYEOF'
+          import os
+          with open('index.template.html', 'r', encoding='utf-8') as f:
+              content = f.read()
+          replacements = {
+              '%%RC_CLIENT_ID%%':             os.environ.get('RC_CLIENT_ID',''),
+              '%%RC_CLIENT_SECRET%%':         os.environ.get('RC_CLIENT_SECRET',''),
+              '%%RC_JWT%%':                   os.environ.get('RC_JWT',''),
+              '%%RC_FROM%%':                  os.environ.get('RC_FROM',''),
+              '%%GS_CLIENT_ID%%':             os.environ.get('GS_CLIENT_ID',''),
+              '%%GS_CLIENT_SECRET%%':         os.environ.get('GS_CLIENT_SECRET',''),
+              '%%GS_REFRESH_TOKEN%%':         os.environ.get('GS_REFRESH_TOKEN',''),
+              '%%GS_SHEET_ID%%':              os.environ.get('GS_SHEET_ID',''),
+              '%%GS_SHEET_NAME%%':            os.environ.get('GS_SHEET_NAME',''),
+              '%%AL_API_KEY%%':               os.environ.get('AL_API_KEY',''),
+              '%%GCAL_CLIENT_ID%%':           os.environ.get('GCAL_CLIENT_ID',''),
+              '%%GCAL_CLIENT_SECRET%%':       os.environ.get('GCAL_CLIENT_SECRET',''),
+              '%%GCAL_REFRESH_TOKEN%%':       os.environ.get('GCAL_REFRESH_TOKEN',''),
+              '%%GCAL_CALENDAR_DEFAULT%%':    os.environ.get('GCAL_CALENDAR_DEFAULT',''),
+              '%%GCAL_ID_RE_INSPECTION%%':    os.environ.get('GCAL_ID_RE_INSPECTION',''),
+              '%%GCAL_ID_INSURANCE_ADJUSTMENT%%': os.environ.get('GCAL_ID_INSURANCE_ADJUSTMENT',''),
+              '%%GCAL_ID_INTERIOR_INS_ADJ%%': os.environ.get('GCAL_ID_INTERIOR_INS_ADJ',''),
+              '%%GCAL_ID_FORENSIC%%':         os.environ.get('GCAL_ID_FORENSIC',''),
+              '%%GCAL_ID_ENGINEER%%':         os.environ.get('GCAL_ID_ENGINEER',''),
+              '%%GCAL_ID_ON_ROOF%%':          os.environ.get('GCAL_ID_ON_ROOF',''),
+              '%%GCAL_ID_INTERIOR_INSP%%':    os.environ.get('GCAL_ID_INTERIOR_INSP',''),
+              '%%GCAL_ID_SHINGLE_PULL%%':     os.environ.get('GCAL_ID_SHINGLE_PULL',''),
+              '%%GCAL_ID_VIDEO_REPAIR%%':     os.environ.get('GCAL_ID_VIDEO_REPAIR',''),
+              '%%GCAL_ID_2ND_VIDEO_REPAIR%%': os.environ.get('GCAL_ID_2ND_VIDEO_REPAIR',''),
+              '%%GCAL_ID_LEAK_SOURCE%%':      os.environ.get('GCAL_ID_LEAK_SOURCE',''),
+              '%%GOOGLE_OAUTH_CLIENT_ID%%':   os.environ.get('GOOGLE_OAUTH_CLIENT_ID',''),
+          }
+          for placeholder, value in replacements.items():
+              content = content.replace(placeholder, value)
+          with open('index.html', 'w', encoding='utf-8') as f:
+              f.write(content)
+          size_kb = len(content.encode('utf-8')) // 1024
+          print(f"Done. Output size: {size_kb}KB")
+          remaining = content.count('%%')
+          if remaining:
+              print(f"WARNING: {remaining} %% markers still in output")
+          PYEOF
 
-      - name: Verify no placeholders remain
+      - name: Verify output size
         run: |
-          if grep -q '%%' index.html; then
-            echo "ERROR: Unfilled placeholders found in index.html"
-            grep '%%' index.html
+          SIZE=$(wc -c < index.html)
+          echo "index.html size: ${SIZE} bytes"
+          if [ "$SIZE" -lt 100000 ]; then
+            echo "ERROR: index.html is too small - injection likely failed"
             exit 1
           fi
-          echo "OK: All placeholders filled"
+          echo "OK: file size looks good"
 
       - name: Deploy to GitHub Pages
         run: |
-          # Copy generated index.html into a clean deploy folder
           mkdir -p deploy
           cp index.html deploy/index.html
-          # Copy logo and other static assets
           cp "TC_White_Logo_2025__2_.png" deploy/ 2>/dev/null || true
-
           cd deploy
           git init
           git config user.name  "github-actions[bot]"
