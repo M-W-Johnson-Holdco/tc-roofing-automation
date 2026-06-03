@@ -2987,18 +2987,6 @@ function calcUpgradesTotal() {
   if (el) el.value = total > 0 ? total.toFixed(2) : '';
 }
 </script><script>
-function calcUpgradesTotal() {
-  var total = 0;
-  document.querySelectorAll('.upgrade-cost').forEach(function(inp) {
-    var v = parseFloat(inp.value.replace(/[^0-9.-]/g,'')) || 0;
-    total += v;
-  });
-  var el = document.getElementById('upgrades-total');
-  if (el) el.value = total > 0 ? '
-</html>
- + total.toFixed(2) : '';
-}
-</script><script>
 document.addEventListener('input', function(e) {
   if (e.target.tagName === 'TEXTAREA') {
     e.target.style.height = 'auto';
@@ -3386,17 +3374,7 @@ function calcUpgradesTotal() {
 }
 
 
-function calcUpgradesTotal() {
-  var total = 0;
-  document.querySelectorAll('.upgrade-cost').forEach(function(inp) {
-    var v = parseFloat(inp.value.replace(/[^0-9.-]/g,'')) || 0;
-    total += v;
-  });
-  var el = document.getElementById('upgrades-total');
-  if (el) el.value = total > 0 ? '
-</html>
- + total.toFixed(2) : '';
-}
+
 
 
 document.addEventListener('input', function(e) {
