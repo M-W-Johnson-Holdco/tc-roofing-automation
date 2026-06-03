@@ -6295,72 +6295,109 @@ function woSetAllFields(data) {
 }
 
 // ── INSURANCE ESTIMATE TRADES TABLE ──────────────────────────────────────
-var WO_TRADE_OPTS = '<option value="">Select...</option><option>Chimney</option><option>Collateral Dump</option><option>Deck/Porch</option><option>Door</option><option>Exterior Painting</option><option>Fascia &amp; Soffit</option><option>Fence</option><option>Flat Roofing</option><option>Flooring</option><option>Garage</option><option>Gazebo</option><option>Gutters</option><option>HVAC</option><option>Interior</option><option>Lighting</option><option>Metal Roofing</option><option>Pergola</option><option>Personal Items</option><option>Siding</option><option>Skylight</option><option>Solar Panels</option><option>Windows</option>';
+var WO_TRADE_OPTS = "<option value="">Select...</option><option>Chimney</option><option>Collateral Dump</option><option>Deck/Porch</option><option>Door</option><option>Exterior Painting</option><option>Fascia &amp; Soffit</option><option>Fence</option><option>Flat Roofing</option><option>Flooring</option><option>Garage</option><option>Gazebo</option><option>Gutters</option><option>HVAC</option><option>Interior</option><option>Lighting</option><option>Metal Roofing</option><option>Pergola</option><option>Personal Items</option><option>Siding</option><option>Skylight</option><option>Solar Panels</option><option>Windows</option>";
 
 function woMakeTradeRow(isMerged) {
-  var tr = document.createElement('tr');
-  tr.setAttribute('data-merged', isMerged ? '1' : '0');
+  var tr = document.createElement("tr");
+  tr.setAttribute("data-merged", isMerged ? "1" : "0");
 
-  var tdS  = 'border:1px solid #888;padding:2px 3px;vertical-align:middle;';
-  var selS = 'width:100%;font-size:10px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;';
-  var taS  = 'width:100%;resize:none;overflow:hidden;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;line-height:1.4;min-height:18px;display:block;';
-  var inS  = 'width:100%;text-align:center;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;';
-  var cbS  = 'display:inline-block;width:14px;height:14px;border:1.5px solid #333;cursor:pointer;font-size:10px;line-height:13px;text-align:center;vertical-align:middle;border-radius:2px;user-select:none;';
+  var tdS  = "border:1px solid #888;padding:2px 3px;vertical-align:middle;";
+  var selS = "width:100%;font-size:10px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;";
+  var taS  = "width:100%;resize:none;overflow:hidden;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;line-height:1.4;min-height:18px;display:block;";
+  var inS  = "width:100%;text-align:center;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;";
+  var cbS  = "display:inline-block;width:14px;height:14px;border:1.5px solid #333;cursor:pointer;font-size:10px;line-height:13px;text-align:center;vertical-align:middle;border-radius:2px;user-select:none;";
 
-  // Trade cell (spans multiple rows when merged)
-  var tradeTd = document.createElement('td');
-  tradeTd.style.cssText = tdS + 'text-align:center;';
-  tradeTd.setAttribute('data-role', 'trade-cell');
-  tradeTd.innerHTML = '<select style="' + selS + '" class="wo-trade-field" data-col="trade">' + WO_TRADE_OPTS + '</select>';
+  // Trade cell
+  var tradeTd = document.createElement("td");
+  tradeTd.style.cssText = tdS + "text-align:center;";
+  tradeTd.setAttribute("data-role", "trade-cell");
+  var sel = document.createElement("select");
+  sel.style.cssText = selS;
+  sel.className = "wo-trade-field";
+  sel.setAttribute("data-col", "trade");
+  sel.innerHTML = WO_TRADE_OPTS;
+  tradeTd.appendChild(sel);
   tr.appendChild(tradeTd);
 
-  // Description — merge toggle lives here as a small button on the left
-  var descTd = document.createElement('td');
+  // Description cell with merge button
+  var descTd = document.createElement("td");
   descTd.style.cssText = tdS;
-  descTd.innerHTML =
-    '<div style="display:flex;align-items:flex-start;gap:3px;">' +
-      '<button type="button" class="wo-merge-btn" title="Merge with trade above" ' +
-        'style="flex-shrink:0;font-size:9px;padding:0 3px;line-height:14px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;margin-top:1px;" ' +
-        'onclick="woToggleMerge(this.closest('tr'))">⛓</button>' +
-      '<textarea rows="1" style="' + taS + 'flex:1;" class="wo-trade-field" data-col="desc" ' +
-        'oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"></textarea>' +
-    '</div>';
+  var descWrap = document.createElement("div");
+  descWrap.style.cssText = "display:flex;align-items:flex-start;gap:3px;";
+  var mergeBtn = document.createElement("button");
+  mergeBtn.type = "button";
+  mergeBtn.className = "wo-merge-btn";
+  mergeBtn.title = "Merge with trade above";
+  mergeBtn.textContent = "⛓";
+  mergeBtn.style.cssText = "flex-shrink:0;font-size:9px;padding:0 3px;line-height:14px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;margin-top:1px;";
+  mergeBtn.addEventListener("click", function() { woToggleMerge(this.closest("tr")); });
+  var descTa = document.createElement("textarea");
+  descTa.rows = 1;
+  descTa.style.cssText = taS + "flex:1;";
+  descTa.className = "wo-trade-field";
+  descTa.setAttribute("data-col", "desc");
+  descTa.addEventListener("input", function() { this.style.height="auto"; this.style.height=this.scrollHeight+"px"; });
+  descWrap.appendChild(mergeBtn);
+  descWrap.appendChild(descTa);
+  descTd.appendChild(descWrap);
   tr.appendChild(descTd);
 
   // RCV
-  var rcvTd = document.createElement('td');
-  rcvTd.style.cssText = tdS + 'text-align:center;';
-  rcvTd.innerHTML = '<input type="text" value="$0.00" style="' + inS + '" class="wo-trade-field wo-currency" data-col="rcv" oninput="woRowCalc(this.closest('tr'));woCalcTotals();">';
+  var rcvTd = document.createElement("td");
+  rcvTd.style.cssText = tdS + "text-align:center;";
+  var rcvIn = document.createElement("input");
+  rcvIn.type = "text"; rcvIn.value = "$0.00"; rcvIn.style.cssText = inS;
+  rcvIn.className = "wo-trade-field wo-currency"; rcvIn.setAttribute("data-col","rcv");
+  rcvIn.addEventListener("input", function() { woRowCalc(this.closest("tr")); woCalcTotals(); });
+  rcvTd.appendChild(rcvIn);
   tr.appendChild(rcvTd);
 
   // Depreciation
-  var depTd = document.createElement('td');
-  depTd.style.cssText = tdS + 'text-align:center;';
-  depTd.innerHTML = '<input type="text" value="$0.00" style="' + inS + '" class="wo-trade-field wo-currency" data-col="dep" oninput="woRowCalc(this.closest('tr'));woCalcTotals();">';
+  var depTd = document.createElement("td");
+  depTd.style.cssText = tdS + "text-align:center;";
+  var depIn = document.createElement("input");
+  depIn.type = "text"; depIn.value = "$0.00"; depIn.style.cssText = inS;
+  depIn.className = "wo-trade-field wo-currency"; depIn.setAttribute("data-col","dep");
+  depIn.addEventListener("input", function() { woRowCalc(this.closest("tr")); woCalcTotals(); });
+  depTd.appendChild(depIn);
   tr.appendChild(depTd);
 
-  // ACV (auto-calculated)
-  var acvTd = document.createElement('td');
-  acvTd.style.cssText = tdS + 'text-align:center;background:#fafaf5;';
-  acvTd.innerHTML = '<input type="text" value="$0.00" style="' + inS + 'background:transparent;" class="wo-trade-field wo-currency" data-col="acv" readonly tabindex="-1">';
+  // ACV
+  var acvTd = document.createElement("td");
+  acvTd.style.cssText = tdS + "text-align:center;background:#fafaf5;";
+  var acvIn = document.createElement("input");
+  acvIn.type = "text"; acvIn.value = "$0.00"; acvIn.style.cssText = inS + "background:transparent;";
+  acvIn.className = "wo-trade-field wo-currency"; acvIn.setAttribute("data-col","acv");
+  acvIn.readOnly = true; acvIn.tabIndex = -1;
+  acvTd.appendChild(acvIn);
   tr.appendChild(acvTd);
 
   // Work Not Doing
-  var wndTd = document.createElement('td');
-  wndTd.style.cssText = tdS + 'text-align:center;';
-  wndTd.innerHTML = '<span class="wo-cb wo-trade-field" data-col="wnd" style="' + cbS + '"></span>';
+  var wndTd = document.createElement("td");
+  wndTd.style.cssText = tdS + "text-align:center;";
+  var wndCb = document.createElement("span");
+  wndCb.className = "wo-cb wo-trade-field"; wndCb.setAttribute("data-col","wnd");
+  wndCb.style.cssText = cbS;
+  wndTd.appendChild(wndCb);
   tr.appendChild(wndTd);
 
   // Execute Trade
-  var execTd = document.createElement('td');
-  execTd.style.cssText = tdS + 'text-align:center;';
-  execTd.innerHTML = '<span class="wo-cb wo-trade-field" data-col="exec" style="' + cbS + '"></span>';
+  var execTd = document.createElement("td");
+  execTd.style.cssText = tdS + "text-align:center;";
+  var execCb = document.createElement("span");
+  execCb.className = "wo-cb wo-trade-field"; execCb.setAttribute("data-col","exec");
+  execCb.style.cssText = cbS;
+  execTd.appendChild(execCb);
   tr.appendChild(execTd);
 
   // Notes
-  var notesTd = document.createElement('td');
+  var notesTd = document.createElement("td");
   notesTd.style.cssText = tdS;
-  notesTd.innerHTML = '<textarea rows="1" style="' + taS + '" class="wo-trade-field" data-col="notes" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"></textarea>';
+  var notesTa = document.createElement("textarea");
+  notesTa.rows = 1; notesTa.style.cssText = taS;
+  notesTa.className = "wo-trade-field"; notesTa.setAttribute("data-col","notes");
+  notesTa.addEventListener("input", function() { this.style.height="auto"; this.style.height=this.scrollHeight+"px"; });
+  notesTd.appendChild(notesTa);
   tr.appendChild(notesTd);
 
   return tr;
