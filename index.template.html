@@ -1476,9 +1476,10 @@ function calc(){try{
   const ventTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desired,0);
   rows.push({name:'Ventilation',selName:'Mixed (see counts)',upgCost:ventUpgradeCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:ventUpgradeCost===0});
 
-  // Discount — never changes Grand Total, Total Upgrade Cost, or Total Price Charged
+  // Discount — only subtracts from total price charged (not from upgrade cost)
   const disc=upgradesDiscount||0;
-  const grandTotal=totHOCharge;
+  const netCharged=totHOCharge-disc;
+  const grandTotal=netCharged;
   const commRate=claimMode==='dap'?0.33:1.00;
   const upgComm=totComm*commRate;
   const rateLbl=document.getElementById('comm-rate-lbl');
@@ -1488,21 +1489,17 @@ function calc(){try{
   document.getElementById('c-matcost').textContent=fmt(totUpgradeCost);
   document.getElementById('c-charged').textContent=fmt(totHOCharge);
 
-  // Credited rows — show only when discount entered
+  // Credited row — discount only shown against price charged, never against cost
   const showDisc=disc>0;
   const ccostRow=document.getElementById('c-credited-cost-row');
   const cchgRow=document.getElementById('c-credited-charged-row');
-  if(ccostRow) ccostRow.style.display=showDisc?'flex':'none';
+  if(ccostRow) ccostRow.style.display='none'; // discount never applies to cost
   if(cchgRow) cchgRow.style.display=showDisc?'flex':'none';
-  const ccostVal=document.getElementById('c-credited-cost');
   const cchgVal=document.getElementById('c-credited-charged');
-  if(ccostVal) ccostVal.textContent='-'+fmt(disc);
   if(cchgVal) cchgVal.textContent='-'+fmt(disc);
 
-  // Gross margin = (Price Charged - Credited Price) - (Upgrade Cost - Credited Cost)
-  const netCharged=totHOCharge-disc;
-  const netCost=totUpgradeCost-disc;
-  const margin2=netCharged-netCost;
+  // Gross margin = (Price Charged - Discount) - Upgrade Cost
+  const margin2=netCharged-totUpgradeCost;
   document.getElementById('c-margin').textContent=fmt(margin2);
   document.getElementById('c-total-comm').textContent=fmt(upgComm);
 
