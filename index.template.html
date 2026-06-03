@@ -2224,98 +2224,90 @@ async function fetchJobData(){
   </table>
 
   <!-- VENTILATION + RED NOTE -->
-  <div style="display:flex; gap:8px; margin-bottom:8px; align-items:flex-start;">
-
-    <!-- Left col: vent labels, existing, desired, color -->
-    <div style="flex:1;">
-      <div style="margin-bottom:4px;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-          <span style="font-weight:700;font-size:12px;">VENTILATION</span>
-          <button type="button" onclick="woSyncVentFromCalc()" style="font-size:9px;padding:1px 6px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;" title="Copy existing counts from Commissions Calculator">⟳ Sync from Calc</button>
-        </div>
-        <div style="display:grid;grid-template-columns:120px 58px 80px 70px 70px 90px;gap:4px;align-items:center;">
-          <div></div>
-          <div style="font-style:italic;font-size:10px;text-align:center;">EXISTING</div>
-          <div style="font-style:italic;font-size:10px;text-align:center;">DESIRED EXISTING</div>
-          <div style="font-style:italic;font-size:10px;text-align:center;">DESIRED EXISTING R&amp;R COVER</div>
-          <div style="font-style:italic;font-size:10px;text-align:center;">DESIRED NEW</div>
-          <div style="font-style:italic;font-size:10px;text-align:center;">COLOR</div>
-
-          <span style="font-size:11px;">Ridge Vent (FT)</span>
-          <textarea id="wo-f16" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <textarea id="wo-vent-de-ridge" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-          <textarea id="wo-f17" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <select id="wo-f18" class="color-sel" style="width:100%;font-size:10px;">
-            <option value="">Color...</option>
-            <option>Black</option>
-            <option>Brown</option>
-            <option>Gray</option>
-            <option>Mill/Silver</option>
-            <option>Shingle Match</option>
-          </select>
-
-          <span style="font-size:11px;">Box Vents</span>
-          <textarea id="wo-f19" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <textarea id="wo-vent-de-box" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-          <textarea id="wo-f20" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-
-          <span style="font-size:11px;">Dome Vents</span>
-          <textarea id="wo-f21" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <textarea id="wo-vent-de-dome" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-          <textarea id="wo-f22" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-
-          <span style="font-size:11px;">Power Vents</span>
-          <textarea id="wo-f23" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <textarea id="wo-vent-de-power" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <textarea id="wo-vent-de-power-cover" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <textarea id="wo-f24" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-
-          <span style="font-size:11px;">Solar Power Vents</span>
-          <textarea id="wo-f25" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <textarea id="wo-vent-de-solar" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-          <textarea id="wo-f26" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-
-          <span style="font-size:11px;">Turbine</span>
-          <textarea id="wo-f27" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <textarea id="wo-vent-de-turbine" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-          <textarea id="wo-f28" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
-          <div></div>
-        </div>
-      </div>
+  <div style="margin-bottom:8px;">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+      <span style="font-weight:700;font-size:12px;">VENTILATION</span>
+      <button type="button" onclick="woSyncVentFromCalc()" style="font-size:9px;padding:1px 6px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;" title="Copy existing counts from Commissions Calculator">⟳ Sync from Calc</button>
     </div>
+    <!-- unified grid: label | exist | des-exist | R&R cover | des-new | color | upgrade-cost -->
+    <div style="display:grid;grid-template-columns:120px 58px 80px 70px 70px 90px 8px 98px;gap:4px;align-items:center;">
+      <!-- header row -->
+      <div></div>
+      <div style="font-style:italic;font-size:10px;text-align:center;">EXISTING</div>
+      <div style="font-style:italic;font-size:10px;text-align:center;">DESIRED EXISTING</div>
+      <div style="font-style:italic;font-size:10px;text-align:center;">DESIRED EXISTING R&amp;R COVER</div>
+      <div style="font-style:italic;font-size:10px;text-align:center;">DESIRED NEW</div>
+      <div style="font-style:italic;font-size:10px;text-align:center;">COLOR</div>
+      <div></div>
+      <div style="font-style:italic;font-size:10px;text-align:center;">UPGRADE COST</div>
 
-    <!-- Right col: upgrade costs -->
-    <div style="width:100px;">
-      <div style="font-style:italic;font-size:11px;text-align:right;margin-bottom:4px;">UPGRADE COST</div>
-      <div style="margin-bottom:3px;height:22px;display:flex;align-items:center;justify-content:flex-end;">
-        <textarea id="wo-f29" class="fi upgrade-cost currency" rows="1" style="width:98px;" oninput="calcUpgradesTotal()"></textarea>
-      </div>
-      <div style="margin-bottom:3px;height:22px;display:flex;align-items:center;justify-content:flex-end;">
-        <textarea id="wo-f30" class="fi upgrade-cost currency" rows="1" style="width:98px;" oninput="calcUpgradesTotal()"></textarea>
-      </div>
-      <div style="margin-bottom:3px;height:22px;display:flex;align-items:center;justify-content:flex-end;">
-        <textarea id="wo-f31" class="fi upgrade-cost currency" rows="1" style="width:98px;" oninput="calcUpgradesTotal()"></textarea>
-      </div>
-      <div style="margin-bottom:3px;height:22px;display:flex;align-items:center;justify-content:flex-end;">
-        <textarea id="wo-f32" class="fi upgrade-cost currency" rows="1" style="width:98px;" oninput="calcUpgradesTotal()"></textarea>
-      </div>
-      <div style="margin-bottom:3px;height:22px;display:flex;align-items:center;justify-content:flex-end;">
-        <textarea id="wo-f33" class="fi upgrade-cost currency" rows="1" style="width:98px;" oninput="calcUpgradesTotal()"></textarea>
-      </div>
-      <div style="margin-bottom:3px;height:22px;display:flex;align-items:center;justify-content:flex-end;">
-        <textarea id="wo-f34" class="fi upgrade-cost currency" rows="1" style="width:98px;" oninput="calcUpgradesTotal()"></textarea>
-      </div>
+      <!-- Ridge Vent -->
+      <span style="font-size:11px;">Ridge Vent (FT)</span>
+      <textarea id="wo-f16" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <textarea id="wo-vent-de-ridge" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <textarea id="wo-f17" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <select id="wo-f18" class="color-sel" style="width:100%;font-size:10px;">
+        <option value="">Color...</option>
+        <option>Black</option>
+        <option>Brown</option>
+        <option>Gray</option>
+        <option>Mill/Silver</option>
+        <option>Shingle Match</option>
+      </select>
+      <div></div>
+      <textarea id="wo-f29" class="fi upgrade-cost currency" rows="1" style="width:100%;box-sizing:border-box;" oninput="calcUpgradesTotal()"></textarea>
+
+      <!-- Box Vents -->
+      <span style="font-size:11px;">Box Vents</span>
+      <textarea id="wo-f19" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <textarea id="wo-vent-de-box" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <textarea id="wo-f20" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <div></div>
+      <textarea id="wo-f30" class="fi upgrade-cost currency" rows="1" style="width:100%;box-sizing:border-box;" oninput="calcUpgradesTotal()"></textarea>
+
+      <!-- Dome Vents -->
+      <span style="font-size:11px;">Dome Vents</span>
+      <textarea id="wo-f21" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <textarea id="wo-vent-de-dome" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <textarea id="wo-f22" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <div></div>
+      <textarea id="wo-f31" class="fi upgrade-cost currency" rows="1" style="width:100%;box-sizing:border-box;" oninput="calcUpgradesTotal()"></textarea>
+
+      <!-- Power Vents -->
+      <span style="font-size:11px;">Power Vents</span>
+      <textarea id="wo-f23" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <textarea id="wo-vent-de-power" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <textarea id="wo-vent-de-power-cover" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <textarea id="wo-f24" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <div></div>
+      <textarea id="wo-f32" class="fi upgrade-cost currency" rows="1" style="width:100%;box-sizing:border-box;" oninput="calcUpgradesTotal()"></textarea>
+
+      <!-- Solar Power Vents -->
+      <span style="font-size:11px;">Solar Power Vents</span>
+      <textarea id="wo-f25" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <textarea id="wo-vent-de-solar" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <textarea id="wo-f26" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <div></div>
+      <textarea id="wo-f33" class="fi upgrade-cost currency" rows="1" style="width:100%;box-sizing:border-box;" oninput="calcUpgradesTotal()"></textarea>
+
+      <!-- Turbine -->
+      <span style="font-size:11px;">Turbine</span>
+      <textarea id="wo-f27" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <textarea id="wo-vent-de-turbine" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <textarea id="wo-f28" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+      <div></div>
+      <div></div>
+      <textarea id="wo-f34" class="fi upgrade-cost currency" rows="1" style="width:100%;box-sizing:border-box;" oninput="calcUpgradesTotal()"></textarea>
     </div>
-
   </div>
 <!-- WARRANTIES -->
   <div style="margin-bottom:6px;">
