@@ -1690,6 +1690,23 @@ async function fetchJobData(){
   </div>
 
   <div class="section" id="tab-workorder">
+  <div class="card" style="margin-bottom:16px;">
+    <h2 style="margin-bottom:14px;">Work Order</h2>
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+      <div style="flex:1;min-width:160px;">
+        <label>Job Number</label>
+        <input type="text" id="wo-job-input" placeholder="e.g. 2025-0142" style="width:100%;">
+      </div>
+      <button class="btn btn-secondary" onclick="woLoad()">📂 Load</button>
+      <button class="btn btn-primary wo-admin-only" onclick="woSave()">💾 Save</button>
+      <button class="btn btn-warn wo-admin-only" onclick="woClear()">🗑️ Clear Form</button>
+    </div>
+    <div id="wo-status" style="margin-top:10px;font-size:0.8rem;min-height:18px;"></div>
+  </div>
+<style>
+  #wo-status.ok  { color:#8DC63F; }
+  #wo-status.err { color:#fca5a5; }
+</style>
 <style>
 /* Work Order styles — scoped to .wo-frame-wrap */
 .wo-frame-wrap { background: #e0e0e0; padding: 0; overflow-x: auto; }
@@ -3752,6 +3769,7 @@ function completeLogin(googleEmail, googleName, gsToken) {
     if (badge) badge.textContent = "👤 " + currentUser + " (" + currentUserRole + ")";
 
     applyRolePermissions(currentUserRole);
+    woApplyRole(currentUserRole);
     addSignOutButton();
 
   }).catch(function(e) {
@@ -3799,6 +3817,7 @@ function initGoogleAuth() {
     var badge = document.querySelector("header .badge");
     if (badge) badge.textContent = "👤 " + currentUser + " (" + currentUserRole + ")";
     applyRolePermissions(currentUserRole);
+    woApplyRole(currentUserRole);
     addSignOutButton();
     return;
   }
@@ -6342,6 +6361,31 @@ function woSave() {
     if (!r.ok) return r.text().then(function(txt) { throw new Error('Save failed: ' + txt); });
     woStatus('✓ Work order saved for job ' + jobNum + ' at ' + new Date().toLocaleTimeString(), true);
   }).catch(function(e) { woStatus('Error saving: ' + e.message, false); });
+}
+
+function woClear() {
+  if (!confirm('Clear all work order fields? This cannot be undone.')) return;
+  var inputs = document.querySelectorAll('#tab-workorder input, #tab-workorder textarea, #tab-workorder select');
+  inputs.forEach(function(el) {
+    if (el.id === 'wo-job-input') return;
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  ['sig-c1','sig-c2','sig-c3','sig-h1','sig-h2','sig-pm','sig-ppa','init-1','init-2','init-3','init-4'].forEach(function(id) {
+    var c = document.getElementById(id);
+    if (c && c.tagName === 'CANVAS') c.getContext('2d').clearRect(0,0,c.width,c.height);
+  });
+  document.querySelectorAll('#tab-workorder .cb').forEach(function(cb) {
+    cb.classList.remove('checked'); cb.textContent = '';
+  });
+  woStatus('Form cleared.', true);
+}
+
+function woApplyRole(role) {
+  var isAdmin = (role === 'admin');
+  document.querySelectorAll('.wo-admin-only').forEach(function(el) {
+    el.style.display = isAdmin ? '' : 'none';
+  });
 }
 
 // Work Order document JS (wrapped to avoid conflicts)
