@@ -2426,14 +2426,14 @@ async function fetchJobData(){
       </colgroup>
       <thead>
         <tr style="background:#9fc45a;">
-          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">TRADE</th>
-          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">DESCRIPTION</th>
-          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">RCV*</th>
-          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">DEPRECIATION</th>
-          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">ACV</th>
-          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">WORK NOT<br>DOING</th>
-          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">EXECUTE<br>TRADE</th>
-          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">NOTES</th>
+          <th style="border:1px solid #555;padding:5px 3px;font-weight:700;text-align:center;font-size:10px;">TRADE</th>
+          <th style="border:1px solid #555;padding:5px 3px;font-weight:700;text-align:center;font-size:10px;">DESCRIPTION</th>
+          <th style="border:1px solid #555;padding:5px 3px;font-weight:700;text-align:center;font-size:9px;">RCV*</th>
+          <th style="border:1px solid #555;padding:5px 3px;font-weight:700;text-align:center;font-size:8px;">DEPRECIATION</th>
+          <th style="border:1px solid #555;padding:5px 3px;font-weight:700;text-align:center;font-size:9px;">ACV</th>
+          <th style="border:1px solid #555;padding:5px 3px;font-weight:700;text-align:center;font-size:8px;">WORK NOT<br>DOING</th>
+          <th style="border:1px solid #555;padding:5px 3px;font-weight:700;text-align:center;font-size:8px;">EXECUTE<br>TRADE</th>
+          <th style="border:1px solid #555;padding:5px 3px;font-weight:700;text-align:center;font-size:10px;">NOTES</th>
         </tr>
       </thead>
       <tbody id="wo-trades-tbody">
@@ -6291,37 +6291,112 @@ function woSetAllFields(data) {
 }
 
 // ── INSURANCE ESTIMATE TRADES TABLE ──────────────────────────────────────
-function woMakeTradeRow() {
+function woMakeTradeRow(isMerged) {
   var tr = document.createElement('tr');
-  var tdS = 'border:1px solid #888;padding:2px 3px;vertical-align:top;';
-  var taS = 'width:100%;resize:none;overflow:hidden;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;line-height:1.4;min-height:18px;';
-  var inS = 'width:100%;text-align:center;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;';
-  var cbS = 'display:inline-block;width:14px;height:14px;border:1px solid #000;cursor:pointer;font-size:9px;line-height:14px;text-align:center;';
-  tr.innerHTML =
-    '<td style="'+tdS+'"><textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="trade" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea></td>' +
-    '<td style="'+tdS+'"><textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="desc" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea></td>' +
-    '<td style="'+tdS+'text-align:center;"><input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="rcv" oninput="woCalcTotals()"></td>' +
-    '<td style="'+tdS+'text-align:center;"><input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="dep" oninput="woCalcTotals()"></td>' +
-    '<td style="'+tdS+'text-align:center;"><input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="acv" oninput="woCalcTotals()"></td>' +
-    '<td style="'+tdS+'text-align:center;"><span class="cb wo-trade-field" data-col="wnd" style="'+cbS+'" onclick="this.classList.toggle(\'checked\');this.textContent=this.classList.contains(\'checked\')?\' ✓\':\'\';"></span></td>' +
-    '<td style="'+tdS+'text-align:center;"><span class="cb wo-trade-field" data-col="exec" style="'+cbS+'" onclick="this.classList.toggle(\'checked\');this.textContent=this.classList.contains(\'checked\')?\' ✓\':\'\';"></span></td>' +
-    '<td style="'+tdS+'"><textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="notes" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea></td>';
+  tr.setAttribute('data-merged', isMerged ? '1' : '0');
+
+  var tdS  = 'border:1px solid #888;padding:2px 3px;vertical-align:top;';
+  var taS  = 'width:100%;resize:none;overflow:hidden;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;line-height:1.4;min-height:18px;display:block;';
+  var inS  = 'width:100%;text-align:center;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;';
+  var cbS  = 'display:inline-block;width:14px;height:14px;border:1.5px solid #333;cursor:pointer;font-size:10px;line-height:13px;text-align:center;vertical-align:middle;border-radius:2px;user-select:none;';
+  var btnS = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #999;border-radius:2px;background:#f0f0f0;margin-top:2px;display:block;width:100%;';
+
+  // Trade cell — hidden when row is merged (handled by woRebuildRowspans)
+  var tradeTd = document.createElement('td');
+  tradeTd.style.cssText = tdS;
+  tradeTd.setAttribute('data-role','trade-cell');
+  tradeTd.innerHTML =
+    '<textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="trade" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea>' +
+    '<button type="button" style="'+btnS+'" onclick="woToggleMerge(this)">⬆ merge</button>';
+  tr.appendChild(tradeTd);
+
+  // Description
+  var descTd = document.createElement('td');
+  descTd.style.cssText = tdS;
+  descTd.innerHTML = '<textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="desc" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea>';
+  tr.appendChild(descTd);
+
+  // RCV
+  var rcvTd = document.createElement('td');
+  rcvTd.style.cssText = tdS + 'text-align:center;';
+  rcvTd.innerHTML = '<input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="rcv" oninput="woRowCalc(this.closest(\'tr\'));woCalcTotals();">';
+  tr.appendChild(rcvTd);
+
+  // Depreciation
+  var depTd = document.createElement('td');
+  depTd.style.cssText = tdS + 'text-align:center;';
+  depTd.innerHTML = '<input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="dep" oninput="woRowCalc(this.closest(\'tr\'));woCalcTotals();">';
+  tr.appendChild(depTd);
+
+  // ACV (calculated: RCV - Dep, read-only)
+  var acvTd = document.createElement('td');
+  acvTd.style.cssText = tdS + 'text-align:center;background:#fafaf5;';
+  acvTd.innerHTML = '<input type="text" value="$0.00" style="'+inS+'background:transparent;" class="wo-trade-field wo-currency" data-col="acv" readonly tabindex="-1">';
+  tr.appendChild(acvTd);
+
+  // Work Not Doing checkbox
+  var wndTd = document.createElement('td');
+  wndTd.style.cssText = tdS + 'text-align:center;';
+  wndTd.innerHTML = '<span class="wo-cb wo-trade-field" data-col="wnd" style="'+cbS+'"></span>';
+  tr.appendChild(wndTd);
+
+  // Execute Trade checkbox
+  var execTd = document.createElement('td');
+  execTd.style.cssText = tdS + 'text-align:center;';
+  execTd.innerHTML = '<span class="wo-cb wo-trade-field" data-col="exec" style="'+cbS+'"></span>';
+  tr.appendChild(execTd);
+
+  // Notes
+  var notesTd = document.createElement('td');
+  notesTd.style.cssText = tdS;
+  notesTd.innerHTML = '<textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="notes" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea>';
+  tr.appendChild(notesTd);
+
   return tr;
+}
+
+// Checkbox click via delegation (avoids inline quote escaping issues)
+document.addEventListener('click', function(e) {
+  if (e.target.classList && e.target.classList.contains('wo-cb')) {
+    var cb = e.target;
+    var isChecked = cb.getAttribute('data-checked') === '1';
+    if (isChecked) {
+      cb.setAttribute('data-checked','0');
+      cb.textContent = '';
+      cb.style.background = '';
+    } else {
+      cb.setAttribute('data-checked','1');
+      cb.textContent = '✓';
+      cb.style.background = '#9fc45a';
+    }
+  }
+});
+
+// Per-row ACV = RCV - Depreciation
+function woRowCalc(tr) {
+  if (!tr) return;
+  var rcvEl = tr.querySelector('[data-col="rcv"]');
+  var depEl = tr.querySelector('[data-col="dep"]');
+  var acvEl = tr.querySelector('[data-col="acv"]');
+  if (!rcvEl || !depEl || !acvEl) return;
+  var rcv = parseFloat(rcvEl.value.replace(/[^0-9.-]/g,'')) || 0;
+  var dep = parseFloat(depEl.value.replace(/[^0-9.-]/g,'')) || 0;
+  acvEl.value = '$' + Math.max(0, rcv - dep).toFixed(2);
 }
 
 function woAddTradeRow() {
   var tbody = document.getElementById('wo-trades-tbody');
-  if (tbody) tbody.appendChild(woMakeTradeRow());
+  if (!tbody) return;
+  tbody.appendChild(woMakeTradeRow(false));
+  woRebuildRowspans();
 }
 
 function woCalcTotals() {
   var rcv = 0, dep = 0, acv = 0;
-  document.querySelectorAll('#wo-trades-tbody .wo-currency').forEach(function(inp) {
-    var v = parseFloat(inp.value.replace(/[^0-9.-]/g,'')) || 0;
-    var col = inp.getAttribute('data-col');
-    if (col === 'rcv') rcv += v;
-    if (col === 'dep') dep += v;
-    if (col === 'acv') acv += v;
+  document.querySelectorAll('#wo-trades-tbody tr').forEach(function(tr) {
+    rcv += parseFloat((tr.querySelector('[data-col="rcv"]')||{}).value||'0') || 0;
+    dep += parseFloat((tr.querySelector('[data-col="dep"]')||{}).value||'0') || 0;
+    acv += parseFloat((tr.querySelector('[data-col="acv"]')||{}).value||'0') || 0;
   });
   var fmt = function(n) { return '$' + n.toFixed(2); };
   var r = document.getElementById('wo-rcv-total'); if (r) r.textContent = fmt(rcv);
@@ -6329,13 +6404,73 @@ function woCalcTotals() {
   var a = document.getElementById('wo-acv-total'); if (a) a.textContent = fmt(acv);
 }
 
+// ── MERGE / UNMERGE ───────────────────────────────────────────────────────
+function woToggleMerge(btn) {
+  var tr = btn.closest('tr');
+  var tbody = document.getElementById('wo-trades-tbody');
+  if (!tbody) return;
+  var rows = Array.from(tbody.rows);
+  var idx = rows.indexOf(tr);
+  if (idx === 0) return; // can't merge first row upward
+  var isMerged = tr.getAttribute('data-merged') === '1';
+  tr.setAttribute('data-merged', isMerged ? '0' : '1');
+  woRebuildRowspans();
+}
+
+function woRebuildRowspans() {
+  var tbody = document.getElementById('wo-trades-tbody');
+  if (!tbody) return;
+  var rows = Array.from(tbody.rows);
+
+  // First pass: restore all trade cells (remove any hidden state)
+  rows.forEach(function(tr) {
+    var tc = tr.querySelector('[data-role="trade-cell"]');
+    if (tc) { tc.style.display = ''; tc.removeAttribute('rowspan'); }
+  });
+
+  // Second pass: apply rowspans for merge groups
+  var i = 0;
+  while (i < rows.length) {
+    var tr = rows[i];
+    var tc = tr.querySelector('[data-role="trade-cell"]');
+    // Count how many rows below are merged into this one
+    var span = 1;
+    var j = i + 1;
+    while (j < rows.length && rows[j].getAttribute('data-merged') === '1') {
+      var subTc = rows[j].querySelector('[data-role="trade-cell"]');
+      if (subTc) subTc.style.display = 'none';
+      span++;
+      j++;
+    }
+    if (tc) {
+      tc.rowSpan = span;
+      // Update merge button label
+      var btn = tc.querySelector('button');
+      if (btn) {
+        var isMerged = tr.getAttribute('data-merged') === '1';
+        btn.textContent = isMerged ? '⬆ unmerge' : '⬆ merge';
+      }
+    }
+    i = j;
+  }
+  // Update merge button labels for merged rows
+  rows.forEach(function(tr) {
+    var isMerged = tr.getAttribute('data-merged') === '1';
+    var tc = tr.querySelector('[data-role="trade-cell"]');
+    if (tc) {
+      var btn = tc.querySelector('button');
+      if (btn) btn.textContent = isMerged ? '↕ unmerge' : '⬆ merge';
+    }
+  });
+}
+
 function woSerializeTrades() {
   var rows = [];
   document.querySelectorAll('#wo-trades-tbody tr').forEach(function(tr) {
-    var row = {};
+    var row = { _merged: tr.getAttribute('data-merged') || '0' };
     tr.querySelectorAll('.wo-trade-field').forEach(function(el) {
       var col = el.getAttribute('data-col');
-      if (el.tagName === 'SPAN') row[col] = el.classList.contains('checked') ? '1' : '0';
+      if (el.classList.contains('wo-cb')) row[col] = el.getAttribute('data-checked') === '1' ? '1' : '0';
       else row[col] = el.value;
     });
     rows.push(row);
@@ -6352,30 +6487,36 @@ function woDeserializeTrades(jsonStr) {
   if (!tbody) return;
   tbody.innerHTML = '';
   var needed = Math.max(rows.length, 10);
-  for (var i = 0; i < needed; i++) tbody.appendChild(woMakeTradeRow());
+  for (var i = 0; i < needed; i++) tbody.appendChild(woMakeTradeRow(false));
   var trs = tbody.querySelectorAll('tr');
   rows.forEach(function(rowData, idx) {
     if (!trs[idx]) return;
+    trs[idx].setAttribute('data-merged', rowData._merged || '0');
     trs[idx].querySelectorAll('.wo-trade-field').forEach(function(el) {
       var col = el.getAttribute('data-col');
       if (!(col in rowData)) return;
-      if (el.tagName === 'SPAN') {
+      if (el.classList.contains('wo-cb')) {
         var chk = rowData[col] === '1';
-        el.classList.toggle('checked', chk);
+        el.setAttribute('data-checked', chk ? '1' : '0');
         el.textContent = chk ? '✓' : '';
+        el.style.background = chk ? '#9fc45a' : '';
       } else {
         el.value = rowData[col];
         if (el.tagName === 'TEXTAREA') { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
       }
     });
+    // Recalc ACV for loaded rows
+    woRowCalc(trs[idx]);
   });
+  woRebuildRowspans();
   woCalcTotals();
 }
 
 function woInitTradesTable() {
   var tbody = document.getElementById('wo-trades-tbody');
   if (!tbody || tbody.rows.length > 0) return;
-  for (var i = 0; i < 10; i++) tbody.appendChild(woMakeTradeRow());
+  for (var i = 0; i < 10; i++) tbody.appendChild(woMakeTradeRow(false));
+  woRebuildRowspans();
 }
 
 
