@@ -6291,69 +6291,77 @@ function woSetAllFields(data) {
 }
 
 // ── INSURANCE ESTIMATE TRADES TABLE ──────────────────────────────────────
+var WO_TRADE_OPTS = '<option value="">Select...</option><option>Chimney</option><option>Collateral Dump</option><option>Deck/Porch</option><option>Door</option><option>Exterior Painting</option><option>Fascia &amp; Soffit</option><option>Fence</option><option>Flat Roofing</option><option>Flooring</option><option>Garage</option><option>Gazebo</option><option>Gutters</option><option>HVAC</option><option>Interior</option><option>Lighting</option><option>Metal Roofing</option><option>Pergola</option><option>Personal Items</option><option>Siding</option><option>Skylight</option><option>Solar Panels</option><option>Windows</option>';
+
 function woMakeTradeRow(isMerged) {
   var tr = document.createElement('tr');
   tr.setAttribute('data-merged', isMerged ? '1' : '0');
 
-  var tdS  = 'border:1px solid #888;padding:2px 3px;vertical-align:top;';
+  var tdS  = 'border:1px solid #888;padding:2px 3px;vertical-align:middle;';
+  var selS = 'width:100%;font-size:10px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;';
   var taS  = 'width:100%;resize:none;overflow:hidden;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;line-height:1.4;min-height:18px;display:block;';
   var inS  = 'width:100%;text-align:center;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;';
   var cbS  = 'display:inline-block;width:14px;height:14px;border:1.5px solid #333;cursor:pointer;font-size:10px;line-height:13px;text-align:center;vertical-align:middle;border-radius:2px;user-select:none;';
-  var btnS = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #999;border-radius:2px;background:#f0f0f0;margin-top:2px;display:block;width:100%;';
 
-  // Trade cell — hidden when row is merged (handled by woRebuildRowspans)
+  // Trade cell (spans multiple rows when merged)
   var tradeTd = document.createElement('td');
-  tradeTd.style.cssText = tdS;
-  tradeTd.setAttribute('data-role','trade-cell');
-  tradeTd.innerHTML =
-    '<textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="trade" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea>' +
-    '<button type="button" style="'+btnS+'" onclick="woToggleMerge(this)">⬆ merge</button>';
+  tradeTd.style.cssText = tdS + 'text-align:center;';
+  tradeTd.setAttribute('data-role', 'trade-cell');
+  tradeTd.innerHTML = '<select style="' + selS + '" class="wo-trade-field" data-col="trade">' + WO_TRADE_OPTS + '</select>';
   tr.appendChild(tradeTd);
 
-  // Description
+  // Description — merge toggle lives here as a small button on the left
   var descTd = document.createElement('td');
   descTd.style.cssText = tdS;
-  descTd.innerHTML = '<textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="desc" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea>';
+  descTd.innerHTML =
+    '<div style="display:flex;align-items:flex-start;gap:3px;">' +
+      '<button type="button" class="wo-merge-btn" title="Merge with trade above" ' +
+        'style="flex-shrink:0;font-size:9px;padding:0 3px;line-height:14px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;margin-top:1px;" ' +
+        'onclick="woToggleMerge(this.closest('tr'))">⛓</button>' +
+      '<textarea rows="1" style="' + taS + 'flex:1;" class="wo-trade-field" data-col="desc" ' +
+        'oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"></textarea>' +
+    '</div>';
   tr.appendChild(descTd);
 
   // RCV
   var rcvTd = document.createElement('td');
   rcvTd.style.cssText = tdS + 'text-align:center;';
-  rcvTd.innerHTML = '<input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="rcv" oninput="woRowCalc(this.closest(\'tr\'));woCalcTotals();">';
+  rcvTd.innerHTML = '<input type="text" value="$0.00" style="' + inS + '" class="wo-trade-field wo-currency" data-col="rcv" oninput="woRowCalc(this.closest('tr'));woCalcTotals();">';
   tr.appendChild(rcvTd);
 
   // Depreciation
   var depTd = document.createElement('td');
   depTd.style.cssText = tdS + 'text-align:center;';
-  depTd.innerHTML = '<input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="dep" oninput="woRowCalc(this.closest(\'tr\'));woCalcTotals();">';
+  depTd.innerHTML = '<input type="text" value="$0.00" style="' + inS + '" class="wo-trade-field wo-currency" data-col="dep" oninput="woRowCalc(this.closest('tr'));woCalcTotals();">';
   tr.appendChild(depTd);
 
-  // ACV (calculated: RCV - Dep, read-only)
+  // ACV (auto-calculated)
   var acvTd = document.createElement('td');
   acvTd.style.cssText = tdS + 'text-align:center;background:#fafaf5;';
-  acvTd.innerHTML = '<input type="text" value="$0.00" style="'+inS+'background:transparent;" class="wo-trade-field wo-currency" data-col="acv" readonly tabindex="-1">';
+  acvTd.innerHTML = '<input type="text" value="$0.00" style="' + inS + 'background:transparent;" class="wo-trade-field wo-currency" data-col="acv" readonly tabindex="-1">';
   tr.appendChild(acvTd);
 
-  // Work Not Doing checkbox
+  // Work Not Doing
   var wndTd = document.createElement('td');
   wndTd.style.cssText = tdS + 'text-align:center;';
-  wndTd.innerHTML = '<span class="wo-cb wo-trade-field" data-col="wnd" style="'+cbS+'"></span>';
+  wndTd.innerHTML = '<span class="wo-cb wo-trade-field" data-col="wnd" style="' + cbS + '"></span>';
   tr.appendChild(wndTd);
 
-  // Execute Trade checkbox
+  // Execute Trade
   var execTd = document.createElement('td');
   execTd.style.cssText = tdS + 'text-align:center;';
-  execTd.innerHTML = '<span class="wo-cb wo-trade-field" data-col="exec" style="'+cbS+'"></span>';
+  execTd.innerHTML = '<span class="wo-cb wo-trade-field" data-col="exec" style="' + cbS + '"></span>';
   tr.appendChild(execTd);
 
   // Notes
   var notesTd = document.createElement('td');
   notesTd.style.cssText = tdS;
-  notesTd.innerHTML = '<textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="notes" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea>';
+  notesTd.innerHTML = '<textarea rows="1" style="' + taS + '" class="wo-trade-field" data-col="notes" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"></textarea>';
   tr.appendChild(notesTd);
 
   return tr;
 }
+
 
 // Checkbox click via delegation (avoids inline quote escaping issues)
 document.addEventListener('click', function(e) {
@@ -6405,13 +6413,13 @@ function woCalcTotals() {
 }
 
 // ── MERGE / UNMERGE ───────────────────────────────────────────────────────
-function woToggleMerge(btn) {
-  var tr = btn.closest('tr');
+function woToggleMerge(tr) {
+  if (!tr) return;
   var tbody = document.getElementById('wo-trades-tbody');
   if (!tbody) return;
   var rows = Array.from(tbody.rows);
   var idx = rows.indexOf(tr);
-  if (idx === 0) return; // can't merge first row upward
+  if (idx === 0) return; // can't merge first row — no row above
   var isMerged = tr.getAttribute('data-merged') === '1';
   tr.setAttribute('data-merged', isMerged ? '0' : '1');
   woRebuildRowspans();
@@ -6453,13 +6461,30 @@ function woRebuildRowspans() {
     }
     i = j;
   }
-  // Update merge button labels for merged rows
+  // Update merge button style to reflect state
   rows.forEach(function(tr) {
     var isMerged = tr.getAttribute('data-merged') === '1';
-    var tc = tr.querySelector('[data-role="trade-cell"]');
-    if (tc) {
-      var btn = tc.querySelector('button');
-      if (btn) btn.textContent = isMerged ? '↕ unmerge' : '⬆ merge';
+    var btn = tr.querySelector('.wo-merge-btn');
+    if (!btn) return;
+    if (isMerged) {
+      btn.textContent = '✂';
+      btn.title = 'Unmerge from trade above';
+      btn.style.background = '#d4edda';
+      btn.style.color = '#2a6632';
+      btn.style.borderColor = '#2a6632';
+    } else {
+      btn.textContent = '⛓';
+      btn.title = 'Merge with trade above';
+      btn.style.background = '#f0f0f0';
+      btn.style.color = '#555';
+      btn.style.borderColor = '#aaa';
+    }
+    // First row — disable merge (nothing above)
+    var tbody2 = document.getElementById('wo-trades-tbody');
+    if (tbody2 && tbody2.rows[0] === tr) {
+      btn.style.visibility = 'hidden';
+    } else {
+      btn.style.visibility = '';
     }
   });
 }
