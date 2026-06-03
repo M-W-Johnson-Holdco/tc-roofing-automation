@@ -2402,42 +2402,62 @@ async function fetchJobData(){
   </div>
 
   <div style="margin-top:60px;">
-    <p style="font-size:11px; font-weight:700; margin-bottom:10px;">If your insurance approves work beyond roofing (siding, gutters, etc.):</p>
-    <ul style="font-size:11px; padding-left:28px; margin-bottom:14px; line-height:1.8;">
-      <li><strong>Executing</strong> - Do the additional work</li>
-      <li><strong>Work Not Done (WND)</strong> - Funds can go toward your deductible/upgrades OR you keep the funds</li>
-    </ul>
 
-    <div style="font-weight:700; font-size:12px;">OTHER TRADES APPROVED BY INSURANCE</div>
-    <div style="font-style:italic; font-size:11px; margin-bottom:6px;">(See supplementary Insurance Estimate Quick Guide for more details)</div>
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+      <div style="font-weight:700; font-size:13px;">OTHER TRADES APPROVED BY INSURANCE</div>
+      <div style="font-size:11px; display:flex; align-items:center; gap:6px; white-space:nowrap;">
+        Insurance Estimate Date:
+        <textarea id="wo-ins-est-date" class="fi" rows="1" style="width:130px;resize:none;overflow:hidden;font-size:11px;border:1px solid #000;padding:2px 4px;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"></textarea>
+      </div>
+    </div>
 
-    <table class="green-table">
+    <input type="hidden" id="wo-trades-data">
+
+    <table id="wo-trades-table" style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed;">
+      <colgroup>
+        <col style="width:11%">
+        <col style="width:22%">
+        <col style="width:9%">
+        <col style="width:11%">
+        <col style="width:9%">
+        <col style="width:7%">
+        <col style="width:7%">
+        <col style="width:24%">
+      </colgroup>
       <thead>
-        <tr>
-          <th style="width:28%;">TRADE</th>
-          <th style="width:18%;">EXECUTING</th>
-          <th style="width:18%;">WORK NOT<br>DOING</th>
-          <th style="width:36%;">NOTES</th>
+        <tr style="background:#9fc45a;">
+          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">TRADE</th>
+          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">DESCRIPTION</th>
+          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">RCV*</th>
+          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">DEPRECIATION</th>
+          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">ACV</th>
+          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">WORK NOT<br>DOING</th>
+          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">EXECUTE<br>TRADE</th>
+          <th style="border:1px solid #555;padding:6px 4px;font-weight:700;text-align:center;font-size:11px;">NOTES</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><td class="trade-cell"><textarea id="wo-f48" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f49" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f50" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f51" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f52" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f53" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f54" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f55" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f56" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f57" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f58" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f59" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f60" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f61" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f62" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f63" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f64" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f65" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f66" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f67" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f68" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f69" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f70" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f71" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f72" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f73" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f74" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f75" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
-        <tr><td class="trade-cell"><textarea id="wo-f76" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><textarea id="wo-f77" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td></tr>
+      <tbody id="wo-trades-tbody">
       </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" style="border:1px solid #888;padding:5px 4px;font-weight:700;text-align:right;font-size:11px;">TOTAL</td>
+          <td id="wo-rcv-total" style="border:1px solid #888;padding:5px 4px;font-weight:700;text-align:center;background:#f5f5dc;">$0.00</td>
+          <td id="wo-dep-total" style="border:1px solid #888;padding:5px 4px;font-weight:700;text-align:center;background:#f5f5dc;">$0.00</td>
+          <td id="wo-acv-total" style="border:1px solid #888;padding:5px 4px;font-weight:700;text-align:center;background:#f5f5dc;">$0.00</td>
+          <td colspan="3" style="border:1px solid #888;"></td>
+        </tr>
+      </tfoot>
     </table>
+
+    <div style="margin-top:7px;">
+      <button type="button" onclick="woAddTradeRow()" style="font-size:11px;padding:3px 12px;cursor:pointer;background:#9fc45a;border:1px solid #555;border-radius:3px;font-weight:700;">+ Add Row</button>
+    </div>
+
+    <p style="font-size:10px;margin-top:12px;line-height:1.7;font-style:italic;">
+      Your insurance claim has approved additional trades besides the roof!<br>
+      Please review the information above and indicate your decision regarding the additional trades approved by your insurance claim.
+    </p>
+
   </div>
 
   <div class="page-footer">
@@ -3089,6 +3109,7 @@ function checkRidgeCapOnColorChange() {
   }
   window.clearSig = clearSigFn;
   document.addEventListener('DOMContentLoaded', function() {
+    woInitTradesTable();
     ['sig-c1','sig-c2','sig-c3','sig-h1','sig-h2','sig-pm','sig-ppa',
      'init-1','init-2','init-3','init-4'].forEach(initSig);
     document.querySelectorAll('.cb').forEach(function(cb) {
@@ -6210,7 +6231,7 @@ document.addEventListener("click", function(e){
 // =====================================================================
 // WORK ORDER TAB
 // =====================================================================
-var WO_FIELD_IDS = ['shingle-type', 'shingle-color', 'ridgecap-type', 'starter-type', 'underlayment-type', 'valley-type', 'warranty-sel', 'pd1', 'pa1', 'pp1', 'pb1', 'pd2', 'pa2', 'pp2', 'pb2', 'pd3', 'pa3', 'pp3', 'pb3', 'pd4', 'pa4', 'pp4', 'pb4', 'pd5', 'pa5', 'pp5', 'pb5', 'total-remaining', 'wo-f1', 'wo-f2', 'wo-f3', 'wo-f4', 'wo-f5', 'wo-f6', 'wo-f7', 'wo-f8', 'wo-f9', 'wo-f10', 'wo-f11', 'wo-f12', 'wo-f13', 'wo-f14', 'wo-f15', 'wo-f16', 'wo-f17', 'wo-f18', 'wo-f19', 'wo-f20', 'wo-f21', 'wo-f22', 'wo-f23', 'wo-f24', 'wo-f25', 'wo-f26', 'wo-f27', 'wo-f28', 'wo-f29', 'wo-f30', 'wo-f31', 'wo-f32', 'wo-f33', 'wo-f34', 'wo-f35', 'wo-f36', 'wo-f37', 'wo-f38', 'wo-f39', 'wo-f40', 'wo-f41', 'wo-f42', 'wo-f43', 'wo-f44', 'wo-f45', 'wo-f46', 'wo-f47', 'wo-f48', 'wo-f49', 'wo-f50', 'wo-f51', 'wo-f52', 'wo-f53', 'wo-f54', 'wo-f55', 'wo-f56', 'wo-f57', 'wo-f58', 'wo-f59', 'wo-f60', 'wo-f61', 'wo-f62', 'wo-f63', 'wo-f64', 'wo-f65', 'wo-f66', 'wo-f67', 'wo-f68', 'wo-f69', 'wo-f70', 'wo-f71', 'wo-f72', 'wo-f73', 'wo-f74', 'wo-f75', 'wo-f76', 'wo-f77', 'wo-f78', 'wo-f79', 'wo-f80', 'wo-f81', 'wo-f82', 'wo-f83', 'wo-f84', 'wo-f85', 'wo-f86', 'wo-f87', 'wo-f88', 'wo-f89', 'wo-f90', 'wo-f91', 'wo-f92', 'wo-f93', 'wo-f94', 'wo-f95', 'wo-f96', 'wo-f97', 'wo-f98', 'wo-f99', 'wo-f100', 'wo-f101', 'wo-f102', 'wo-f103', 'wo-f104', 'wo-f105', 'wo-f106', 'wo-f107', 'wo-f108', 'wo-f109', 'wo-f110', 'wo-f111', 'wo-f112', 'wo-f113', 'wo-f114', 'wo-f115', 'wo-f116', 'wo-f117', 'wo-f118', 'wo-f119', 'wo-f120', 'wo-f121', 'wo-f122', 'wo-f123', 'wo-f124', 'wo-f125', 'wo-f126', 'wo-f127', 'wo-f128', 'wo-f129', 'wo-f130', 'wo-f131', 'wo-f132'];
+var WO_FIELD_IDS = ['shingle-type', 'shingle-color', 'ridgecap-type', 'starter-type', 'underlayment-type', 'valley-type', 'warranty-sel', 'pd1', 'pa1', 'pp1', 'pb1', 'pd2', 'pa2', 'pp2', 'pb2', 'pd3', 'pa3', 'pp3', 'pb3', 'pd4', 'pa4', 'pp4', 'pb4', 'pd5', 'pa5', 'pp5', 'pb5', 'total-remaining', 'wo-f1', 'wo-f2', 'wo-f3', 'wo-f4', 'wo-f5', 'wo-f6', 'wo-f7', 'wo-f8', 'wo-f9', 'wo-f10', 'wo-f11', 'wo-f12', 'wo-f13', 'wo-f14', 'wo-f15', 'wo-f16', 'wo-f17', 'wo-f18', 'wo-f19', 'wo-f20', 'wo-f21', 'wo-f22', 'wo-f23', 'wo-f24', 'wo-f25', 'wo-f26', 'wo-f27', 'wo-f28', 'wo-f29', 'wo-f30', 'wo-f31', 'wo-f32', 'wo-f33', 'wo-f34', 'wo-f35', 'wo-f36', 'wo-f37', 'wo-f38', 'wo-f39', 'wo-f40', 'wo-f41', 'wo-f42', 'wo-f43', 'wo-f44', 'wo-f45', 'wo-f46', 'wo-f47', 'wo-f78', 'wo-f79', 'wo-f80', 'wo-f81', 'wo-f82', 'wo-f83', 'wo-f84', 'wo-f85', 'wo-f86', 'wo-f87', 'wo-f88', 'wo-f89', 'wo-f90', 'wo-f91', 'wo-f92', 'wo-f93', 'wo-f94', 'wo-f95', 'wo-f96', 'wo-f97', 'wo-f98', 'wo-f99', 'wo-f100', 'wo-f101', 'wo-f102', 'wo-f103', 'wo-f104', 'wo-f105', 'wo-f106', 'wo-f107', 'wo-f108', 'wo-f109', 'wo-f110', 'wo-f111', 'wo-f112', 'wo-f113', 'wo-f114', 'wo-f115', 'wo-f116', 'wo-f117', 'wo-f118', 'wo-f119', 'wo-f120', 'wo-f121', 'wo-f122', 'wo-f123', 'wo-f124', 'wo-f125', 'wo-f126', 'wo-f127', 'wo-f128', 'wo-f129', 'wo-f130', 'wo-f131', 'wo-f132', 'wo-ins-est-date', 'wo-trades-data'];
 var WO_SIG_IDS   = ['sig-h1', 'sig-h2', 'sig-pm', 'sig-c1', 'sig-c2', 'sig-c3', 'sig-ppa'];
 var WO_SHEET_TAB = "WorkOrders";
 
@@ -6266,7 +6287,97 @@ function woSetAllFields(data) {
     };
     img.src = data[key];
   });
+  if (data['wo-trades-data']) woDeserializeTrades(data['wo-trades-data']);
 }
+
+// ── INSURANCE ESTIMATE TRADES TABLE ──────────────────────────────────────
+function woMakeTradeRow() {
+  var tr = document.createElement('tr');
+  var tdS = 'border:1px solid #888;padding:2px 3px;vertical-align:top;';
+  var taS = 'width:100%;resize:none;overflow:hidden;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;line-height:1.4;min-height:18px;';
+  var inS = 'width:100%;text-align:center;font-size:11px;border:none;background:transparent;font-family:Arial,Helvetica,sans-serif;padding:1px;';
+  var cbS = 'display:inline-block;width:14px;height:14px;border:1px solid #000;cursor:pointer;font-size:9px;line-height:14px;text-align:center;';
+  tr.innerHTML =
+    '<td style="'+tdS+'"><textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="trade" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea></td>' +
+    '<td style="'+tdS+'"><textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="desc" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea></td>' +
+    '<td style="'+tdS+'text-align:center;"><input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="rcv" oninput="woCalcTotals()"></td>' +
+    '<td style="'+tdS+'text-align:center;"><input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="dep" oninput="woCalcTotals()"></td>' +
+    '<td style="'+tdS+'text-align:center;"><input type="text" value="$0.00" style="'+inS+'" class="wo-trade-field wo-currency" data-col="acv" oninput="woCalcTotals()"></td>' +
+    '<td style="'+tdS+'text-align:center;"><span class="cb wo-trade-field" data-col="wnd" style="'+cbS+'" onclick="this.classList.toggle(\'checked\');this.textContent=this.classList.contains(\'checked\')?\' ✓\':\'\';"></span></td>' +
+    '<td style="'+tdS+'text-align:center;"><span class="cb wo-trade-field" data-col="exec" style="'+cbS+'" onclick="this.classList.toggle(\'checked\');this.textContent=this.classList.contains(\'checked\')?\' ✓\':\'\';"></span></td>' +
+    '<td style="'+tdS+'"><textarea rows="1" style="'+taS+'" class="wo-trade-field" data-col="notes" oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\';"></textarea></td>';
+  return tr;
+}
+
+function woAddTradeRow() {
+  var tbody = document.getElementById('wo-trades-tbody');
+  if (tbody) tbody.appendChild(woMakeTradeRow());
+}
+
+function woCalcTotals() {
+  var rcv = 0, dep = 0, acv = 0;
+  document.querySelectorAll('#wo-trades-tbody .wo-currency').forEach(function(inp) {
+    var v = parseFloat(inp.value.replace(/[^0-9.-]/g,'')) || 0;
+    var col = inp.getAttribute('data-col');
+    if (col === 'rcv') rcv += v;
+    if (col === 'dep') dep += v;
+    if (col === 'acv') acv += v;
+  });
+  var fmt = function(n) { return '$' + n.toFixed(2); };
+  var r = document.getElementById('wo-rcv-total'); if (r) r.textContent = fmt(rcv);
+  var d = document.getElementById('wo-dep-total'); if (d) d.textContent = fmt(dep);
+  var a = document.getElementById('wo-acv-total'); if (a) a.textContent = fmt(acv);
+}
+
+function woSerializeTrades() {
+  var rows = [];
+  document.querySelectorAll('#wo-trades-tbody tr').forEach(function(tr) {
+    var row = {};
+    tr.querySelectorAll('.wo-trade-field').forEach(function(el) {
+      var col = el.getAttribute('data-col');
+      if (el.tagName === 'SPAN') row[col] = el.classList.contains('checked') ? '1' : '0';
+      else row[col] = el.value;
+    });
+    rows.push(row);
+  });
+  var h = document.getElementById('wo-trades-data');
+  if (h) h.value = JSON.stringify(rows);
+}
+
+function woDeserializeTrades(jsonStr) {
+  if (!jsonStr) return;
+  var rows; try { rows = JSON.parse(jsonStr); } catch(e) { return; }
+  if (!Array.isArray(rows) || !rows.length) return;
+  var tbody = document.getElementById('wo-trades-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  var needed = Math.max(rows.length, 10);
+  for (var i = 0; i < needed; i++) tbody.appendChild(woMakeTradeRow());
+  var trs = tbody.querySelectorAll('tr');
+  rows.forEach(function(rowData, idx) {
+    if (!trs[idx]) return;
+    trs[idx].querySelectorAll('.wo-trade-field').forEach(function(el) {
+      var col = el.getAttribute('data-col');
+      if (!(col in rowData)) return;
+      if (el.tagName === 'SPAN') {
+        var chk = rowData[col] === '1';
+        el.classList.toggle('checked', chk);
+        el.textContent = chk ? '✓' : '';
+      } else {
+        el.value = rowData[col];
+        if (el.tagName === 'TEXTAREA') { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+      }
+    });
+  });
+  woCalcTotals();
+}
+
+function woInitTradesTable() {
+  var tbody = document.getElementById('wo-trades-tbody');
+  if (!tbody || tbody.rows.length > 0) return;
+  for (var i = 0; i < 10; i++) tbody.appendChild(woMakeTradeRow());
+}
+
 
 function woClear() {
   WO_FIELD_IDS.forEach(function(id) {
@@ -6316,6 +6427,7 @@ function woLoad() {
 }
 
 function woSave() {
+  woSerializeTrades();
   var jobNum = (document.getElementById('wo-job-input').value || '').trim();
   if (!jobNum) { woStatus('Enter a job number before saving.', false); return; }
   var data = woGetAllFields();
