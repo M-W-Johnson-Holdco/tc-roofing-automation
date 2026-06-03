@@ -2208,21 +2208,23 @@ async function fetchJobData(){
 
     <!-- Left col: vent labels, existing, desired, color -->
     <div style="flex:1;">
-      <div style="display:flex; gap:8px; align-items:baseline; margin-bottom:4px;">
-        <span style="font-weight:700;font-size:12px;min-width:104px;">VENTILATION</span>
-        <button type="button" onclick="woSyncVentFromCalc()" style="font-size:9px;padding:1px 6px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;" title="Copy existing counts from Commissions Calculator">⟳ Sync from Calc</button>
-        <span style="font-style:italic;font-size:11px;width:60px;text-align:center;">EXISTING</span>
-        <span style="font-style:italic;font-size:11px;width:70px;text-align:center;">DESIRED EXISTING</span>
-        <span style="font-style:italic;font-size:11px;width:70px;text-align:center;">DESIRED NEW</span>
-        <span style="font-style:italic;font-size:11px;width:90px;text-align:center;">COLOR</span>
-      </div>
-      <div style="padding-left:0;">
-        <div style="display:flex;gap:8px;align-items:baseline;height:22px;margin-bottom:3px;">
-          <span style="min-width:104px;font-size:11px;">Ridge Vent (FT)</span>
-          <textarea id="wo-f16" class="fi" rows="1" style="width:60px;"></textarea>
-          <textarea id="wo-vent-de-ridge" class="fi" rows="1" style="width:70px;"></textarea>
-          <textarea id="wo-f17" class="fi" rows="1" style="width:70px;"></textarea>
-          <select id="wo-f18" class="color-sel" style="width:90px;">
+      <div style="margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+          <span style="font-weight:700;font-size:12px;">VENTILATION</span>
+          <button type="button" onclick="woSyncVentFromCalc()" style="font-size:9px;padding:1px 6px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;" title="Copy existing counts from Commissions Calculator">⟳ Sync from Calc</button>
+        </div>
+        <div style="display:grid;grid-template-columns:120px 58px 80px 70px 90px;gap:4px;align-items:center;">
+          <div></div>
+          <div style="font-style:italic;font-size:10px;text-align:center;">EXISTING</div>
+          <div style="font-style:italic;font-size:10px;text-align:center;">DESIRED EXISTING</div>
+          <div style="font-style:italic;font-size:10px;text-align:center;">DESIRED NEW</div>
+          <div style="font-style:italic;font-size:10px;text-align:center;">COLOR</div>
+
+          <span style="font-size:11px;">Ridge Vent (FT)</span>
+          <textarea id="wo-f16" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-vent-de-ridge" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-f17" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <select id="wo-f18" class="color-sel" style="width:100%;font-size:10px;">
             <option value="">Color...</option>
             <option>Black</option>
             <option>Brown</option>
@@ -2230,36 +2232,36 @@ async function fetchJobData(){
             <option>Mill/Silver</option>
             <option>Shingle Match</option>
           </select>
-        </div>
-        <div style="display:flex;gap:8px;align-items:baseline;height:22px;margin-bottom:3px;">
-          <span style="min-width:104px;font-size:11px;">Box Vents</span>
-          <textarea id="wo-f19" class="fi" rows="1" style="width:60px;"></textarea>
-          <textarea id="wo-vent-de-box" class="fi" rows="1" style="width:70px;"></textarea>
-          <textarea id="wo-f20" class="fi" rows="1" style="width:70px;"></textarea>
-        </div>
-        <div style="display:flex;gap:8px;align-items:baseline;height:22px;margin-bottom:3px;">
-          <span style="min-width:104px;font-size:11px;">Dome Vents</span>
-          <textarea id="wo-f21" class="fi" rows="1" style="width:60px;"></textarea>
-          <textarea id="wo-vent-de-dome" class="fi" rows="1" style="width:70px;"></textarea>
-          <textarea id="wo-f22" class="fi" rows="1" style="width:70px;"></textarea>
-        </div>
-        <div style="display:flex;gap:8px;align-items:baseline;height:22px;margin-bottom:3px;">
-          <span style="min-width:104px;font-size:11px;">Power Vents</span>
-          <textarea id="wo-f23" class="fi" rows="1" style="width:60px;"></textarea>
-          <textarea id="wo-vent-de-power" class="fi" rows="1" style="width:70px;"></textarea>
-          <textarea id="wo-f24" class="fi" rows="1" style="width:70px;"></textarea>
-        </div>
-        <div style="display:flex;gap:8px;align-items:baseline;height:22px;margin-bottom:3px;">
-          <span style="min-width:104px;font-size:11px;">Solar Power Vents</span>
-          <textarea id="wo-f25" class="fi" rows="1" style="width:60px;"></textarea>
-          <textarea id="wo-vent-de-solar" class="fi" rows="1" style="width:70px;"></textarea>
-          <textarea id="wo-f26" class="fi" rows="1" style="width:70px;"></textarea>
-        </div>
-        <div style="display:flex;gap:8px;align-items:baseline;height:22px;margin-bottom:3px;">
-          <span style="min-width:104px;font-size:11px;">Turbine</span>
-          <textarea id="wo-f27" class="fi" rows="1" style="width:60px;"></textarea>
-          <textarea id="wo-vent-de-turbine" class="fi" rows="1" style="width:70px;"></textarea>
-          <textarea id="wo-f28" class="fi" rows="1" style="width:70px;"></textarea>
+
+          <span style="font-size:11px;">Box Vents</span>
+          <textarea id="wo-f19" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-vent-de-box" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-f20" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <div></div>
+
+          <span style="font-size:11px;">Dome Vents</span>
+          <textarea id="wo-f21" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-vent-de-dome" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-f22" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <div></div>
+
+          <span style="font-size:11px;">Power Vents</span>
+          <textarea id="wo-f23" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-vent-de-power" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-f24" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <div></div>
+
+          <span style="font-size:11px;">Solar Power Vents</span>
+          <textarea id="wo-f25" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-vent-de-solar" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-f26" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <div></div>
+
+          <span style="font-size:11px;">Turbine</span>
+          <textarea id="wo-f27" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-vent-de-turbine" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <textarea id="wo-f28" class="fi" rows="1" style="width:100%;box-sizing:border-box;"></textarea>
+          <div></div>
         </div>
       </div>
     </div>
