@@ -4232,7 +4232,7 @@ function processRows(rows,log,today){
     var prospectDate=pd(row["Prospect Date"]);
     var submittedProspectDate=pd(row["Submitted as Prospect Date"]);
     var cutoff=new Date("2026-04-06");cutoff.setHours(0,0,0,0);
-    if((prospectDate&&prospectDate<cutoff)||(submittedProspectDate&&submittedProspectDate<cutoff)){addLog("skip","Job "+jobKey+" ("+fullName+") — prospect date before 4/6/2026, skipping");stats.skipped++;return next();}
+    if((!prospectDate&&!submittedProspectDate)||(prospectDate&&prospectDate<cutoff)||(submittedProspectDate&&submittedProspectDate<cutoff)){addLog("skip","Job "+jobKey+" ("+fullName+") — prospect date missing or before 4/6/2026, skipping");stats.skipped++;return next();}
     return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,0).then(function(){updateStats();return next();});
   }
   return next();
