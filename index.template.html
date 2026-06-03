@@ -2229,8 +2229,8 @@ async function fetchJobData(){
       <span style="font-weight:700;font-size:12px;">VENTILATION</span>
       <button type="button" onclick="woSyncVentFromCalc()" style="font-size:9px;padding:1px 6px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;" title="Copy existing counts from Commissions Calculator">⟳ Sync from Calc</button>
     </div>
-    <!-- unified grid: label | exist | des-exist | R&R cover | des-new | color | upgrade-cost -->
-    <div style="display:grid;grid-template-columns:120px 58px 80px 70px 70px 90px 8px 98px;gap:4px;align-items:center;">
+    <!-- unified grid: label | exist | des-exist | R&R cover | des-new | color | spacer | upgrade-cost -->
+    <div style="display:grid;grid-template-columns:120px 58px 80px 70px 70px 90px 1fr 188px;gap:4px;align-items:center;width:100%;">
       <!-- header row -->
       <div></div>
       <div style="font-style:italic;font-size:10px;text-align:center;">EXISTING</div>
@@ -3025,7 +3025,7 @@ async function fetchJobData(){
 
   <div style="text-align:center; margin-top:30px;" class="no-print">
     <button onclick="printDoc()" style="background:#003087;color:#fff;font-size:14px;font-weight:700;padding:10px 32px;border:none;border-radius:4px;cursor:pointer;letter-spacing:0.5px;">
-      &#128438; Export as PDF / Print
+      &#128438; Export as Flattened PDF
     </button>
     <div style="font-size:10px;color:#666;margin-top:6px;">Opens print dialog — select &ldquo;Save as PDF&rdquo; in your browser</div>
   </div></div>
