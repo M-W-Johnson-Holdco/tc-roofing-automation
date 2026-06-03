@@ -1415,20 +1415,35 @@ function calc(){try{
     rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge,comm:commission,qty,isStd:upgCost===0});
   });
 
-  // VENTILATION — upgrade cost = net new units × costTaxEa
+  // VENTILATION — upgrade cost accounts for type switching, removal & install labor
   let ventUpgradeCost=0;
   const ventM=MATS.find(m=>m.key==='vent');
   ['ridge','box','power','solar','turbine','dome'].forEach((k,i)=>{
     const opt=ventM.opts[i];
     const existing=ventCounts[k].exist||0;
     const desired=ventCounts[k].desired||0;
-    const netNew=Math.max(0,desired-existing);
-    let cost=0;
-    if(k==='ridge'){const sticks=Math.ceil(netNew/4);cost=sticks*(opt.costEa||0)*1.08;}
-    else cost=netNew*(opt.costEa||0)*1.08;
+    // Net material cost: desired cost minus credit for existing units removed
+    let desiredCost,existingCost;
+    if(k==='ridge'){
+      desiredCost=Math.ceil(desired/4)*(opt.costEa||0)*1.08;
+      existingCost=Math.ceil(existing/4)*(opt.costEa||0)*1.08;
+    } else {
+      desiredCost=desired*(opt.costEa||0)*1.08;
+      existingCost=existing*(opt.costEa||0)*1.08;
+    }
+    let cost=desiredCost-existingCost;
+    // Removal labor $35/unit: box, turbine, or power being fully removed (desired=0, existing>0)
+    if(desired===0&&existing>0&&(k==='box'||k==='turbine'||k==='power')){
+      cost+=existing*35;
+    }
+    // Installation labor $50/unit: power or solar being added (desired>0)
+    if(desired>0&&(k==='power'||k==='solar')){
+      cost+=desired*50;
+    }
     ventUpgradeCost+=cost;
-    maxComm+=cost;
   });
+  ventUpgradeCost=Math.max(0,ventUpgradeCost); // floor at $0
+  maxComm+=ventUpgradeCost;
 
   const ventPct=sliderPct['vent']||0;
   // upgradeAmtOverride['vent'] stores total HO charge; commission = hoCharge - cost
