@@ -1436,9 +1436,10 @@ function calc(){try{
     if(desired===0&&existing>0&&(k==='box'||k==='turbine'||k==='power')){
       cost+=existing*35;
     }
-    // Installation labor $50/unit: power or solar being added (desired>0)
+    // Installation labor $50/unit: power or solar — only on NET NEW units added
     if(desired>0&&(k==='power'||k==='solar')){
-      cost+=desired*50;
+      const netNew=Math.max(0,desired-existing);
+      cost+=netNew*50;
     }
     ventUpgradeCost+=cost;
   });
