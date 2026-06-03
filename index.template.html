@@ -779,7 +779,25 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
 <div class=&quot;toast&quot; id=&quot;toast&quot;></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function(){ var auth=document.getElementById('s-auth'); var app=document.getElementById('s-app'); if(auth){auth.style.display='none';auth.classList.remove('on');} if(app){app.style.display='flex';app.classList.add('on');} var bnav=document.getElementById('bnav'); if(bnav){bnav.style.display='flex';} });
+document.addEventListener('DOMContentLoaded', function(){
+  var auth = document.getElementById('s-auth');
+  var app  = document.getElementById('s-app');
+  if(auth){ auth.classList.remove('on'); auth.style.display='none'; }
+  if(app){  app.classList.add('on');    app.style.display='flex';   }
+  me = 'admin'; myRole = 'admin';
+  var chip = document.getElementById('role-chip');
+  if(chip){ chip.textContent='Admin'; chip.className='chip chip-green'; }
+  var ul = document.getElementById('user-lbl');
+  if(ul){ ul.textContent='Admin'; }
+  try{ buildNav(); }     catch(e){}
+  try{ initCalc(); }     catch(e){}
+  try{ loadState(); }    catch(e){}
+  try{ renderHistory(); } catch(e){}
+  try{ buildAdminFields(); } catch(e){}
+  try{ renderAdminVers(); }  catch(e){}
+  try{ renderReps(); }       catch(e){}
+  try{ setPage('pg-calc'); } catch(e){}
+});
 
 
 const MATS=[
