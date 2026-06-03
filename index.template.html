@@ -6660,16 +6660,15 @@ function woSyncVentFromCalc() {
     var iDoc = iframe.contentDocument;
     var ventSection = iDoc.getElementById('mr-vent');
     if (!ventSection) { woStatus('Commissions calculator vent data not loaded yet.', false); return; }
-    // inputs order in buildVentUI: ridge, box, power, solar, turbine, dome — each has exist then desired
+    // inputs order: ridge(0,1,2) | box(3,4,5) | power(6,7,8,9 w/coverRR) | solar(10,11,12) | turbine(13,14,15) | dome(16,17,18)
     var inputs = ventSection.querySelectorAll('input[type="number"]');
-    // [0]=ridge exist,[2]=box exist,[4]=power exist,[6]=solar exist,[8]=turbine exist,[10]=dome exist
     var map = [
-      ['wo-f16', 0],   // Ridge Vent
-      ['wo-f19', 2],   // Box Vents
-      ['wo-f23', 4],   // Power Vents
-      ['wo-f25', 6],   // Solar Power Vents
-      ['wo-f27', 8],   // Turbine
-      ['wo-f21', 10]   // Dome Vents
+      ['wo-f16', 0],   // Ridge Vent exist
+      ['wo-f19', 3],   // Box Vents exist
+      ['wo-f23', 6],   // Power Vents exist
+      ['wo-f25', 10],  // Solar Power Vents exist
+      ['wo-f27', 13],  // Turbine exist
+      ['wo-f21', 16]   // Dome Vents exist
     ];
     var synced = 0;
     map.forEach(function(pair) {
