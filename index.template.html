@@ -975,7 +975,7 @@ let upgradeAmtOverride={};
 let lastUpgCost={};
 let existingTier={};
 let upgradesDiscount=0;
-let ventCounts={ridge:{exist:0,desired:0},box:{exist:0,desired:0},power:{exist:0,desired:0},solar:{exist:0,desired:0},turbine:{exist:0,desired:0},dome:{exist:0,desired:0}};
+let ventCounts={ridge:{exist:0,desiredExist:0,desired:0},box:{exist:0,desiredExist:0,desired:0},power:{exist:0,desiredExist:0,desired:0},solar:{exist:0,desiredExist:0,desired:0},turbine:{exist:0,desiredExist:0,desired:0},dome:{exist:0,desiredExist:0,desired:0}};
 let bootCount=0;
 
 // AUTH
@@ -1202,15 +1202,17 @@ function buildVentUI(){
   return `<div class=&quot;mat-row&quot; id=&quot;mr-vent&quot;>
     <div class=&quot;mat-hd&quot;><span class=&quot;mat-hd-name&quot;>Ventilation</span><span class=&quot;mat-hd-cost&quot; id=&quot;mhc-vent&quot;></span></div>
     <div class=&quot;mat-body&quot;>
-      <div style=&quot;display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:6px;align-items:end&quot;>
+      <div style=&quot;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;margin-bottom:6px;align-items:end&quot;>
         <div style=&quot;font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em&quot;>Type</div>
         <div style=&quot;font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;text-align:center&quot;>Existing</div>
-        <div style=&quot;font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;text-align:center&quot;>Desired</div>
+        <div style=&quot;font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;text-align:center&quot;>Desired Existing</div>
+        <div style=&quot;font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;text-align:center&quot;>Desired New</div>
       </div>
       ${rows.map(r=>`
-        <div style=&quot;display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-bottom:8px;align-items:center&quot;>
+        <div style=&quot;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px;align-items:center&quot;>
           <div><div style=&quot;font-size:12px;font-weight:600;color:var(--txt2)&quot;>${r.lbl}</div></div>
           <input type=&quot;number&quot; value=&quot;${ventCounts[r.k].exist}&quot; min=&quot;0&quot; style=&quot;background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none&quot; oninput=&quot;setVent('${r.k}','exist',this.value)&quot;/>
+          <input type=&quot;number&quot; value=&quot;${ventCounts[r.k].desiredExist}&quot; min=&quot;0&quot; style=&quot;background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none&quot; oninput=&quot;setVent('${r.k}','desiredExist',this.value)&quot;/>
           <input type=&quot;number&quot; value=&quot;${ventCounts[r.k].desired}&quot; min=&quot;0&quot; style=&quot;background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px;color:var(--txt);outline:none;font-size:14px;text-align:center;width:100%;font-family:'Syne',sans-serif;-webkit-appearance:none&quot; oninput=&quot;setVent('${r.k}','desired',this.value)&quot;/>
         </div>`).join('')}
       <div class=&quot;mat-result&quot;><span class=&quot;mat-result-label&quot;>Ventilation upgrade charge</span><span class=&quot;mat-result-val&quot; style=&quot;color:var(--red)&quot; id=&quot;mrc-vent&quot;></span></div>
@@ -1415,35 +1417,34 @@ function calc(){try{
     rows.push({name:m.name,selName:selOpt.name,upgCost,hoCharge,comm:commission,qty,isStd:upgCost===0});
   });
 
-  // VENTILATION — upgrade cost accounts for type switching, removal & install labor
+  // VENTILATION — upgrade cost: Existing, Desired Existing, Desired New columns
   let ventUpgradeCost=0;
   const ventM=MATS.find(m=>m.key==='vent');
   ['ridge','box','power','solar','turbine','dome'].forEach((k,i)=>{
     const opt=ventM.opts[i];
     const existing=ventCounts[k].exist||0;
-    const desired=ventCounts[k].desired||0;
-    // Net material cost: desired cost minus credit for existing units removed
-    let desiredCost,existingCost;
+    const desiredExist=ventCounts[k].desiredExist||0;
+    const desiredNew=ventCounts[k].desired||0;
+    const removed=Math.max(0,existing-desiredExist);
+    const totalAfter=desiredExist+desiredNew;
+    let totalCost,existingCost;
     if(k==='ridge'){
-      desiredCost=Math.ceil(desired/4)*(opt.costEa||0)*1.08;
+      totalCost=Math.ceil(totalAfter/4)*(opt.costEa||0)*1.08;
       existingCost=Math.ceil(existing/4)*(opt.costEa||0)*1.08;
     } else {
-      desiredCost=desired*(opt.costEa||0)*1.08;
+      totalCost=totalAfter*(opt.costEa||0)*1.08;
       existingCost=existing*(opt.costEa||0)*1.08;
     }
-    let cost=desiredCost-existingCost;
-    // Removal labor $35/unit: box, turbine, or power being fully removed (desired=0, existing>0)
-    if(desired===0&&existing>0&&(k==='box'||k==='turbine'||k==='power')){
-      cost+=existing*35;
+    let cost=totalCost-existingCost;
+    if(removed>0&&(k==='box'||k==='turbine'||k==='power')){
+      cost+=removed*35;
     }
-    // Installation labor $50/unit: power or solar — only on NET NEW units added
-    if(desired>0&&(k==='power'||k==='solar')){
-      const netNew=Math.max(0,desired-existing);
-      cost+=netNew*50;
+    if(desiredNew>0&&(k==='power'||k==='solar')){
+      cost+=desiredNew*50;
     }
     ventUpgradeCost+=cost;
   });
-  ventUpgradeCost=Math.max(0,ventUpgradeCost); // floor at $0
+  ventUpgradeCost=Math.max(0,ventUpgradeCost);
   maxComm+=ventUpgradeCost;
 
   const ventPct=sliderPct['vent']||0;
