@@ -3188,14 +3188,9 @@ function applyJobTypeVisibility() {
     var el = document.getElementById(id);
     if (el) el.style.display = isRetail ? 'none' : '';
   });
-  // Table cells and other block elements: display:none is safe
+  // Hide upgrade cost column elements; vent grid needs 7-col layout simultaneously
   document.querySelectorAll('.wo-upg-col').forEach(function(el) {
-    var inVentGrid = document.getElementById('wo-vent-grid') && document.getElementById('wo-vent-grid').contains(el);
-    if (inVentGrid) {
-      el.style.visibility = isRetail ? 'hidden' : '';
-    } else {
-      el.style.display = isRetail ? 'none' : '';
-    }
+    el.style.display = isRetail ? 'none' : '';
   });
   // Shrink/restore the vent grid column when retail is selected
   var ventGrid = document.getElementById('wo-vent-grid');
