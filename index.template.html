@@ -956,9 +956,11 @@ let bootCount=0;
 // AUTH
 
 // NAV
-const NAV=[{id:'pg-calc',ico:'🧮',lbl:'Calc'},{id:'pg-hist',ico:'📋',lbl:'History'},{id:'pg-admin',ico:'💲',lbl:'Pricing'}];
-function buildNav(){document.getElementById('bnav').innerHTML=NAV.map(n=>`<button class=&quot;bn&quot; id=&quot;bn-${n.id}&quot; onclick=&quot;setPage('${n.id}')&quot;><span class=&quot;bn-ico&quot;>${n.ico}</span><span class=&quot;bn-lbl&quot;>${n.lbl}</span></button>`).join('');}
-function setPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.bn').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');const bn=document.getElementById('bn-'+id);if(bn)bn.classList.add('on');document.getElementById('pages').scrollTop=0;}
+const NAV_BASE=[{id:'pg-calc',ico:'🧮',lbl:'Calc'},{id:'pg-hist',ico:'📋',lbl:'History'}];
+const NAV_ADMIN=[{id:'pg-calc',ico:'🧮',lbl:'Calc'},{id:'pg-hist',ico:'📋',lbl:'History'},{id:'pg-admin',ico:'💲',lbl:'Pricing'}];
+function isCommAdmin(){try{return window.parent&amp;&amp;window.parent.currentUserRole==='admin';}catch(e){return false;}}
+function buildNav(){const nav=isCommAdmin()?NAV_ADMIN:NAV_BASE;document.getElementById('bnav').innerHTML=nav.map(n=>`<button class=&quot;bn&quot; id=&quot;bn-${n.id}&quot; onclick=&quot;setPage('${n.id}')&quot;><span class=&quot;bn-ico&quot;>${n.ico}</span><span class=&quot;bn-lbl&quot;>${n.lbl}</span></button>`).join('');}
+function setPage(id){if(id==='pg-admin'&amp;&amp;!isCommAdmin()){id='pg-calc';}document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.bn').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');const bn=document.getElementById('bn-'+id);if(bn)bn.classList.add('on');document.getElementById('pages').scrollTop=0;}
 
 // INIT
 function getVer(d){const date=d||new Date().toISOString().slice(0,10);return [...VERSIONS].sort((a,b)=>b.eff.localeCompare(a.eff)).find(v=>v.eff<=date&amp;&amp;(!v.exp||v.exp>=date))||VERSIONS[VERSIONS.length-1];}
@@ -6781,6 +6783,14 @@ function woApplyRole(role) {
   document.querySelectorAll('.wo-admin-only').forEach(function(el) {
     el.style.display = isAdmin ? '' : 'none';
   });
+  // Rebuild commissions iframe nav now that role is known
+  var iframe = document.getElementById('comm-iframe');
+  if (iframe && iframe.contentWindow && typeof iframe.contentWindow.buildNav === 'function') {
+    iframe.contentWindow.buildNav();
+    if (!isAdmin && typeof iframe.contentWindow.setPage === 'function') {
+      iframe.contentWindow.setPage('pg-calc');
+    }
+  }
 }
 
 // Work Order document JS (wrapped to avoid conflicts)
