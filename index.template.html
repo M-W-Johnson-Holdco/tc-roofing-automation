@@ -552,6 +552,12 @@ input,select,textarea,button{font-family:'Karla',sans-serif;font-size:15px}
   #ph,#psig,#pnotes{display:block!important}
   .badge{print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .comm-detail{border:1px solid #ccc}.comm-row{border-bottom:1px solid #ddd}
+  /* Work order export — hide all app chrome, show only WO pages */
+  header, .section-tabs { display:none!important; }
+  .section:not(#tab-workorder) { display:none!important; }
+  #tab-workorder { display:block!important; padding:0!important; }
+  #tab-workorder .card, #tab-workorder .no-print { display:none!important; }
+  .wo-frame-wrap { display:block!important; }
 }
 /* ── MARGIN SLIDER ── */
 .slider-wrap{margin-top:8px}
@@ -3260,35 +3266,11 @@ function printDoc() {
   var meta = document.querySelector('meta[name="viewport"]');
   var orig = meta ? meta.getAttribute('content') : null;
   if (meta) meta.setAttribute('content', 'width=816, initial-scale=1.0');
-
-  var hiddenEls = [];
-  function hide(el) { if (el) { el.style.display = 'none'; hiddenEls.push(el); } }
-
-  // Hide page chrome
-  hide(document.querySelector('header'));
-  hide(document.querySelector('.section-tabs'));
-  // Hide all tab sections except the work order
-  document.querySelectorAll('.section').forEach(function(el) {
-    if (el.id !== 'tab-workorder') hide(el);
-  });
-  // Hide the Job Number card and Export button inside the work order tab
-  document.querySelectorAll('#tab-workorder .card, #tab-workorder .no-print').forEach(function(el) {
-    hide(el);
-  });
-
-  function restore() {
-    hiddenEls.forEach(function(el) { el.style.display = ''; });
+  window.print();
+  window.addEventListener('afterprint', function restore() {
     if (meta && orig) meta.setAttribute('content', orig);
-  }
-
-  setTimeout(function() {
-    window.print();
-    window.addEventListener('afterprint', function handler() {
-      restore();
-      window.removeEventListener('afterprint', handler);
-    });
-    setTimeout(restore, 2000);
-  }, 100);
+    window.removeEventListener('afterprint', restore);
+  });
 }
 </script>
 <!-- ════════════════════════════════════════════ PAGE 7 – PAYMENT PLAN ════ -->
