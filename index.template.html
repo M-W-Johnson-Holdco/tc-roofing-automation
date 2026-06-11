@@ -2229,7 +2229,7 @@ async function fetchJobData(){
       <button type="button" onclick="woSyncVentFromCalc()" style="font-size:9px;padding:1px 6px;cursor:pointer;border:1px solid #aaa;border-radius:2px;background:#f0f0f0;color:#555;" title="Copy existing counts from Commissions Calculator">⟳ Sync from Calc</button>
     </div>
     <!-- unified grid: label | exist | des-exist | R&R cover | des-new | color | spacer | upgrade-cost -->
-    <div style="display:grid;grid-template-columns:120px 58px 80px 70px 70px 90px 1fr 188px;gap:4px;align-items:center;width:100%;">
+    <div id="wo-vent-grid" style="display:grid;grid-template-columns:120px 58px 80px 70px 70px 90px 1fr 188px;gap:4px;align-items:center;width:100%;">
       <!-- header row -->
       <div></div>
       <div style="font-style:italic;font-size:10px;text-align:center;">EXISTING</div>
@@ -3188,9 +3188,22 @@ function applyJobTypeVisibility() {
     var el = document.getElementById(id);
     if (el) el.style.display = isRetail ? 'none' : '';
   });
+  // Table cells and other block elements: display:none is safe
   document.querySelectorAll('.wo-upg-col').forEach(function(el) {
-    el.style.display = isRetail ? 'none' : '';
+    var inVentGrid = document.getElementById('wo-vent-grid') && document.getElementById('wo-vent-grid').contains(el);
+    if (inVentGrid) {
+      el.style.visibility = isRetail ? 'hidden' : '';
+    } else {
+      el.style.display = isRetail ? 'none' : '';
+    }
   });
+  // Shrink/restore the vent grid column when retail is selected
+  var ventGrid = document.getElementById('wo-vent-grid');
+  if (ventGrid) {
+    ventGrid.style.gridTemplateColumns = isRetail
+      ? '120px 58px 80px 70px 70px 90px 1fr'
+      : '120px 58px 80px 70px 70px 90px 1fr 188px';
+  }
 }
 
 // ── SYNC UPGRADES/RETAIL TOTALS TO PAGE 5 PAYMENT TABLE ──
