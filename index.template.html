@@ -769,12 +769,6 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <div class=&quot;card&quot;><div class=&quot;card-ttl&quot;>All Versions</div><div class=&quot;tbl-wrap&quot;><table class=&quot;tbl&quot;><thead><tr><th>Ver</th><th>Label</th><th>Effective</th><th>Expires</th><th>Status</th></tr></thead><tbody id=&quot;adm-ver-body&quot;></tbody></table></div></div>
     </div>
 
-    <div class=&quot;page&quot; id=&quot;pg-users&quot;>
-      <div class=&quot;pg-title&quot;>Team Roster</div>
-      <div class=&quot;pg-sub&quot;>All active logins</div>
-      <div class=&quot;card&quot;><div class=&quot;card-ttl&quot;>Sales Reps</div><div id=&quot;reps-list&quot;></div></div>
-      <div class=&quot;card&quot;><div class=&quot;card-ttl&quot;>Admins</div><div id=&quot;admins-list&quot;></div></div>
-    </div>
 
   </div>
   <div class=&quot;bnav&quot; id=&quot;bnav&quot;></div>
@@ -948,26 +942,6 @@ const MATS=[
 let VERSIONS=[{id:'v1',label:'Jun 17, 2026 – Present',eff:'2026-06-17',exp:null,by:'admin'}];
 let vidx=2;
 
-const USERS={
-  Buck:{pass:'Hailyeah',role:'sales',name:'Buck Broadhead'},
-  Isaac:{pass:'Hailyeah',role:'sales',name:'Isaac Perez'},
-  Omar:{pass:'Hailyeah',role:'sales',name:'Omar Al Shanti'},
-  Kyle:{pass:'Hailyeah',role:'sales',name:'Kyle Pippins'},
-  Noah:{pass:'Hailyeah',role:'sales',name:'Noah Carr'},
-  Matt:{pass:'Hailyeah',role:'sales',name:'Matt Timcho'},
-  Leo:{pass:'Hailyeah',role:'sales',name:'Leobardo Gonzalez'},
-  Nick:{pass:'Hailyeah',role:'sales',name:'Nick Scobee'},
-  Joseph:{pass:'Hailyeah',role:'sales',name:'Joseph Valderrama'},
-  Ryan:{pass:'Hailyeah',role:'sales',name:'Ryan Comer'},
-  Charles:{pass:'Hailyeah',role:'sales',name:'Charles Tomlinson'},
-  Johana:{pass:'Hailyeah',role:'sales',name:'Johana Cortina'},
-  MJ:{pass:'Hailyeah',role:'sales',name:'Michael Johnson'},
-  Deering:{pass:'Hailyeah',role:'sales',name:'Ryan Deering'},
-  Testpm:{pass:'Testpm',role:'sales',name:'Test Pm'},
-  Madison:{pass:'Hailyeah',role:'sales',name:'Madison Kennerly'},
-  Peyton:{pass:'Hailyeah',role:'admin',name:'Peyton Dixon'},
-  Kat:{pass:'Hailyeah',role:'admin',name:'Kat Liss'},
-};
 
 let me=null,myRole=null,authTab='sales',activeVer=null,claimMode='full',hoOverride=false;
 let matSel={};
@@ -980,30 +954,10 @@ let ventCounts={ridge:{exist:0,desiredExist:0,desired:0},box:{exist:0,desiredExi
 let bootCount=0;
 
 // AUTH
-function setTab(t){authTab=t;document.getElementById('t-sales').classList.toggle('on',t==='sales');document.getElementById('t-admin').classList.toggle('on',t==='admin');document.getElementById('aerr').textContent='';}
-function login(){
-  const u=document.getElementById('au').value.trim();
-  const p=document.getElementById('ap').value;
-  const rec=USERS[u];const err=document.getElementById('aerr');
-  if(!rec||rec.pass!==p){err.textContent='Invalid username or password.';return;}
-  if(authTab==='admin'&amp;&amp;rec.role!=='admin'){err.textContent='Admin credentials required.';return;}
-  if(authTab==='sales'&amp;&amp;rec.role==='admin'){err.textContent='Use Admin tab for admin login.';return;}
-  me=u;myRole=rec.role;
-  document.getElementById('s-auth').classList.remove('on');
-  document.getElementById('s-app').classList.add('on');
-  document.getElementById('role-chip').textContent=rec.role==='admin'?'Admin':'Sales Rep';
-  document.getElementById('role-chip').className='chip '+(rec.role==='admin'?'chip-green':'chip-gold');
-  document.getElementById('user-lbl').textContent=rec.name;
-  buildNav();initCalc();loadState();renderHistory();
-  if(myRole==='admin'){buildAdminFields();renderAdminVers();renderReps();}
-  setPage('pg-calc');
-}
-function logout(){me=null;myRole=null;activeVer=null;document.getElementById('s-app').classList.remove('on');document.getElementById('s-auth').classList.add('on');document.getElementById('au').value='';document.getElementById('ap').value='';document.getElementById('aerr').textContent='';}
 
 // NAV
-const NAV_S=[{id:'pg-calc',ico:'🧮',lbl:'Calc'},{id:'pg-hist',ico:'📋',lbl:'History'}];
-const NAV_A=[{id:'pg-calc',ico:'🧮',lbl:'Calc'},{id:'pg-hist',ico:'📋',lbl:'History'},{id:'pg-admin',ico:'💲',lbl:'Pricing'},{id:'pg-users',ico:'👥',lbl:'Reps'}];
-function buildNav(){const items=myRole==='admin'?NAV_A:NAV_S;document.getElementById('bnav').innerHTML=items.map(n=>`<button class=&quot;bn&quot; id=&quot;bn-${n.id}&quot; onclick=&quot;setPage('${n.id}')&quot;><span class=&quot;bn-ico&quot;>${n.ico}</span><span class=&quot;bn-lbl&quot;>${n.lbl}</span></button>`).join('');}
+const NAV=[{id:'pg-calc',ico:'🧮',lbl:'Calc'},{id:'pg-hist',ico:'📋',lbl:'History'},{id:'pg-admin',ico:'💲',lbl:'Pricing'}];
+function buildNav(){document.getElementById('bnav').innerHTML=NAV.map(n=>`<button class=&quot;bn&quot; id=&quot;bn-${n.id}&quot; onclick=&quot;setPage('${n.id}')&quot;><span class=&quot;bn-ico&quot;>${n.ico}</span><span class=&quot;bn-lbl&quot;>${n.lbl}</span></button>`).join('');}
 function setPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.bn').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');const bn=document.getElementById('bn-'+id);if(bn)bn.classList.add('on');document.getElementById('pages').scrollTop=0;}
 
 // INIT
