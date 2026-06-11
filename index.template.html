@@ -3314,9 +3314,9 @@ function printDoc() {
       hiddenEls.push(el);
     }
   });
-  // Also hide the nav/header inside the wo wrapper
-  var noPrintEls = document.querySelectorAll('#tab-workorder .no-print');
-  noPrintEls.forEach(function(el) { el.style.visibility = 'hidden'; });
+  // Hide the Job Number card and no-print elements inside the wo tab
+  var noPrintEls = document.querySelectorAll('#tab-workorder .no-print, #tab-workorder .card');
+  noPrintEls.forEach(function(el) { el.style.display = 'none'; hiddenEls.push(el); });
 
   function restore() {
     hiddenEls.forEach(function(el) { el.style.display = ''; });
