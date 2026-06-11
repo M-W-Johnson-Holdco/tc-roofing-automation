@@ -3259,22 +3259,23 @@ function printDoc() {
   var orig = meta ? meta.getAttribute('content') : null;
   if (meta) meta.setAttribute('content', 'width=816, initial-scale=1.0');
 
-  // Hide everything except the work order pages
-  var woWrap = document.querySelector('.wo-frame-wrap');
   var hiddenEls = [];
-  document.querySelectorAll('body > *').forEach(function(el) {
-    if (!el.contains(woWrap) && el.style.display !== 'none') {
-      el.style.display = 'none';
-      hiddenEls.push(el);
-    }
+  function hide(el) { if (el) { el.style.display = 'none'; hiddenEls.push(el); } }
+
+  // Hide page chrome
+  hide(document.querySelector('header'));
+  hide(document.querySelector('.section-tabs'));
+  // Hide all tab sections except the work order
+  document.querySelectorAll('.section').forEach(function(el) {
+    if (el.id !== 'tab-workorder') hide(el);
   });
-  // Hide the Job Number card and no-print elements inside the wo tab
-  var noPrintEls = document.querySelectorAll('#tab-workorder .no-print, #tab-workorder .card');
-  noPrintEls.forEach(function(el) { el.style.display = 'none'; hiddenEls.push(el); });
+  // Hide the Job Number card and Export button inside the work order tab
+  document.querySelectorAll('#tab-workorder .card, #tab-workorder .no-print').forEach(function(el) {
+    hide(el);
+  });
 
   function restore() {
     hiddenEls.forEach(function(el) { el.style.display = ''; });
-    noPrintEls.forEach(function(el) { el.style.visibility = ''; });
     if (meta && orig) meta.setAttribute('content', orig);
   }
 
