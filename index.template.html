@@ -2194,11 +2194,9 @@ async function fetchJobData(){
         <td>
           <select id="wo-f12" class="color-sel">
             <option value="">Choose...</option>
-            <option>White</option>
-            <option>Brown</option>
             <option>Black</option>
-            <option>Gray</option>
-            <option>Almond</option>
+            <option>Brown</option>
+            <option>White</option>
           </select>
         </td>
         <td class="wo-upg-col" style="text-align:right"><input type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
@@ -2251,10 +2249,7 @@ async function fetchJobData(){
       <select id="wo-f18" class="color-sel" style="width:100%;font-size:10px;">
         <option value="">Color...</option>
         <option>Black</option>
-        <option>Brown</option>
-        <option>Gray</option>
-        <option>Mill/Silver</option>
-        <option>Shingle Match</option>
+        <option>Weathered Wood</option>
       </select>
       <div></div>
       <textarea id="wo-f29" class="fi upgrade-cost currency wo-upg-col" rows="1" style="width:100%;box-sizing:border-box;" oninput="calcUpgradesTotal()"></textarea>
@@ -2883,6 +2878,12 @@ async function fetchJobData(){
       satisfaction.
     </div>
   </div>
+  <div class="page-footer">
+    5339 Alpha Road, Suite 101, Dallas, TX 75240<br>
+    Office: 833-799-ROOF<br>
+    www.tcroofingexperts.com
+  </div>
+  <span class="page-number">8</span>
 </div>
 
 <!-- ════════════════════════════════════════════ PAGE 9 – HOW TO PREPARE (2) ════ -->
@@ -2965,6 +2966,12 @@ async function fetchJobData(){
       miscellaneous items. Any alterations or negotiations must be directly communicated with and paid to the crew.
     </div>
   </div>
+  <div class="page-footer">
+    5339 Alpha Road, Suite 101, Dallas, TX 75240<br>
+    Office: 833-799-ROOF<br>
+    www.tcroofingexperts.com
+  </div>
+  <span class="page-number">9</span>
 </div>
 
 <!-- ════════════════════════════════════════════ PAGE 10 – SIGNATURE ════ -->
@@ -3024,6 +3031,12 @@ async function fetchJobData(){
     </div>
   </div>
 
+  <div class="page-footer">
+    5339 Alpha Road, Suite 101, Dallas, TX 75240<br>
+    Office: 833-799-ROOF<br>
+    www.tcroofingexperts.com
+  </div>
+  <span class="page-number">10</span>
   <div style="text-align:center; margin-top:30px;" class="no-print">
     <button onclick="printDoc()" style="background:#003087;color:#fff;font-size:14px;font-weight:700;padding:10px 32px;border:none;border-radius:4px;cursor:pointer;letter-spacing:0.5px;">
       &#128438; Export as Flattened PDF
@@ -3282,20 +3295,34 @@ function toggleMaskedFields() {
 function printDoc() {
   var meta = document.querySelector('meta[name="viewport"]');
   var orig = meta ? meta.getAttribute('content') : null;
-  // Force layout at design width before printing
   if (meta) meta.setAttribute('content', 'width=816, initial-scale=1.0');
-  // Small delay lets the browser re-render at new viewport before print dialog
+
+  // Hide everything except the work order pages
+  var woWrap = document.querySelector('.wo-frame-wrap');
+  var hiddenEls = [];
+  document.querySelectorAll('body > *').forEach(function(el) {
+    if (!el.contains(woWrap) && el.style.display !== 'none') {
+      el.style.display = 'none';
+      hiddenEls.push(el);
+    }
+  });
+  // Also hide the nav/header inside the wo wrapper
+  var noPrintEls = document.querySelectorAll('#tab-workorder .no-print');
+  noPrintEls.forEach(function(el) { el.style.visibility = 'hidden'; });
+
+  function restore() {
+    hiddenEls.forEach(function(el) { el.style.display = ''; });
+    noPrintEls.forEach(function(el) { el.style.visibility = ''; });
+    if (meta && orig) meta.setAttribute('content', orig);
+  }
+
   setTimeout(function() {
     window.print();
-    // Restore viewport after print dialog closes
-    window.addEventListener('afterprint', function restore() {
-      if (meta && orig) meta.setAttribute('content', orig);
-      window.removeEventListener('afterprint', restore);
+    window.addEventListener('afterprint', function handler() {
+      restore();
+      window.removeEventListener('afterprint', handler);
     });
-    // Fallback restore in case afterprint doesn't fire (iOS Safari)
-    setTimeout(function() {
-      if (meta && orig) meta.setAttribute('content', orig);
-    }, 2000);
+    setTimeout(restore, 2000);
   }, 100);
 }
 </script>
@@ -3423,6 +3450,12 @@ function printDoc() {
     provisions of U.S. law. I certify that I am an authorized user of this credit card/bank account and will not dispute TC Roofing &amp; Restorations billing with my bank
     or credit card company; so long as the transaction corresponds to the terms indicated in this agreement.
   </p>
+  <div class="page-footer">
+    5339 Alpha Road, Suite 101, Dallas, TX 75240<br>
+    Office: 833-799-ROOF<br>
+    www.tcroofingexperts.com
+  </div>
+  <span class="page-number">7</span>
 </div>
 
 
