@@ -940,12 +940,12 @@ const MATS=[
   ]},
   {key:'warr',name:'Warranty',unitType:'warr',opts:[
     {name:'No Warranty / GAF Lim. Lifetime (incl.)',std:true, costPerSq:0, flatLte50:0,   flatGt50:0},
-    {name:'GAF Silver Pledge',                       std:false,costPerSq:5, flatLte50:170, flatGt50:340},
-    {name:'GAF Golden Pledge',                       std:false,costPerSq:8, flatLte50:0,   flatGt50:0},
+    {name:'GAF Silver Pledge',                       std:false,costPerSq:7, flatLte50:0,   flatGt50:0},
+    {name:'GAF Golden Pledge',                       std:false,costPerSq:10,flatLte50:0,   flatGt50:0},
   ]},
 ];
 
-let VERSIONS=[{id:'v1',label:'May 26, 2026 – Present',eff:'2026-05-26',exp:null,by:'admin'}];
+let VERSIONS=[{id:'v1',label:'Jun 17, 2026 – Present',eff:'2026-06-17',exp:null,by:'admin'}];
 let vidx=2;
 
 const USERS={
@@ -1030,18 +1030,11 @@ function setMode(m){claimMode=m;document.getElementById('mode-full').className='
 function unitStr(mat){if(mat.key==='shingle')return'/sq';if(mat.key==='ridge')return'/bd';if(mat.key==='starter')return'/bd';if(mat.key==='under')return'/roll';if(mat.key==='valley')return'/unit';if(mat.key==='boot')return'/ea';return'';}
 
 // warrantyJobCost:
-// Golden Pledge = sq * 8 * 1.08
-// Silver Pledge = (sq * 5 + flat) * 1.08  where flat = $170 if sq<=50, $340 if sq>50
+// Golden Pledge = sq * 10 * 1.08
+// Silver Pledge = sq * 7 * 1.08
 function warrantyJobCost(opt, sq){
   if(!opt||opt.std) return 0;
-  if(opt.costPerSq===8){
-    // Golden Pledge
-    return sq * 8 * 1.08;
-  } else {
-    // Silver Pledge
-    const flat = sq <= 50 ? 170 : 340;
-    return (sq * 5 + flat) * 1.08;
-  }
+  return sq * opt.costPerSq * 1.08;
 }
 
 // getUpgradeCost: returns the minimum upgrade cost for a material selection
