@@ -4048,29 +4048,48 @@ for(var k in DEFAULT_BODIES) templateBodies[k] = DEFAULT_BODIES[k];
 var imageStore = {T1:null,T6:null,T8:null};
 
 var TEMPLATES = [
-  {id:"T1",name:"Welcome",trigger:"Submitted as Prospect Date — day of",
-   check:function(row,today){var d=pd(row["Submitted as Prospect Date"]);return d&&sd(d,today);}},
-  {id:"T2",name:"LGIB Insurance Update",trigger:"Current Status = lgib — day of",
-   check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;var d=pd(row["Current Status Date"]);return d&&sd(d,today);}},
-  {id:"T3",name:"LGIB Materials",trigger:"Current Status = lgib — 2 days after LGIB status date (skips if T8 ready)",
+  {id:"T1",name:"Welcome",trigger:"Submitted as Prospect Date — within 7 days, or Prospect Date — within 5 days",
+   check:function(row,today){
+     var d1=pd(row["Submitted as Prospect Date"]);
+     var d2=pd(row["Prospect Date"]);
+     return (d1&&wc(d1,today,7))||(d2&&wc(d2,today,5));
+   }},
+  {id:"T2",name:"LGIB Insurance Update",trigger:"Current Status = lgib — within 5 days of LGIB status date",
+   check:function(row,today){
+     if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;
+     var d=pd(row["Current Status Date"]);return d&&wc(d,today,5);
+   }},
+  {id:"T3",name:"LGIB Materials",trigger:"2 days after LGIB status date (skips if T8 ready)",
    check:function(row,today){
      if((row["Current Status"]||"").toLowerCase()!=="lgib")return false;
      var d=pd(row["Current Status Date"]);if(!d)return false;
-     var dayAfter=new Date(d);dayAfter.setDate(dayAfter.getDate()+2);
-     if(!wc(dayAfter,today,1))return false;
-     var t8d=pd(row["Submitted for Approval Date"]);if(t8d&&wc(t8d,today,2))return false;
+     var t3date=new Date(d);t3date.setDate(t3date.getDate()+2);
+     if(!wc(t3date,today,1))return false;
+     var t8d1=pd(row["Submitted for Approval Date"]);
+     var t8d2=pd(row["Approved Date"]);
+     if((t8d1&&wc(t8d1,today,5))||(t8d2&&wc(t8d2,today,5)))return false;
      return true;
    }},
-  {id:"T4",name:"Roof Completed",trigger:"Completed Date — within 4 days",
-   check:function(row,today){var d=pd(row["Completed Date"]);return d&&wc(d,today,4);}},
-  {id:"T5",name:"Other Trades Completed",trigger:"Current Status = Other Trade(s) Completed — within 4 days",
-   check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="other trade(s) completed")return false;var d=pd(row["Current Status Date"]);return d&&wc(d,today,4);}},
-  {id:"T6",name:"Settlement Reached",trigger:"Invoiced Date — within 2 days",
-   check:function(row,today){var d=pd(row["Invoiced Date"]);return d&&wc(d,today,2);}},
-  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — day after (skips if T2 ready)",
-   check:function(row,today){var d=pd(row["Met With Adjuster Date"]);if(!d)return false;var da=new Date(d);da.setDate(da.getDate()+1);if(!sd(da,today))return false;var t2d=pd(row["Current Status Date"]);if(t2d&&(row["Current Status"]||"").toLowerCase()==="lgib"&&sd(t2d,today))return false;return true;}},
-  {id:"T8",name:"Work Order Approved",trigger:"Submitted for Approval Date — within 2 days",
-   check:function(row,today){var d=pd(row["Submitted for Approval Date"]);return d&&wc(d,today,2);}}
+  {id:"T4",name:"Roof Completed",trigger:"Completed Date — within 7 days",
+   check:function(row,today){var d=pd(row["Completed Date"]);return d&&wc(d,today,7);}},
+  {id:"T5",name:"Other Trades Completed",trigger:"Current Status = Other Trade(s) Completed — within 7 days",
+   check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="other trade(s) completed")return false;var d=pd(row["Current Status Date"]);return d&&wc(d,today,7);}},
+  {id:"T6",name:"Settlement Reached",trigger:"Invoiced Date — within 5 days",
+   check:function(row,today){var d=pd(row["Invoiced Date"]);return d&&wc(d,today,5);}},
+  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — within 3 days (skips if T2 ready)",
+   check:function(row,today){
+     var d=pd(row["Met With Adjuster Date"]);if(!d)return false;
+     if(!wc(d,today,3))return false;
+     var t2d=pd(row["Current Status Date"]);
+     if(t2d&&(row["Current Status"]||"").toLowerCase()==="lgib"&&wc(t2d,today,5))return false;
+     return true;
+   }},
+  {id:"T8",name:"Work Order Approved",trigger:"Submitted for Approval Date or Approved Date — within 5 days",
+   check:function(row,today){
+     var d1=pd(row["Submitted for Approval Date"]);
+     var d2=pd(row["Approved Date"]);
+     return (d1&&wc(d1,today,5))||(d2&&wc(d2,today,5));
+   }}
 ];
 
 function pd(v){if(!v||!v.trim())return null;var d=new Date(v);return isNaN(d.getTime())?null:d;}
