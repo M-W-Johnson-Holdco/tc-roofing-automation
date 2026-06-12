@@ -4311,12 +4311,20 @@ function runAutomation(){
 }
 
 function processRows(rows,log,today){
+  // Warn if multiple jobs share the same customer phone — they will share an RC thread
+  var phoneSeen={};
+  rows.forEach(function(r){
+    var p=toE164(r["Phone Number"]||"");
+    var jn=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
+    if(p){if(phoneSeen[p])addLog("warn","⚠️ Jobs "+phoneSeen[p]+" and "+jn+" share phone "+p+" — they will use the same RC group thread");else phoneSeen[p]=jn;}
+  });
   var i=0;
   function next(){
     if(i>=rows.length)return Promise.resolve();
     var row=rows[i++];stats.jobs++;
     var jobNum=row["Job Number"]||"";
-    var jobGuidFromUrl=extractGuid(row["Job Number Url"]||"")||extractGuid(row["Job Name Url"]||"");
+    // Use Job Number Url GUID only (not Job Name Url) to avoid matching on customer-level GUIDs
+    var jobGuidFromUrl=extractGuid(row["Job Number Url"]||"");
     var jobKey=jobNum||jobGuidFromUrl||"";
     if(!jobKey){addLog("warn","Row has no Job Number or URL, skipping");stats.errors++;return next();}
     var fullName=((row["Primary Contact: First Name"]||"")+" "+(row["Primary Contact: Last Name"]||"")).trim();
@@ -4335,15 +4343,15 @@ function processRows(rows,log,today){
 function processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti){
   if(ti>=TEMPLATES.length)return Promise.resolve();
   var tmpl=TEMPLATES[ti];
-  // Check duplicates against both job number AND guid in case job got a number after T1 was sent
+  // Check if this template was already sent for this specific job
   var jobNum=row["Job Number"]||"";
-  var jobGuidFromUrl=extractGuid(row["Job Number Url"]||"")||extractGuid(row["Job Name Url"]||"");
+  var jobGuidFromUrl=extractGuid(row["Job Number Url"]||"");
   var alreadySent=false;
   for(var i=0;i<log.length;i++){
     if(log[i].template===tmpl.id){
-      if((jobKey&&log[i].jobNum===jobKey)||(jobNum&&log[i].jobNum===jobNum)||(jobGuidFromUrl&&log[i].jobNum===jobGuidFromUrl)||(jobGuidFromUrl&&log[i].jobGuid===jobGuidFromUrl)){
-        alreadySent=true;break;
-      }
+      var numMatch=jobNum&&(log[i].jobNum===jobNum);
+      var guidMatch=jobGuidFromUrl&&(log[i].jobGuid===jobGuidFromUrl||log[i].jobNum===jobGuidFromUrl);
+      if(numMatch||guidMatch){alreadySent=true;break;}
     }
   }
   if(alreadySent&&tmpl.id!=="T3"){stats.skipped++;return processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti+1);}
