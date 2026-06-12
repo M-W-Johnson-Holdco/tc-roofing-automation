@@ -1713,7 +1713,8 @@ async function fetchJobData(){
   }.wo-frame-wrap .page {
     width: 816px;
     height: 1056px;
-    overflow: hidden;
+    overflow: clip;
+    contain: size layout;
     background: #fff;
     margin: 24px auto;
     padding: 48px 54px 40px;
@@ -1958,8 +1959,8 @@ async function fetchJobData(){
       break-after: page;
       width: 8.5in !important;
       height: 11in !important;
-      max-height: 11in !important;
-      overflow: hidden !important;
+      overflow: clip !important;
+      contain: size layout !important;
       box-sizing: border-box !important;
       display: flex !important;
       flex-direction: column !important;
