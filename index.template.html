@@ -2043,9 +2043,11 @@ async function fetchJobData(){
 
 
 <!-- ════════════════════════════════════════ COVER PAGE ════ -->
-<div class="page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
-  <img src="TC_White_Logo_2025__2_.png" alt="TC Roofing" style="max-width:320px;margin-bottom:32px;">
-  <div style="font-size:32px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:2px;color:#1a2340;text-transform:uppercase;">Completed Work Order</div>
+<div class="page" id="wo-cover-page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#1a2340;">
+  <img id="wo-cover-logo" alt="TC Roofing" style="max-width:340px;margin-bottom:40px;">
+  <div style="width:60px;height:4px;background:#8DC63F;margin-bottom:32px;"></div>
+  <div style="font-size:28px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:4px;color:#ffffff;text-transform:uppercase;">Completed Work Order</div>
+  <div style="margin-top:16px;font-size:13px;font-family:'Karla',sans-serif;color:#8DC63F;letter-spacing:2px;text-transform:uppercase;">TC Roofing &amp; Restorations</div>
 </div>
 
 <!-- ════════════════════════════════════════════ PAGE 1 ════ -->
@@ -4082,6 +4084,14 @@ function applyLogo(d){var l=document.getElementById("header-logo");var f=documen
 function renderLogoPreview(d){document.getElementById("logo-preview").innerHTML='<img src="'+d+'" style="max-height:60px;border-radius:6px;border:1px solid #2a3050;background:#0f1117;padding:6px;margin-top:8px;"><div class="small" style="margin-top:4px;">Logo saved</div><button class="btn btn-danger btn-sm" id="remove-logo-btn" style="margin-top:6px;">Remove</button>';var b=document.getElementById("remove-logo-btn");if(b)b.addEventListener("click",clearLogo);}
 function clearLogo(){store.del("brand_logo");var l=document.getElementById("header-logo");l.src="";l.style.display="none";document.getElementById("header-fallback").style.display="block";document.getElementById("logo-preview").innerHTML="";document.getElementById("logo-upload").value="";}
 function loadLogo(){var d=store.get("brand_logo");if(d){applyLogo(d);renderLogoPreview(d);}}
+
+function initCoverLogo(){
+  var coverLogo=document.getElementById('wo-cover-logo');
+  if(!coverLogo)return;
+  var srcImg=document.querySelector('.logo-block img');
+  if(srcImg&&srcImg.src)coverLogo.src=srcImg.src;
+}
+document.addEventListener('DOMContentLoaded',initCoverLogo);
 
 function loadImages(){
   ["T1","T6","T8"].forEach(function(id){
