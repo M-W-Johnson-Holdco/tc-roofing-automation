@@ -3300,16 +3300,49 @@ function toggleMaskedFields() {
 }
 
 
-// ── PRINT WITH VIEWPORT FIX FOR MOBILE ──
+// ── PRINT VIA POPUP – no app chrome, no blank pages ──
 function printDoc() {
-  var meta = document.querySelector('meta[name="viewport"]');
-  var orig = meta ? meta.getAttribute('content') : null;
-  if (meta) meta.setAttribute('content', 'width=816, initial-scale=1.0');
-  window.print();
-  window.addEventListener('afterprint', function restore() {
-    if (meta && orig) meta.setAttribute('content', orig);
-    window.removeEventListener('afterprint', restore);
-  });
+  // Ensure cover logo is populated
+  var coverLogo = document.getElementById('wo-cover-logo');
+  if (coverLogo && !coverLogo.getAttribute('src')) {
+    var srcImg = document.querySelector('.logo-block img');
+    if (srcImg) coverLogo.setAttribute('src', srcImg.getAttribute('src'));
+  }
+
+  var wrap = document.querySelector('.wo-frame-wrap');
+  if (!wrap) { window.print(); return; }
+
+  var wrapClone = wrap.cloneNode(true);
+  // Force cover page visible in clone
+  var cc = wrapClone.querySelector('#wo-cover-page');
+  if (cc) { cc.style.display = 'flex'; }
+
+  // Collect all <style> tags
+  var styles = Array.from(document.querySelectorAll('style')).map(function(s){ return s.outerHTML; }).join('');
+
+  var win = window.open('', '_blank');
+  if (!win) { window.print(); return; }
+  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8">');
+  win.document.write('<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">');
+  win.document.write(styles);
+  win.document.write('<style>');
+  win.document.write('@page{size:8.5in 11in;margin:0;}');
+  win.document.write('html,body{margin:0!important;padding:0!important;background:#fff!important;}');
+  win.document.write('.wo-frame-wrap{background:#fff!important;padding:0!important;margin:0!important;}');
+  win.document.write('.page{margin:0!important;padding:0.4in 0.5625in 0.35in!important;width:8.5in!important;height:11in!important;overflow:clip!important;break-after:page;page-break-after:always;box-shadow:none!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;position:relative!important;}');
+  win.document.write('.page:last-child{break-after:avoid!important;page-break-after:avoid!important;}');
+  win.document.write('button,.no-print{display:none!important;}');
+  win.document.write('input,textarea,select{color:#000!important;background:#fff!important;border-color:#000!important;}');
+  win.document.write('</style></head><body>');
+  win.document.write(wrapClone.outerHTML);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(function(){
+    win.print();
+    win.addEventListener('afterprint', function(){ try{ win.close(); }catch(e){} });
+    setTimeout(function(){ try{ win.close(); }catch(e){} }, 4000);
+  }, 800);
 }
 </script>
 <!-- ════════════════════════════════════════════ PAGE 7 – PAYMENT PLAN ════ -->
@@ -3688,23 +3721,33 @@ function toggleMaskedFields() {
 
 // ── PRINT WITH VIEWPORT FIX FOR MOBILE ──
 function printDoc() {
-  var meta = document.querySelector('meta[name="viewport"]');
-  var orig = meta ? meta.getAttribute('content') : null;
-  // Force layout at design width before printing
-  if (meta) meta.setAttribute('content', 'width=816, initial-scale=1.0');
-  // Small delay lets the browser re-render at new viewport before print dialog
-  setTimeout(function() {
-    window.print();
-    // Restore viewport after print dialog closes
-    window.addEventListener('afterprint', function restore() {
-      if (meta && orig) meta.setAttribute('content', orig);
-      window.removeEventListener('afterprint', restore);
-    });
-    // Fallback restore in case afterprint doesn't fire (iOS Safari)
-    setTimeout(function() {
-      if (meta && orig) meta.setAttribute('content', orig);
-    }, 2000);
-  }, 100);
+  // Delegated to the popup-based printDoc defined earlier
+  var coverLogo = document.getElementById('wo-cover-logo');
+  if (coverLogo && !coverLogo.getAttribute('src')) {
+    var srcImg = document.querySelector('.logo-block img');
+    if (srcImg) coverLogo.setAttribute('src', srcImg.getAttribute('src'));
+  }
+  var wrap = document.querySelector('.wo-frame-wrap');
+  if (!wrap) { window.print(); return; }
+  var wrapClone = wrap.cloneNode(true);
+  var cc = wrapClone.querySelector('#wo-cover-page');
+  if (cc) cc.style.display = 'flex';
+  var styles = Array.from(document.querySelectorAll('style')).map(function(s){ return s.outerHTML; }).join('');
+  var win = window.open('', '_blank');
+  if (!win) { window.print(); return; }
+  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8">');
+  win.document.write('<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">');
+  win.document.write(styles);
+  win.document.write('<style>@page{size:8.5in 11in;margin:0;}html,body{margin:0!important;padding:0!important;background:#fff!important;}.wo-frame-wrap{background:#fff!important;padding:0!important;margin:0!important;}.page{margin:0!important;padding:0.4in 0.5625in 0.35in!important;width:8.5in!important;height:11in!important;overflow:clip!important;break-after:page;page-break-after:always;box-shadow:none!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;position:relative!important;}.page:last-child{break-after:avoid!important;page-break-after:avoid!important;}button,.no-print{display:none!important;}input,textarea,select{color:#000!important;background:#fff!important;border-color:#000!important;}</style></head><body>');
+  win.document.write(wrapClone.outerHTML);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(function(){
+    win.print();
+    win.addEventListener('afterprint', function(){ try{ win.close(); }catch(e){} });
+    setTimeout(function(){ try{ win.close(); }catch(e){} }, 4000);
+  }, 800);
 }
 
 </script>
