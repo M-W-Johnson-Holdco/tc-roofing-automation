@@ -122,6 +122,10 @@
 
   #comm-app-wrapper input, #comm-app-wrapper textarea, #comm-app-wrapper select, #comm-app-wrapper button { all: revert; }
 
+  @media screen {
+    #wo-cover-page { display:none!important; }
+  }
+
   @media print {
     header, .section-tabs { display:none!important; }
     .section { display:none!important; }
@@ -1969,7 +1973,6 @@ async function fetchJobData(){
     .page-footer {
       margin-top: 12px;
     }
-    #wo-cover-page { display:flex !important; }
     .wo-frame-wrap { margin:0!important; padding:0!important; }
     #tab-workorder { margin:0!important; padding:0!important; }
     .page:last-child { page-break-after: avoid !important; break-after: avoid !important; }
@@ -2046,7 +2049,7 @@ async function fetchJobData(){
 
 
 <!-- ════════════════════════════════════════ COVER PAGE ════ -->
-<div class="page" id="wo-cover-page" style="display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#ffffff;">
+<div class="page" id="wo-cover-page" style="flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#ffffff;">
   <img id="wo-cover-logo" alt="TC Roofing" style="max-width:340px;margin-bottom:36px;">
   <div style="width:60px;height:4px;background:#8DC63F;margin-bottom:28px;"></div>
   <div style="font-size:28px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:4px;color:#1a2340;text-transform:uppercase;">Completed Work Order</div>
