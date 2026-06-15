@@ -3842,11 +3842,13 @@ var store = {
 // =====================================================================
 
 // Tab visibility per role — true = visible
+// Tabs: dashboard, weather, scheduler, templates, config, logs, commissions, workorder, pto, smartsched, prewo
 var ROLE_TABS = {
-  admin:     { dashboard:true,  weather:true,  scheduler:true, templates:true,  config:true,  logs:true,  commissions:true, workorder:true, pto:true, smartsched:true },
-  scheduler: { dashboard:false, weather:true,  scheduler:true, templates:false, config:false, logs:true,  commissions:true, workorder:true, pto:true, smartsched:true },
-  run:       { dashboard:true,  weather:false, scheduler:false,templates:false, config:false, logs:true,  commissions:true, workorder:true, pto:true, smartsched:true },
-  viewer:    { dashboard:false, weather:false, scheduler:false,templates:false, config:false, logs:true,  commissions:true, workorder:true, pto:true, smartsched:true }
+  admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true  },
+  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:false, workorder:false, pto:true, smartsched:false, prewo:false },
+  sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false },
+  production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true  },
+  viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true  }
 };
 
 var currentUserEmail = "";
@@ -3863,7 +3865,8 @@ function applyRolePermissions(role) {
   var perms = ROLE_TABS[role] || ROLE_TABS["viewer"];
   var tabMap = {
     dashboard: "dashboard", weather: "weather", scheduler: "scheduler",
-    templates: "templates", config: "config", logs: "logs", commissions: "commissions"
+    templates: "templates", config: "config", logs: "logs", commissions: "commissions",
+    workorder: "workorder", pto: "pto", smartsched: "smartsched", prewo: "prewo"
   };
   // Find first visible tab to activate
   var firstVisible = null;
