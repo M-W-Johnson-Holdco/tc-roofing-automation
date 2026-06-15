@@ -4345,19 +4345,24 @@ var DEDUP_PHONE="+12145098272";
 function processRows(rows,log,today){
   // When multiple jobs share the same customer phone, inject a dedup number as secondary
   // on the 2nd+ jobs so RC creates a separate group thread for each job
-  var phoneSeen={};
+  var phoneCount={};
   rows.forEach(function(r){
     var p=toE164(r["Phone Number"]||"");
     if(!p)return;
-    if(phoneSeen[p]){
-      // Already saw this phone — inject dedup secondary if not already set
+    var jn=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
+    phoneCount[p]=(phoneCount[p]||[]);
+    phoneCount[p].push(jn);
+    var idx=phoneCount[p].length;
+    if(idx===2){
+      // 2nd job — inject dedup secondary so RC creates a separate thread
       if(!toE164(r["Secondary Phone"]||"")){
         r["Secondary Phone"]=DEDUP_PHONE;
-        var jn=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
-        addLog("info","📱 Jobs "+phoneSeen[p]+" and "+jn+" share phone — auto-adding secondary "+DEDUP_PHONE+" to Job "+jn+" for separate RC thread");
+        addLog("info","📱 Jobs "+phoneCount[p][0]+" and "+jn+" share phone — auto-adding secondary "+DEDUP_PHONE+" to Job "+jn+" for separate RC thread");
       }
-    } else {
-      phoneSeen[p]=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
+    } else if(idx>=3){
+      // 3rd+ job — mark for skip
+      r["_skipDupePhone"]=true;
+      addLog("warn","⛔ Job "+jn+" skipped — 2 jobs ("+phoneCount[p][0]+", "+phoneCount[p][1]+") already exist for this phone. Handle manually.");
     }
   });
   var i=0;
@@ -4369,6 +4374,7 @@ function processRows(rows,log,today){
     var jobGuidFromUrl=extractGuid(row["Job Number Url"]||"");
     var jobKey=jobNum||jobGuidFromUrl||"";
     if(!jobKey){addLog("warn","Row has no Job Number or URL, skipping");stats.errors++;return next();}
+    if(row["_skipDupePhone"]){stats.skipped++;return next();}
     var fullName=((row["Primary Contact: First Name"]||"")+" "+(row["Primary Contact: Last Name"]||"")).trim();
     var custPhone=toE164(row["Phone Number"]||"");
     if(!custPhone){addLog("warn","Job "+jobKey+" ("+fullName+") invalid phone, skipping");stats.errors++;return next();}
