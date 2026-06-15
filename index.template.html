@@ -4340,13 +4340,25 @@ function runAutomation(){
   }).catch(function(e){addLog("error","Fatal error: "+e.message);btn.disabled=false;setStatus("error",e.message);});
 }
 
+var DEDUP_PHONE="+12145098272";
+
 function processRows(rows,log,today){
-  // Warn if multiple jobs share the same customer phone — they will share an RC thread
+  // When multiple jobs share the same customer phone, inject a dedup number as secondary
+  // on the 2nd+ jobs so RC creates a separate group thread for each job
   var phoneSeen={};
   rows.forEach(function(r){
     var p=toE164(r["Phone Number"]||"");
-    var jn=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
-    if(p){if(phoneSeen[p])addLog("warn","⚠️ Jobs "+phoneSeen[p]+" and "+jn+" share phone "+p+" — they will use the same RC group thread");else phoneSeen[p]=jn;}
+    if(!p)return;
+    if(phoneSeen[p]){
+      // Already saw this phone — inject dedup secondary if not already set
+      if(!toE164(r["Secondary Phone"]||"")){
+        r["Secondary Phone"]=DEDUP_PHONE;
+        var jn=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
+        addLog("info","📱 Jobs "+phoneSeen[p]+" and "+jn+" share phone — auto-adding secondary "+DEDUP_PHONE+" to Job "+jn+" for separate RC thread");
+      }
+    } else {
+      phoneSeen[p]=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
+    }
   });
   var i=0;
   function next(){
