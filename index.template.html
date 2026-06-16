@@ -2543,6 +2543,10 @@ async function fetchJobData(){
       Your insurance claim has approved additional trades besides the roof!<br>
       Please review the information above and indicate your decision regarding the additional trades approved by your insurance claim.
     </p>
+    <p style="font-size:10px;margin-top:6px;line-height:1.7;font-style:italic;display:flex;align-items:center;gap:6px;">
+      <input type="checkbox" style="width:13px;height:13px;margin:0;flex-shrink:0;">
+      <span>*Tax Not Included</span>
+    </p>
 
   </div>
 
@@ -6698,10 +6702,11 @@ function woAddTradeRow() {
 
 function woCalcTotals() {
   var rcv = 0, dep = 0, acv = 0;
+  var stripCurrency = function(v){ return (v||'').replace(/[^0-9.-]/g,''); };
   document.querySelectorAll('#wo-trades-tbody tr').forEach(function(tr) {
-    rcv += parseFloat((tr.querySelector('[data-col="rcv"]')||{}).value||'0') || 0;
-    dep += parseFloat((tr.querySelector('[data-col="dep"]')||{}).value||'0') || 0;
-    acv += parseFloat((tr.querySelector('[data-col="acv"]')||{}).value||'0') || 0;
+    rcv += parseFloat(stripCurrency((tr.querySelector('[data-col="rcv"]')||{}).value)) || 0;
+    dep += parseFloat(stripCurrency((tr.querySelector('[data-col="dep"]')||{}).value)) || 0;
+    acv += parseFloat(stripCurrency((tr.querySelector('[data-col="acv"]')||{}).value)) || 0;
   });
   var fmt = function(n) { return '$' + n.toFixed(2); };
   var r = document.getElementById('wo-rcv-total'); if (r) r.textContent = fmt(rcv);
