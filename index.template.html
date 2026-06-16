@@ -2544,7 +2544,7 @@ async function fetchJobData(){
       Please review the information above and indicate your decision regarding the additional trades approved by your insurance claim.
     </p>
     <p style="font-size:10px;margin-top:6px;line-height:1.7;font-style:italic;display:flex;align-items:center;gap:6px;">
-      <input type="checkbox" style="width:13px;height:13px;margin:0;flex-shrink:0;">
+      <input type="checkbox" id="wo-tax-not-included" style="width:13px;height:13px;margin:0;flex-shrink:0;">
       <span>*Tax Not Included</span>
     </p>
 
@@ -6473,7 +6473,7 @@ document.addEventListener("click", function(e){
 // =====================================================================
 // WORK ORDER TAB
 // =====================================================================
-var WO_FIELD_IDS = ['shingle-type', 'shingle-color', 'ridgecap-type', 'starter-type', 'underlayment-type', 'valley-type', 'warranty-sel', 'pd1', 'pa1', 'pp1', 'pb1', 'pd2', 'pa2', 'pp2', 'pb2', 'pd3', 'pa3', 'pp3', 'pb3', 'pd4', 'pa4', 'pp4', 'pb4', 'pd5', 'pa5', 'pp5', 'pb5', 'total-remaining', 'wo-f1', 'wo-f2', 'wo-f3', 'wo-f4', 'wo-f5', 'wo-f6', 'wo-f7', 'wo-f8', 'wo-f9', 'wo-f10', 'wo-f11', 'wo-f12', 'wo-f13', 'wo-f14', 'wo-f15', 'wo-f16', 'wo-f17', 'wo-f18', 'wo-f19', 'wo-f20', 'wo-f21', 'wo-f22', 'wo-f23', 'wo-f24', 'wo-f25', 'wo-f26', 'wo-f27', 'wo-f28', 'wo-f29', 'wo-f30', 'wo-f31', 'wo-f32', 'wo-f33', 'wo-f34', 'wo-f35', 'wo-f36', 'wo-f37', 'wo-f38', 'wo-f39', 'wo-f40', 'wo-f41', 'wo-f42', 'wo-f43', 'wo-f44', 'wo-f45', 'wo-f46', 'wo-f47', 'wo-f78', 'wo-f79', 'wo-f80', 'wo-f81', 'wo-f82', 'wo-f83', 'wo-f84', 'wo-f85', 'wo-f86', 'wo-f87', 'wo-f88', 'wo-f89', 'wo-f90', 'wo-f91', 'wo-f92', 'wo-f93', 'wo-f94', 'wo-f95', 'wo-f96', 'wo-f97', 'wo-f98', 'wo-f99', 'wo-f100', 'wo-f101', 'wo-f102', 'wo-f103', 'wo-f104', 'wo-f105', 'wo-f106', 'wo-f107', 'wo-f108', 'wo-f109', 'wo-f110', 'wo-f111', 'wo-f112', 'wo-f113', 'wo-f114', 'wo-f115', 'wo-f116', 'wo-f117', 'wo-f118', 'wo-f119', 'wo-f120', 'wo-f121', 'wo-f122', 'wo-f123', 'wo-f124', 'wo-f125', 'wo-f126', 'wo-f127', 'wo-f128', 'wo-f129', 'wo-f130', 'wo-f131', 'wo-f132', 'wo-ins-est-date', 'wo-trades-data', 'wo-f-hoa-plan', 'wo-blackout-dates', 'wo-vent-de-ridge', 'wo-vent-de-box', 'wo-vent-de-dome', 'wo-vent-de-power', 'wo-vent-de-power-cover', 'wo-vent-de-solar', 'wo-vent-de-turbine'];
+var WO_FIELD_IDS = ['wo-tax-not-included', 'shingle-type', 'shingle-color', 'ridgecap-type', 'starter-type', 'underlayment-type', 'valley-type', 'warranty-sel', 'pd1', 'pa1', 'pp1', 'pb1', 'pd2', 'pa2', 'pp2', 'pb2', 'pd3', 'pa3', 'pp3', 'pb3', 'pd4', 'pa4', 'pp4', 'pb4', 'pd5', 'pa5', 'pp5', 'pb5', 'total-remaining', 'wo-f1', 'wo-f2', 'wo-f3', 'wo-f4', 'wo-f5', 'wo-f6', 'wo-f7', 'wo-f8', 'wo-f9', 'wo-f10', 'wo-f11', 'wo-f12', 'wo-f13', 'wo-f14', 'wo-f15', 'wo-f16', 'wo-f17', 'wo-f18', 'wo-f19', 'wo-f20', 'wo-f21', 'wo-f22', 'wo-f23', 'wo-f24', 'wo-f25', 'wo-f26', 'wo-f27', 'wo-f28', 'wo-f29', 'wo-f30', 'wo-f31', 'wo-f32', 'wo-f33', 'wo-f34', 'wo-f35', 'wo-f36', 'wo-f37', 'wo-f38', 'wo-f39', 'wo-f40', 'wo-f41', 'wo-f42', 'wo-f43', 'wo-f44', 'wo-f45', 'wo-f46', 'wo-f47', 'wo-f78', 'wo-f79', 'wo-f80', 'wo-f81', 'wo-f82', 'wo-f83', 'wo-f84', 'wo-f85', 'wo-f86', 'wo-f87', 'wo-f88', 'wo-f89', 'wo-f90', 'wo-f91', 'wo-f92', 'wo-f93', 'wo-f94', 'wo-f95', 'wo-f96', 'wo-f97', 'wo-f98', 'wo-f99', 'wo-f100', 'wo-f101', 'wo-f102', 'wo-f103', 'wo-f104', 'wo-f105', 'wo-f106', 'wo-f107', 'wo-f108', 'wo-f109', 'wo-f110', 'wo-f111', 'wo-f112', 'wo-f113', 'wo-f114', 'wo-f115', 'wo-f116', 'wo-f117', 'wo-f118', 'wo-f119', 'wo-f120', 'wo-f121', 'wo-f122', 'wo-f123', 'wo-f124', 'wo-f125', 'wo-f126', 'wo-f127', 'wo-f128', 'wo-f129', 'wo-f130', 'wo-f131', 'wo-f132', 'wo-ins-est-date', 'wo-trades-data', 'wo-f-hoa-plan', 'wo-blackout-dates', 'wo-vent-de-ridge', 'wo-vent-de-box', 'wo-vent-de-dome', 'wo-vent-de-power', 'wo-vent-de-power-cover', 'wo-vent-de-solar', 'wo-vent-de-turbine'];
 var WO_SIG_IDS   = ['sig-h1', 'sig-h2', 'sig-pm', 'sig-c1', 'sig-c2', 'sig-c3', 'sig-ppa'];
 var WO_SHEET_TAB = "WorkOrders";
 
@@ -6487,7 +6487,8 @@ function woGetAllFields() {
   WO_FIELD_IDS.forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
-    if (el.tagName === 'SELECT') data[id] = el.value;
+    if (el.type === 'checkbox') data[id] = el.checked;
+    else if (el.tagName === 'SELECT') data[id] = el.value;
     else data[id] = el.value || '';
   });
   // Capture canvas signatures as base64
@@ -6504,13 +6505,13 @@ function woSetAllFields(data) {
   WO_FIELD_IDS.forEach(function(id) {
     var el = document.getElementById(id);
     if (!el || data[id] === undefined) return;
-    if (el.tagName === 'SELECT') {
+    if (el.type === 'checkbox') {
+      el.checked = !!data[id];
+    } else if (el.tagName === 'SELECT') {
       el.value = data[id];
-      // Trigger onchange for dependent fields
       if (el.onchange) el.onchange();
     } else {
       el.value = data[id];
-      // Trigger input event for auto-calc fields
       var evt = new Event('input', {bubbles: true});
       el.dispatchEvent(evt);
     }
@@ -6830,7 +6831,8 @@ function woClear() {
   WO_FIELD_IDS.forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
-    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    if (el.type === 'checkbox') el.checked = false;
+    else if (el.tagName === 'SELECT') el.selectedIndex = 0;
     else el.value = '';
   });
   WO_SIG_IDS.forEach(function(id) {
