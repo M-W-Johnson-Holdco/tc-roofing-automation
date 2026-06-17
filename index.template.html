@@ -425,7 +425,10 @@
 
 
   <div class="section" id="tab-commissions">
-    <iframe id="comm-iframe" style="width:100%;height:calc(100vh - 120px);border:none;border-radius:8px;" srcdoc="<!DOCTYPE html>
+    <div style="padding:6px 8px 0;display:flex;justify-content:flex-end;">
+      <button id="comm-print-btn" onclick="commPrintExport()" style="background:#c9a84c;color:#000;border:none;border-radius:6px;padding:7px 16px;font-weight:700;font-size:12px;cursor:pointer;">⬇ Export PDF Cheat Sheet</button>
+    </div>
+    <iframe id="comm-iframe" style="width:100%;height:calc(100vh - 155px);border:none;border-radius:8px;" srcdoc="<!DOCTYPE html>
 <html lang=&quot;en&quot;>
 <head>
 <meta charset=&quot;UTF-8&quot;>
@@ -1581,6 +1584,10 @@ function saveToPayrollSheet(){
 
 // PDF
 function exportPDF(){
+  const html=buildExportHTML();
+  window.parent.postMessage({type:'tc_exportReady',html:html},'*');
+}
+function buildExportHTML(){
   updateBanner();
   const notes=document.getElementById('fc-notes').value.trim();
   document.getElementById('pnotes-body').textContent=notes;
@@ -1590,21 +1597,19 @@ function exportPDF(){
   const styles=Array.from(document.querySelectorAll('style')).map(s=>s.outerHTML).join('');
   const bodyClone=document.body.cloneNode(true);
   bodyClone.querySelectorAll('.no-print').forEach(el=>el.style.display='none');
-  const html=`<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><link href='https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap' rel='stylesheet'>${styles}<style>@page{size:letter;margin:0.5in;}body{margin:0;background:#fff;}</style></head><body>${bodyClone.innerHTML}</body></html>`;
-  const blob=new Blob([html],{type:'text/html'});
-  const url=URL.createObjectURL(blob);
-  const win=window.open(url,'_blank');
-  if(!win){
-    // Popup blocked — download the file so user can open and print manually
-    const a=document.createElement('a');
-    a.href=url;a.download='commission-cheat-sheet.html';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-    setTimeout(function(){URL.revokeObjectURL(url);},5000);
-  } else {
-    setTimeout(function(){URL.revokeObjectURL(url);},30000);
-  }
-  setTimeout(function(){['psig','ph','pnotes'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});},300);
+  const html='<!DOCTYPE html><html lang=\x22en\x22><head><meta charset=\x22utf-8\x22>'
+    +'<link href=\x22https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap\x22 rel=\x22stylesheet\x22>'
+    +styles
+    +'<style>@page{size:letter;margin:0.5in;}body{margin:0;background:#fff;}</style>'
+    +'</head><body>'+bodyClone.innerHTML+'</body></html>';
+  setTimeout(function(){['psig','ph','pnotes'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});},400);
+  return html;
 }
+window.addEventListener('message',function(e){
+  if(!e.data||e.data.type!=='tc_prepExport')return;
+  const html=buildExportHTML();
+  window.parent.postMessage({type:'tc_exportReady',html:html},'*');
+});
 
 // HISTORY
 function renderHistory(){
@@ -7168,6 +7173,29 @@ function woClear() {
   });
   woStatus('Form cleared.', true);
 }
+
+function commPrintExport() {
+  var iframe = document.getElementById('comm-iframe');
+  if (!iframe || !iframe.contentWindow) return;
+  // Tell iframe to prepare print elements; iframe posts HTML back
+  iframe.contentWindow.postMessage({type:'tc_prepExport'}, '*');
+}
+
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.type !== 'tc_exportReady') return;
+  var html = e.data.html;
+  var win = window.open('', '_blank');
+  if (!win) { alert('Allow popups for this site to use Export PDF.'); return; }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(function() {
+    try { win.print(); } catch(ex) {}
+    win.addEventListener('afterprint', function(){ try{win.close();}catch(ex){} });
+    setTimeout(function(){ try{win.close();}catch(ex){}; }, 8000);
+  }, 900);
+});
 
 function woApplyRole(role) {
   var isAdmin = (role === 'admin');
