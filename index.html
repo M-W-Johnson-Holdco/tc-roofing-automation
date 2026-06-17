@@ -7197,6 +7197,23 @@ function commPrintExport() {
     // Clone full document, strip scripts + no-print elements
     var clone = iDoc.documentElement.cloneNode(true);
     clone.querySelectorAll('script,.no-print').forEach(function(el){ el.remove(); });
+    // Sync live input/textarea/select values into clone
+    var liveInputs = iDoc.querySelectorAll('input, textarea');
+    var cloneInputs = clone.querySelectorAll('input, textarea');
+    liveInputs.forEach(function(orig, i) {
+      var cl = cloneInputs[i]; if (!cl) return;
+      if (orig.tagName === 'TEXTAREA') { cl.textContent = orig.value; }
+      else { cl.setAttribute('value', orig.value); }
+    });
+    var liveSelects = iDoc.querySelectorAll('select');
+    var cloneSelects = clone.querySelectorAll('select');
+    liveSelects.forEach(function(orig, i) {
+      var cl = cloneSelects[i]; if (!cl) return;
+      Array.from(cl.options).forEach(function(opt) {
+        if (opt.value === orig.value) opt.setAttribute('selected', 'selected');
+        else opt.removeAttribute('selected');
+      });
+    });
     // Ensure auth hidden, app visible in clone
     var sa = clone.querySelector('#s-auth'); if(sa) sa.style.display='none';
     var ap = clone.querySelector('#s-app');  if(ap) ap.style.display='block';
