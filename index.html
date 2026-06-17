@@ -3465,6 +3465,25 @@ function printDoc() {
   if (!wrap) { window.print(); return; }
 
   var wrapClone = wrap.cloneNode(true);
+
+  // Sync live input/textarea/select values into clone (cloneNode copies attributes, not DOM properties)
+  var liveInputs = wrap.querySelectorAll('input, textarea');
+  var cloneInputs = wrapClone.querySelectorAll('input, textarea');
+  liveInputs.forEach(function(orig, i) {
+    var cl = cloneInputs[i]; if (!cl) return;
+    if (orig.tagName === 'TEXTAREA') { cl.textContent = orig.value; }
+    else { cl.setAttribute('value', orig.value); }
+  });
+  var liveSelects = wrap.querySelectorAll('select');
+  var cloneSelects = wrapClone.querySelectorAll('select');
+  liveSelects.forEach(function(orig, i) {
+    var cl = cloneSelects[i]; if (!cl) return;
+    Array.from(cl.options).forEach(function(opt) {
+      if (opt.value === orig.value) opt.setAttribute('selected', 'selected');
+      else opt.removeAttribute('selected');
+    });
+  });
+
   // Force cover page visible in clone
   var cc = wrapClone.querySelector('#wo-cover-page');
   if (cc) { cc.style.display = 'flex'; }
