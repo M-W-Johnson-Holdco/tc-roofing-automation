@@ -1483,7 +1483,7 @@ function calc(){try{
     <td style=&quot;font-size:10px;color:var(--txt3)&quot;>${r.qty}</td>
     <td>$${(r.upgCost||0).toFixed(0)}</td>
     <td style=&quot;color:${(r.hoCharge||0)>0?'var(--amber)':'var(--txt3)'}&quot;>$${(r.hoCharge||0).toFixed(0)}</td>
-    <td style=&quot;color:var(--gold);font-weight:600&quot;>$${(r.comm||0).toFixed(0)}</td>
+    <td style=&quot;color:var(--gold);font-weight:600&quot;>$${((r.comm||0)*commRate).toFixed(0)}</td>
   </tr>`).join('');
 
   document.getElementById('ft-cost').textContent='$'+Math.round(totUpgradeCost).toLocaleString();
