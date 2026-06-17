@@ -7169,23 +7169,29 @@ function woClear() {
 }
 
 function commPrintExport() {
-  // Open popup FIRST while still in user-gesture context (click handler)
   var win = window.open('', '_blank');
   if (!win) { alert('Allow popups for this site to use Export PDF.'); return; }
-  var iframe = document.getElementById('comm-iframe');
-  if (!iframe || !iframe.contentWindow || typeof iframe.contentWindow.buildExportHTML !== 'function') {
-    win.close(); return;
-  }
-  var html = iframe.contentWindow.buildExportHTML();
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(function() {
-    try { win.print(); } catch(ex) {}
-    win.addEventListener('afterprint', function(){ try{win.close();}catch(ex){} });
-    setTimeout(function(){ try{win.close();}catch(ex){}; }, 8000);
-  }, 900);
+  try {
+    var iframe = document.getElementById('comm-iframe');
+    var iDoc = iframe.contentDocument;
+    // Show print-only elements in live doc before cloning
+    ['psig','ph'].forEach(function(id){ var el=iDoc.getElementById(id); if(el) el.style.display='block'; });
+    var notesVal = (iDoc.getElementById('fc-notes')||{}).value||'';
+    var pb = iDoc.getElementById('pnotes-body'); if(pb) pb.textContent = notesVal.trim();
+    var pn = iDoc.getElementById('pnotes'); if(pn) pn.style.display = notesVal.trim()?'block':'none';
+    // Clone full document, strip scripts + no-print elements
+    var clone = iDoc.documentElement.cloneNode(true);
+    clone.querySelectorAll('script,.no-print').forEach(function(el){ el.remove(); });
+    // Ensure auth hidden, app visible in clone
+    var sa = clone.querySelector('#s-auth'); if(sa) sa.style.display='none';
+    var ap = clone.querySelector('#s-app');  if(ap) ap.style.display='block';
+    var html = '<!DOCTYPE html>' + clone.outerHTML;
+    // Restore live doc
+    ['psig','ph','pnotes'].forEach(function(id){ var el=iDoc.getElementById(id); if(el) el.style.display='none'; });
+    win.document.open(); win.document.write(html); win.document.close();
+    win.focus();
+    setTimeout(function(){ try{win.print();}catch(ex){} }, 600);
+  } catch(e) { alert('Export error: '+e.message); win.close(); }
 }
 
 function woApplyRole(role) {
