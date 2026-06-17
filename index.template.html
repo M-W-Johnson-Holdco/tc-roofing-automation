@@ -1510,6 +1510,8 @@ function loadState(){
   let state;
   try{const raw=localStorage.getItem(storageKey());if(!raw)return;state=JSON.parse(raw);}catch(e){return;}
   if(state.fieldVals)Object.entries(state.fieldVals).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
+  // Always default date signed to today if blank
+  const dateEl=document.getElementById('fc-date');if(dateEl&&!dateEl.value)dateEl.value=new Date().toISOString().slice(0,10);
   if(state.matSel)Object.assign(matSel,state.matSel);
   if(state.sliderPct)Object.assign(sliderPct,state.sliderPct);
   if(state.existingTier)Object.assign(existingTier,state.existingTier);
