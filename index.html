@@ -756,7 +756,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       </div>
 
       <div class=&quot;no-print&quot; style=&quot;margin-top:6px&quot;>
-        <button class=&quot;btn btn-export&quot; onclick=&quot;exportPDF()&quot;>⬇ Export PDF Cheat Sheet</button>
+        <button class=&quot;btn btn-export&quot; style=&quot;display:none&quot; onclick=&quot;exportPDF()&quot;>⬇ Export PDF Cheat Sheet</button>
         <button id=&quot;save-payroll-btn&quot; class=&quot;btn&quot; style=&quot;width:100%;margin-top:7px;background:#2a7a4f;color:#fff;font-weight:700&quot; onclick=&quot;saveToPayrollSheet()&quot;>💾 Save to Payroll Sheet</button>
         <div style=&quot;display:flex;gap:7px;margin-top:7px&quot;>
           <button class=&quot;btn&quot; style=&quot;flex:1;font-size:12px&quot; onclick=&quot;resetCalc()&quot;>↺ Reset</button>
@@ -1584,8 +1584,7 @@ function saveToPayrollSheet(){
 
 // PDF
 function exportPDF(){
-  const html=buildExportHTML();
-  window.parent.postMessage({type:'tc_exportReady',html:html},'*');
+  // Parent button handles printing — this is a no-op fallback
 }
 function buildExportHTML(){
   updateBanner();
@@ -1605,11 +1604,6 @@ function buildExportHTML(){
   setTimeout(function(){['psig','ph','pnotes'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});},400);
   return html;
 }
-window.addEventListener('message',function(e){
-  if(!e.data||e.data.type!=='tc_prepExport')return;
-  const html=buildExportHTML();
-  window.parent.postMessage({type:'tc_exportReady',html:html},'*');
-});
 
 // HISTORY
 function renderHistory(){
@@ -7175,17 +7169,14 @@ function woClear() {
 }
 
 function commPrintExport() {
-  var iframe = document.getElementById('comm-iframe');
-  if (!iframe || !iframe.contentWindow) return;
-  // Tell iframe to prepare print elements; iframe posts HTML back
-  iframe.contentWindow.postMessage({type:'tc_prepExport'}, '*');
-}
-
-window.addEventListener('message', function(e) {
-  if (!e.data || e.data.type !== 'tc_exportReady') return;
-  var html = e.data.html;
+  // Open popup FIRST while still in user-gesture context (click handler)
   var win = window.open('', '_blank');
   if (!win) { alert('Allow popups for this site to use Export PDF.'); return; }
+  var iframe = document.getElementById('comm-iframe');
+  if (!iframe || !iframe.contentWindow || typeof iframe.contentWindow.buildExportHTML !== 'function') {
+    win.close(); return;
+  }
+  var html = iframe.contentWindow.buildExportHTML();
   win.document.open();
   win.document.write(html);
   win.document.close();
@@ -7195,7 +7186,7 @@ window.addEventListener('message', function(e) {
     win.addEventListener('afterprint', function(){ try{win.close();}catch(ex){} });
     setTimeout(function(){ try{win.close();}catch(ex){}; }, 8000);
   }, 900);
-});
+}
 
 function woApplyRole(role) {
   var isAdmin = (role === 'admin');
