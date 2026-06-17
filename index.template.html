@@ -1454,7 +1454,8 @@ function calc(){try{
   const netCharged=totHOCharge-disc;
   const grandTotal=netCharged;
   const commRate=claimMode==='dap'?0.33:1.00;
-  const upgComm=totComm*commRate;
+  // Gross margin = (charged - discount) - cost; commission is based on that
+  const upgComm=Math.max(0,(totComm-disc))*commRate;
   const rateLbl=document.getElementById('comm-rate-lbl');
   if(rateLbl)rateLbl.textContent=claimMode==='dap'?'DAP — 33% of margin':'Full Deductible — 100% of margin';
 
