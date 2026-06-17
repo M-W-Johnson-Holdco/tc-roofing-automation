@@ -6670,6 +6670,21 @@ function woSetAllFields(data) {
 // ── INSURANCE ESTIMATE TRADES TABLE ──────────────────────────────────────
 var WO_TRADE_OPTS = '<option value="">Select...</option><option>Chimney</option><option>Collateral Dump</option><option>Deck/Porch</option><option>Door</option><option>Exterior Painting</option><option>Fascia &amp; Soffit</option><option>Fence</option><option>Flat Roofing</option><option>Flooring</option><option>Garage</option><option>Gazebo</option><option>Gutters</option><option>HVAC</option><option>Interior</option><option>Lighting</option><option>Metal Roofing</option><option>Pergola</option><option>Personal Items</option><option>Siding</option><option>Skylight</option><option>Solar Panels</option><option>Windows</option>';
 
+function woAttachCurrencyBehavior(inp) {
+  inp.addEventListener('focus', function() {
+    var raw = this.value.replace(/[^0-9.]/g, '');
+    this.value = raw === '0' || raw === '0.00' || raw === '' ? '' : raw;
+    this.select();
+  });
+  inp.addEventListener('blur', function() {
+    var raw = this.value.replace(/[^0-9.]/g, '');
+    var num = parseFloat(raw);
+    this.value = isNaN(num) ? '$0.00' : '$' + num.toFixed(2);
+    woRowCalc(this.closest('tr'));
+    woCalcTotals();
+  });
+}
+
 function woMakeTradeRow(isMerged) {
   var tr = document.createElement("tr");
   tr.setAttribute("data-merged", isMerged ? "1" : "0");
@@ -6722,6 +6737,7 @@ function woMakeTradeRow(isMerged) {
   rcvIn.type = "text"; rcvIn.value = "$0.00"; rcvIn.style.cssText = inS;
   rcvIn.className = "wo-trade-field wo-currency"; rcvIn.setAttribute("data-col","rcv");
   rcvIn.addEventListener("input", function() { woRowCalc(this.closest("tr")); woCalcTotals(); });
+  woAttachCurrencyBehavior(rcvIn);
   rcvTd.appendChild(rcvIn);
   tr.appendChild(rcvTd);
 
@@ -6732,6 +6748,7 @@ function woMakeTradeRow(isMerged) {
   depIn.type = "text"; depIn.value = "$0.00"; depIn.style.cssText = inS;
   depIn.className = "wo-trade-field wo-currency"; depIn.setAttribute("data-col","dep");
   depIn.addEventListener("input", function() { woRowCalc(this.closest("tr")); woCalcTotals(); });
+  woAttachCurrencyBehavior(depIn);
   depTd.appendChild(depIn);
   tr.appendChild(depTd);
 
