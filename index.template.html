@@ -1758,6 +1758,11 @@ async function fetchJobData(){
     box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     display: flex;
     flex-direction: column;
+  }.wo-frame-wrap #wo-page3 {
+    height: auto !important;
+    min-height: 1056px !important;
+    overflow: visible !important;
+    contain: none !important;
   }.wo-frame-wrap /* ── LOGO ── */
   .logo-block {
     position: absolute;
@@ -3336,6 +3341,101 @@ function toggleMaskedFields() {
 
 
 // ── PRINT VIA POPUP – no app chrome, no blank pages ──
+// Max trade rows that fit comfortably on page 3 (has logo, header, instruction text)
+// and on continuation pages (logo + "continued" label only)
+var MAX_ROWS_PAGE3 = 10;
+var MAX_ROWS_CONT  = 16;
+
+function splitPage3Trades(wrapClone) {
+  var page3 = wrapClone.querySelector('#wo-page3');
+  if (!page3) return;
+  var tbody = page3.querySelector('#wo-trades-tbody');
+  if (!tbody) return;
+  var allRows = Array.from(tbody.querySelectorAll('tr'));
+  if (allRows.length <= MAX_ROWS_PAGE3) return; // fits — no split needed
+
+  // Remove overflow rows from page 3's tbody
+  var overflowRows = allRows.slice(MAX_ROWS_PAGE3);
+  overflowRows.forEach(function(r) { tbody.removeChild(r); });
+
+  // On page 3, hide tfoot totals, add-row button, and instruction paragraphs
+  // (they will appear only on the last continuation page)
+  var tfoot = page3.querySelector('#wo-trades-table tfoot');
+  if (tfoot) tfoot.style.display = 'none';
+  page3.querySelectorAll('p').forEach(function(p) { p.style.display = 'none'; });
+
+  // Split overflow rows into chunks
+  var chunks = [];
+  var rem = overflowRows.slice();
+  while (rem.length > 0) { chunks.push(rem.splice(0, MAX_ROWS_CONT)); }
+
+  // Get the logo/address block HTML from page 3 to reuse
+  var logoBlock = page3.querySelector('.logo-block');
+  var logoHTML  = logoBlock ? logoBlock.outerHTML : '';
+  var footerEl  = page3.querySelector('.page-footer');
+  var footerHTML = footerEl ? footerEl.outerHTML : '';
+
+  // Grab the green-header table column structure from the original table
+  var origTable = page3.querySelector('#wo-trades-table');
+  var colgroupHTML = '', theadHTML = '';
+  if (origTable) {
+    var cg = origTable.querySelector('colgroup');
+    if (cg) colgroupHTML = cg.outerHTML;
+    var th = origTable.querySelector('thead');
+    if (th) theadHTML = th.outerHTML;
+  }
+  // Get tfoot HTML for reuse on last page
+  var tfootHTML = tfoot ? tfoot.outerHTML.replace('style="display: none;"','').replace('style="display:none"','') : '';
+
+  // Get instruction paragraphs HTML for last page
+  var instrHTML = '';
+  page3.querySelectorAll('p').forEach(function(p) {
+    instrHTML += p.outerHTML.replace(/style="[^"]*display:\s*none[^"]*"/g, '');
+  });
+
+  // Get page 3 number for labeling
+  var p3Span = page3.querySelector('.page-number');
+  var p3Num  = p3Span ? parseInt(p3Span.textContent) || 3 : 3;
+
+  // Insert continuation pages before page 4
+  var page4 = wrapClone.querySelector('#wo-page4');
+  var insertBefore = page4 || null;
+
+  chunks.forEach(function(chunk, idx) {
+    var isLast = idx === chunks.length - 1;
+    var pageNum = p3Num + idx + 1; // 3→4, shifts all subsequent pages
+
+    var contDiv = document.createElement('div');
+    contDiv.className = 'page';
+    contDiv.id = 'wo-page3-cont-' + (idx + 1);
+
+    // Build inner HTML
+    var inner = logoHTML;
+    inner += '<div style="font-size:11px;font-weight:700;color:#555;margin-bottom:6px;margin-top:56px;">ADDITIONAL TRADES (CONTINUED)</div>';
+    inner += '<table style="width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed;">';
+    inner += colgroupHTML + theadHTML;
+    inner += '<tbody>';
+    chunk.forEach(function(r) { inner += r.outerHTML; });
+    inner += '</tbody>';
+    if (isLast) inner += tfootHTML;
+    inner += '</table>';
+    if (isLast) inner += instrHTML;
+    inner += footerHTML;
+    inner += '<span class="page-number">' + pageNum + '</span>';
+
+    contDiv.innerHTML = inner;
+    wrapClone.insertBefore(contDiv, insertBefore);
+  });
+
+  // Re-number pages that come after page 3 (page 4 onward shift up by chunk count)
+  var shift = chunks.length;
+  var renum = wrapClone.querySelectorAll('.page-number');
+  renum.forEach(function(sp) {
+    var n = parseInt(sp.textContent);
+    if (!isNaN(n) && n > p3Num) sp.textContent = n + shift;
+  });
+}
+
 function printDoc() {
   // Ensure cover logo is populated
   var coverLogo = document.getElementById('wo-cover-logo');
@@ -3351,6 +3451,8 @@ function printDoc() {
   // Force cover page visible in clone
   var cc = wrapClone.querySelector('#wo-cover-page');
   if (cc) { cc.style.display = 'flex'; }
+  // Split page 3 trades into continuation pages if needed
+  splitPage3Trades(wrapClone);
 
   // Collect all <style> tags
   var styles = Array.from(document.querySelectorAll('style')).map(function(s){ return s.outerHTML; }).join('');
