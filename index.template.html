@@ -1658,21 +1658,20 @@ const _SHEETS_KEY='AIzaSyAmRLupl4GwVHbnb509Sm5QhWbsqVdjG2g';
 // 23:TotalAreaSQ 24:MetalSQ 25:RidgesFT 26:HipsFT 27:ValleysFT
 // 28:RakesFT 29:EavesFT 30:FlashingFT 31:StepFlashingFT 32:HighRoofSQ
 // 33:Facets 34:TransitionsFT 35:GeneralNotes
-async function fetchJobData(){
+function fetchJobData(){
   const jobNum=(document.getElementById('fc-wo').value||'').trim();
   const status=document.getElementById('fetch-status');
   const btn=document.getElementById('btn-fetch');
   if(!jobNum){status.style.color='var(--red)';status.textContent='Enter a job number first.';return;}
+  if(!window.parent||typeof window.parent.fetchUpgradesJobData!=='function'){
+    status.style.color='var(--red)';status.textContent='Error: parent fetch not available.';return;
+  }
   btn.disabled=true;btn.style.opacity='.5';btn.textContent='Loading…';
   status.style.color='var(--txt3)';status.textContent='Fetching from Google Sheets…';
-  try{
-    const url=`https://sheets.googleapis.com/v4/spreadsheets/${_SHEET_ID}/values/A%3AAJ?key=${_SHEETS_KEY}`;
-    const res=await fetch(url);
-    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||`HTTP ${res.status}`);}
-    const data=await res.json();
-    const rows=(data.values||[]).slice(1);
-    const match=rows.find(r=>(r[0]||'').trim().toLowerCase()===jobNum.toLowerCase());
-    if(!match){status.style.color='var(--red)';status.textContent=`No record found for job &quot;${jobNum}&quot;.`;return;}
+  window.parent.fetchUpgradesJobData(jobNum,function(match,err){
+    btn.disabled=false;btn.style.opacity='1';btn.textContent='Fetch';
+    if(err){status.style.color='var(--red)';status.textContent='Error: '+err;return;}
+    if(!match){status.style.color='var(--red)';status.textContent='No record found for job &quot;'+jobNum+'&quot;.';return;}
     const n=(i)=>parseFloat(match[i])||0;
     // Geometry
     document.getElementById('g-sq').value=n(23)||'';
@@ -1695,12 +1694,8 @@ async function fetchJobData(){
     if(notes)document.getElementById('fc-notes').value=notes;
     // Rebuild and recalc
     buildMatUI();calc();saveState();
-    status.style.color='var(--green)';status.textContent=`✓ Loaded data for job ${jobNum}`;
-  }catch(e){
-    status.style.color='var(--red)';status.textContent=`Error: ${e.message}`;
-  }finally{
-    btn.disabled=false;btn.style.opacity='1';btn.textContent='Fetch';
-  }
+    status.style.color='var(--green)';status.textContent='✓ Loaded data for job '+jobNum;
+  });
 }
 </script>
 </body>
@@ -4592,6 +4587,39 @@ window.saveUpgradesCommission = function(data) {
       }
     })
     .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(t);});return r.json();});
+};
+
+// Fetch job measurement data from the upgrades sheet and pass match row to callback(row, error)
+var UPGRADES_FETCH_SHEET_ID = '1pgp5aW8e24JuYGDZGO9Wt5koer-sSU7FrBlwL55jevU';
+var UPGRADES_FETCH_GID      = 104064159;
+window.fetchUpgradesJobData = function(jobNum, callback) {
+  var tok;
+  getGSToken().then(function(t) {
+    tok = t;
+    // Resolve the tab name from the GID
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + UPGRADES_FETCH_SHEET_ID +
+      '?fields=sheets.properties', {headers: {Authorization: 'Bearer ' + tok}});
+  }).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error('Metadata error: ' + t); });
+    return r.json();
+  }).then(function(meta) {
+    var sheet = (meta.sheets || []).find(function(s) {
+      return s.properties && s.properties.sheetId === UPGRADES_FETCH_GID;
+    });
+    var tabName = sheet ? sheet.properties.title : null;
+    var range = tabName ? encodeURIComponent(tabName) + '!A:AJ' : 'A%3AAJ';
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + UPGRADES_FETCH_SHEET_ID +
+      '/values/' + range, {headers: {Authorization: 'Bearer ' + tok}});
+  }).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error('Sheets error: ' + t); });
+    return r.json();
+  }).then(function(data) {
+    var rows = (data.values || []).slice(1);
+    var match = rows.find(function(r) { return (r[0] || '').trim().toLowerCase() === jobNum.toLowerCase(); });
+    callback(match || null, null);
+  }).catch(function(e) {
+    callback(null, e.message);
+  });
 };
 
 function parseWeatherNums(raw){return raw.split(/[\n,]+/).map(function(n){return toE164(n.trim());}).filter(Boolean);}
