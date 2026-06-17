@@ -1407,6 +1407,7 @@ function calc(){try{
     const desiredExist=ventCounts[k].desiredExist||0;
     const desiredNew=ventCounts[k].desired||0;
     const removed=Math.max(0,existing-desiredExist);
+    const removalLabor=Math.max(0,removed-desiredNew);
     const totalAfter=desiredExist+desiredNew;
     let totalCost,existingCost;
     if(k==='ridge'){
@@ -1417,8 +1418,8 @@ function calc(){try{
       existingCost=existing*(opt.costEa||0)*1.08;
     }
     let cost=totalCost-existingCost;
-    if(removed>0&&(k==='box'||k==='turbine'||k==='power')){
-      cost+=removed*35;
+    if(removalLabor>0&&(k==='box'||k==='turbine'||k==='power')){
+      cost+=removalLabor*35;
     }
     if(desiredNew>0&&(k==='power'||k==='solar')){
       cost+=desiredNew*50;
