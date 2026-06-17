@@ -3228,12 +3228,13 @@ function checkRidgeCapOnColorChange() {
     woInitTradesTable();
     ['sig-c1','sig-c2','sig-c3','sig-h1','sig-h2','sig-pm','sig-ppa',
      'init-1','init-2','init-3','init-4'].forEach(initSig);
-    document.querySelectorAll('.cb').forEach(function(cb) {
-      cb.addEventListener('click', function() {
-        this.classList.toggle('checked');
-        this.textContent = this.classList.contains('checked') ? '✓' : '';
-      });
-    });
+  });
+  // Single delegated handler — avoids double-fire from duplicate DOMContentLoaded blocks
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('cb')) {
+      e.target.classList.toggle('checked');
+      e.target.textContent = e.target.classList.contains('checked') ? '✓' : '';
+    }
   });
 })();
 
@@ -3768,12 +3769,6 @@ function checkRidgeCapOnColorChange() {
   document.addEventListener('DOMContentLoaded', function() {
     ['sig-c1','sig-c2','sig-c3','sig-h1','sig-h2','sig-pm','sig-ppa',
      'init-1','init-2','init-3','init-4'].forEach(initSig);
-    document.querySelectorAll('.cb').forEach(function(cb) {
-      cb.addEventListener('click', function() {
-        this.classList.toggle('checked');
-        this.textContent = this.classList.contains('checked') ? '✓' : '';
-      });
-    });
   });
 })();
 
