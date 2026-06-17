@@ -1588,14 +1588,14 @@ function exportPDF(){
   document.getElementById('psig').style.display='block';
   document.getElementById('ph').style.display='block';
   // Use popup window so print captures only the commission sheet, not the parent page
-  const styles=Array.from(document.querySelectorAll('style,link[rel="stylesheet"]')).map(s=>s.outerHTML).join('');
+  const styles=Array.from(document.querySelectorAll('style,link[rel=&quot;stylesheet&quot;]')).map(s=>s.outerHTML).join('');
   const bodyClone=document.body.cloneNode(true);
   // Hide no-print elements in clone
   bodyClone.querySelectorAll('.no-print').forEach(el=>el.style.display='none');
   const win=window.open('','_blank');
   if(!win){window.print();return;}
-  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8">');
-  win.document.write('<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">');
+  win.document.write('<!DOCTYPE html><html><head><meta charset=&quot;utf-8&quot;>');
+  win.document.write('<link href=&quot;https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap&quot; rel=&quot;stylesheet&quot;>');
   win.document.write(styles);
   win.document.write('<style>@page{size:letter;margin:0.5in;}body{margin:0;background:#fff;}</style>');
   win.document.write('</head><body>');
