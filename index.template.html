@@ -1587,31 +1587,23 @@ function exportPDF(){
   document.getElementById('pnotes').style.display=notes?'block':'none';
   document.getElementById('psig').style.display='block';
   document.getElementById('ph').style.display='block';
-  // Use popup window so print captures only the commission sheet, not the parent page
-  const styles=Array.from(document.querySelectorAll('style,link[rel=&quot;stylesheet&quot;]')).map(s=>s.outerHTML).join('');
+  const styles=Array.from(document.querySelectorAll('style')).map(s=>s.outerHTML).join('');
   const bodyClone=document.body.cloneNode(true);
-  // Hide no-print elements in clone
   bodyClone.querySelectorAll('.no-print').forEach(el=>el.style.display='none');
-  const win=window.open('','_blank');
-  if(!win){window.print();return;}
-  win.document.write('<!DOCTYPE html><html><head><meta charset=&quot;utf-8&quot;>');
-  win.document.write('<link href=&quot;https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap&quot; rel=&quot;stylesheet&quot;>');
-  win.document.write(styles);
-  win.document.write('<style>@page{size:letter;margin:0.5in;}body{margin:0;background:#fff;}</style>');
-  win.document.write('</head><body>');
-  win.document.write(bodyClone.innerHTML);
-  win.document.write('</body></html>');
-  win.document.close();
-  win.focus();
-  setTimeout(function(){
-    try{
-      win.print();
-      win.addEventListener('afterprint',function(){try{win.close();}catch(e){}});
-      setTimeout(function(){try{win.close();}catch(e){}},4000);
-    }catch(e){try{win.close();}catch(ce){}}
-  },800);
-  // Hide print-only sections after sending to popup
-  setTimeout(()=>{['psig','ph','pnotes'].forEach(id=>document.getElementById(id).style.display='none');},300);
+  const html=`<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><link href='https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&display=swap' rel='stylesheet'>${styles}<style>@page{size:letter;margin:0.5in;}body{margin:0;background:#fff;}</style></head><body>${bodyClone.innerHTML}</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const win=window.open(url,'_blank');
+  if(!win){
+    // Popup blocked — download the file so user can open and print manually
+    const a=document.createElement('a');
+    a.href=url;a.download='commission-cheat-sheet.html';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},5000);
+  } else {
+    setTimeout(function(){URL.revokeObjectURL(url);},30000);
+  }
+  setTimeout(function(){['psig','ph','pnotes'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});},300);
 }
 
 // HISTORY
