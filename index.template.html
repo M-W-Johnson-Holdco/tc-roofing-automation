@@ -1443,7 +1443,7 @@ function calc(){try{
   showSliderResult('vent',ventUpgradeCost,ventPct);
   totUpgradeCost+=ventUpgradeCost;
 
-  const ventTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desired,0);
+  const ventTotal=Object.values(ventCounts).reduce((a,v)=>a+v.desiredExist+v.desired,0);
   rows.push({name:'Ventilation',selName:'Mixed (see counts)',upgCost:ventUpgradeCost,hoCharge:finalVentHO,comm:finalVentComm,qty:ventTotal+' units',isStd:ventUpgradeCost===0});
 
   // Discount — only subtracts from total price charged (not from upgrade cost)
