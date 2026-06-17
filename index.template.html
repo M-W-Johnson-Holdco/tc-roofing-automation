@@ -2160,7 +2160,7 @@ function fetchJobData(){
         <option>Designer - Top Tier</option>
         <option>Designer - Premium</option>
       </select>
-      &nbsp;&nbsp; HOA Approval Required? <span class="cb"></span></div>
+      &nbsp;&nbsp; HOA Approval Required? <span class="cb" id="wo-cb-hoa"></span></div>
     <div class="row">HOA Approval Plan: <textarea id="wo-f-hoa-plan" class="fi xl" rows="1" style="width:380px;"></textarea></div>
   </div>
 
@@ -2467,11 +2467,11 @@ function fetchJobData(){
         <span style="color:#ff0000; font-weight:700;">WILL REMOVE</span>
         all old flashing unless specified to be part of pest control warranty.
       </div>
-      <div><span class="cb"></span> <strong style="font-size:11px;">YES</strong></div>
+      <div><span class="cb" id="wo-cb-remove-flashing"></span> <strong style="font-size:11px;">YES</strong></div>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
       <span style="font-size:11px; font-weight:700;">OK WITH SATURDAY BUILD?</span>
-      <span class="cb"></span> <strong style="font-size:11px;">YES</strong>
+      <span class="cb" id="wo-cb-saturday"></span> <strong style="font-size:11px;">YES</strong>
     </div>
   </div>
 
@@ -2607,15 +2607,15 @@ function fetchJobData(){
         </tr>
       </thead>
       <tbody>
-        <tr><td><textarea id="wo-f78" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f79" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
-        <tr><td><textarea id="wo-f80" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f81" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
-        <tr><td><textarea id="wo-f82" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f83" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
-        <tr><td><textarea id="wo-f84" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f85" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
-        <tr><td><textarea id="wo-f86" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f87" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
-        <tr><td><textarea id="wo-f88" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f89" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
-        <tr><td><textarea id="wo-f90" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f91" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
-        <tr><td><textarea id="wo-f92" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f93" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
-        <tr><td><textarea id="wo-f94" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f95" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb"></span></td></tr>
+        <tr><td><textarea id="wo-f78" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f79" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw1"></span></td></tr>
+        <tr><td><textarea id="wo-f80" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f81" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw2"></span></td></tr>
+        <tr><td><textarea id="wo-f82" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f83" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw3"></span></td></tr>
+        <tr><td><textarea id="wo-f84" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f85" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw4"></span></td></tr>
+        <tr><td><textarea id="wo-f86" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f87" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw5"></span></td></tr>
+        <tr><td><textarea id="wo-f88" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f89" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw6"></span></td></tr>
+        <tr><td><textarea id="wo-f90" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f91" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw7"></span></td></tr>
+        <tr><td><textarea id="wo-f92" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f93" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw8"></span></td></tr>
+        <tr><td><textarea id="wo-f94" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td><textarea id="wo-f95" class="fi" rows="1" style="width:100%;min-width:0;box-sizing:border-box;"></textarea></td><td class="center"><span class="cb" id="wo-cb-aw9"></span></td></tr>
       </tbody>
     </table>
   </div>
@@ -3575,8 +3575,8 @@ function printDoc() {
     <div class="ppa-section" style="flex:1;">
       <div class="ppa-title">Checking/ Savings Account</div>
       <div style="margin-bottom:6px;">
-        <span class="cb"></span> Checking &nbsp;&nbsp;
-        <span class="cb"></span> Savings
+        <span class="cb" id="wo-cb-checking"></span> Checking &nbsp;&nbsp;
+        <span class="cb" id="wo-cb-savings"></span> Savings
       </div>
       <div class="ppa-row">Name on Acct <textarea id="wo-f123" class="fi md" rows="1"></textarea></div>
       <div class="ppa-row">Bank Name <textarea id="wo-f124" class="fi md" rows="1"></textarea></div>
@@ -3593,10 +3593,10 @@ function printDoc() {
     <div class="ppa-section" style="flex:1;">
       <div class="ppa-title">Credit Card</div>
       <div style="margin-bottom:8px; line-height:2;">
-        <span class="cb"></span> Visa &nbsp;&nbsp;&nbsp;&nbsp;
-        <span class="cb"></span> MasterCard<br>
-        <span class="cb"></span> AMEX &nbsp;&nbsp;
-        <span class="cb"></span> Discover
+        <span class="cb" id="wo-cb-visa"></span> Visa &nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="cb" id="wo-cb-mc"></span> MasterCard<br>
+        <span class="cb" id="wo-cb-amex"></span> AMEX &nbsp;&nbsp;
+        <span class="cb" id="wo-cb-discover"></span> Discover
       </div>
       <div class="ppa-row">Cardholder Name <textarea id="wo-f128" class="fi md masked-field" rows="1"></textarea></div>
       <div class="ppa-row">Account Number <textarea id="wo-f129" class="fi md masked-field" rows="1"></textarea></div>
@@ -6632,6 +6632,7 @@ document.addEventListener("click", function(e){
 // =====================================================================
 // WORK ORDER TAB
 // =====================================================================
+var WO_CB_IDS = ['wo-cb-hoa','wo-cb-remove-flashing','wo-cb-saturday','wo-cb-checking','wo-cb-savings','wo-cb-visa','wo-cb-mc','wo-cb-amex','wo-cb-discover','wo-cb-aw1','wo-cb-aw2','wo-cb-aw3','wo-cb-aw4','wo-cb-aw5','wo-cb-aw6','wo-cb-aw7','wo-cb-aw8','wo-cb-aw9'];
 var WO_FIELD_IDS = ['wo-tax-not-included', 'shingle-type', 'shingle-color', 'ridgecap-type', 'starter-type', 'underlayment-type', 'valley-type', 'warranty-sel', 'pd1', 'pa1', 'pp1', 'pb1', 'pd2', 'pa2', 'pp2', 'pb2', 'pd3', 'pa3', 'pp3', 'pb3', 'pd4', 'pa4', 'pp4', 'pb4', 'pd5', 'pa5', 'pp5', 'pb5', 'total-remaining', 'wo-f1', 'wo-f2', 'wo-f3', 'wo-f4', 'wo-f5', 'wo-f6', 'wo-f7', 'wo-f8', 'wo-f9', 'wo-f10', 'wo-f11', 'wo-f12', 'wo-f13', 'wo-f14', 'wo-f15', 'wo-f16', 'wo-f17', 'wo-f18', 'wo-f19', 'wo-f20', 'wo-f21', 'wo-f22', 'wo-f23', 'wo-f24', 'wo-f25', 'wo-f26', 'wo-f27', 'wo-f28', 'wo-f29', 'wo-f30', 'wo-f31', 'wo-f32', 'wo-f33', 'wo-f34', 'wo-f35', 'wo-f36', 'wo-f37', 'wo-f38', 'wo-f39', 'wo-f40', 'wo-f41', 'wo-f42', 'wo-f43', 'wo-f44', 'wo-f45', 'wo-f46', 'wo-f47', 'wo-f78', 'wo-f79', 'wo-f80', 'wo-f81', 'wo-f82', 'wo-f83', 'wo-f84', 'wo-f85', 'wo-f86', 'wo-f87', 'wo-f88', 'wo-f89', 'wo-f90', 'wo-f91', 'wo-f92', 'wo-f93', 'wo-f94', 'wo-f95', 'wo-f96', 'wo-f97', 'wo-f98', 'wo-f99', 'wo-f100', 'wo-f101', 'wo-f102', 'wo-f103', 'wo-f104', 'wo-f105', 'wo-f106', 'wo-f107', 'wo-f108', 'wo-f109', 'wo-f110', 'wo-f111', 'wo-f112', 'wo-f113', 'wo-f114', 'wo-f115', 'wo-f116', 'wo-f117', 'wo-f118', 'wo-f119', 'wo-f120', 'wo-f121', 'wo-f122', 'wo-f123', 'wo-f124', 'wo-f125', 'wo-f126', 'wo-f127', 'wo-f128', 'wo-f129', 'wo-f130', 'wo-f131', 'wo-f132', 'wo-ins-est-date', 'wo-trades-data', 'wo-f-hoa-plan', 'wo-blackout-dates', 'wo-vent-de-ridge', 'wo-vent-de-box', 'wo-vent-de-dome', 'wo-vent-de-power', 'wo-vent-de-power-cover', 'wo-vent-de-solar', 'wo-vent-de-turbine'];
 var WO_SIG_IDS   = ['sig-h1', 'sig-h2', 'sig-pm', 'sig-c1', 'sig-c2', 'sig-c3', 'sig-ppa'];
 var WO_SHEET_TAB = "WorkOrders";
@@ -6649,6 +6650,11 @@ function woGetAllFields() {
     if (el.type === 'checkbox') data[id] = el.checked;
     else if (el.tagName === 'SELECT') data[id] = el.value;
     else data[id] = el.value || '';
+  });
+  // Capture .cb span checkboxes
+  WO_CB_IDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) data[id] = el.classList.contains('checked');
   });
   // Capture canvas signatures as base64
   WO_SIG_IDS.forEach(function(id) {
@@ -6674,6 +6680,13 @@ function woSetAllFields(data) {
       var evt = new Event('input', {bubbles: true});
       el.dispatchEvent(evt);
     }
+  });
+  // Restore .cb span checkboxes
+  WO_CB_IDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el || data[id] === undefined) return;
+    if (data[id]) { el.classList.add('checked'); el.textContent = '✓'; }
+    else { el.classList.remove('checked'); el.textContent = ''; }
   });
   // Restore signatures
   WO_SIG_IDS.forEach(function(id) {
@@ -7010,6 +7023,10 @@ function woClear() {
     if (el.type === 'checkbox') el.checked = false;
     else if (el.tagName === 'SELECT') el.selectedIndex = 0;
     else el.value = '';
+  });
+  WO_CB_IDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.classList.remove('checked'); el.textContent = ''; }
   });
   WO_SIG_IDS.forEach(function(id) {
     var canvas = document.getElementById(id);
