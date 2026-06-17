@@ -3363,6 +3363,14 @@ function toggleMaskedFields() {
 var MAX_ROWS_PAGE3 = 10;
 var MAX_ROWS_CONT  = 16;
 
+// Returns the first safe split index <= limit that doesn't cut a merge group
+function safeTradeBreak(rows, limit) {
+  if (limit >= rows.length) return rows.length;
+  var i = limit;
+  while (i > 0 && rows[i] && rows[i].getAttribute('data-merged') === '1') { i--; }
+  return i > 0 ? i : limit; // fallback: if entire block is one group, cut anyway
+}
+
 function splitPage3Trades(wrapClone) {
   var page3 = wrapClone.querySelector('#wo-page3');
   if (!page3) return;
@@ -3371,8 +3379,11 @@ function splitPage3Trades(wrapClone) {
   var allRows = Array.from(tbody.querySelectorAll('tr'));
   if (allRows.length <= MAX_ROWS_PAGE3) return; // fits — no split needed
 
+  // Find safe break point for page 3 (don't cut mid-merge-group)
+  var p3Break = safeTradeBreak(allRows, MAX_ROWS_PAGE3);
+
   // Remove overflow rows from page 3's tbody
-  var overflowRows = allRows.slice(MAX_ROWS_PAGE3);
+  var overflowRows = allRows.slice(p3Break);
   overflowRows.forEach(function(r) { tbody.removeChild(r); });
 
   // On page 3, hide tfoot totals, add-row button, and instruction paragraphs
@@ -3381,10 +3392,13 @@ function splitPage3Trades(wrapClone) {
   if (tfoot) tfoot.style.display = 'none';
   page3.querySelectorAll('p').forEach(function(p) { p.style.display = 'none'; });
 
-  // Split overflow rows into chunks
+  // Split overflow rows into chunks, respecting merge group boundaries
   var chunks = [];
   var rem = overflowRows.slice();
-  while (rem.length > 0) { chunks.push(rem.splice(0, MAX_ROWS_CONT)); }
+  while (rem.length > 0) {
+    var breakAt = safeTradeBreak(rem, MAX_ROWS_CONT);
+    chunks.push(rem.splice(0, breakAt));
+  }
 
   // Get the logo/address block HTML from page 3 to reuse
   var logoBlock = page3.querySelector('.logo-block');
