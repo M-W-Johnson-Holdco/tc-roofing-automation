@@ -7078,44 +7078,34 @@ function woFetchAllRows() {
 
 // Sync existing vent counts from commissions calculator iframe into WO fields
 function woSyncVentFromCalc() {
-  try {
-    var iframe = document.querySelector('#tab-commissions iframe');
-    if (!iframe || !iframe.contentDocument) return;
-    var iDoc = iframe.contentDocument;
-    var ventSection = iDoc.getElementById('mr-vent');
-    if (!ventSection) { woStatus('Commissions calculator vent data not loaded yet.', false); return; }
-    // inputs order: ridge(0,1,2) | box(3,4,5) | power(6,7,8,9 w/coverRR) | solar(10,11,12) | turbine(13,14,15) | dome(16,17,18)
-    var inputs = ventSection.querySelectorAll('input[type="number"]');
-    var map = [
-      ['wo-f16', 0],   // Ridge Vent exist
-      ['wo-f19', 3],   // Box Vents exist
-      ['wo-f23', 6],   // Power Vents exist
-      ['wo-f25', 10],  // Solar Power Vents exist
-      ['wo-f27', 13],  // Turbine exist
-      ['wo-f21', 16]   // Dome Vents exist
+  var jobNum = (document.getElementById('wo-job-input').value || '').trim();
+  if (!jobNum) { woStatus('Enter a job number first.', false); return; }
+  woStatus('Fetching vent data…', true);
+  window.fetchUpgradesJobData(jobNum, function(match, err) {
+    if (err)    { woStatus('Sync error: ' + err, false); return; }
+    if (!match) { woStatus('No form response found for job ' + jobNum + '.', false); return; }
+    var n = function(i){ return parseFloat(match[i]) || 0; };
+    // Column mapping: 2=Ridge(FT) 3=Power 4=Solar 5=Turbine 6=Dome 7=Box 9=SatDishes
+    var ventMap = [
+      ['wo-f16', n(2)],   // Ridge Vent (FT)
+      ['wo-f19', n(7)],   // Box Vents
+      ['wo-f21', n(6)],   // Dome Vents
+      ['wo-f23', n(3)],   // Power Vents
+      ['wo-f25', n(4)],   // Solar Power Vents
+      ['wo-f27', n(5)],   // Turbine
     ];
     var synced = 0;
-    map.forEach(function(pair) {
+    ventMap.forEach(function(pair) {
       var el = document.getElementById(pair[0]);
-      var inp = inputs[pair[1]];
-      if (el && inp) {
-        var val = inp.value;
-        if (val && val !== '0') { el.value = val; synced++; }
-      }
+      if (el && pair[1]) { el.value = pair[1]; synced++; }
     });
-    // Satellite count — read directly from iframe's satCount variable
-    try {
-      var sat = iframe.contentWindow.satCount;
-      if (typeof sat === 'number' && sat > 0) {
-        var satEl = document.getElementById('wo-f42');
-        if (satEl) { satEl.value = sat; synced++; }
-      }
-    } catch(se) {}
-    if (synced > 0) woStatus('✓ Synced ' + synced + ' vent/satellite counts from calculator', true);
-    else woStatus('No non-zero vent/satellite counts found in calculator.', false);
-  } catch(e) { woStatus('Sync error: ' + e.message, false); }
+    var sat = n(9);
+    var satEl = document.getElementById('wo-f42');
+    if (satEl && sat) { satEl.value = sat; synced++; }
+    if (synced > 0) woStatus('✓ Synced ' + synced + ' vent/satellite counts from form responses', true);
+    else woStatus('No non-zero vent/satellite counts found for job ' + jobNum + '.', false);
+  });
 }
-
 function woLoad() {
   var jobNum = (document.getElementById('wo-job-input').value || '').trim();
   if (!jobNum) { woStatus('Enter a job number first.', false); return; }
