@@ -7127,7 +7127,6 @@ function woLoad() {
       return;
     }
     woSetAllFields(found.data);
-    woSyncVentFromCalc();
     woStatus('✓ Loaded work order for job ' + jobNum, true);
   }).catch(function(e) { woStatus('Error: ' + e.message, false); });
 }
