@@ -3501,6 +3501,20 @@ function printDoc() {
   // Force cover page visible in clone
   var cc = wrapClone.querySelector('#wo-cover-page');
   if (cc) { cc.style.display = 'flex'; }
+  // Sync canvas signatures — cloneNode copies the element but not pixel data;
+  // replace each canvas in the clone with an <img> of its data URL
+  var liveCanvases  = Array.from(wrap.querySelectorAll('canvas'));
+  var cloneCanvases = Array.from(wrapClone.querySelectorAll('canvas'));
+  liveCanvases.forEach(function(cv, i) {
+    var cl = cloneCanvases[i]; if (!cl) return;
+    var img = document.createElement('img');
+    img.src = cv.toDataURL();
+    img.width  = cv.width;
+    img.height = cv.height;
+    img.style.cssText = cl.style.cssText;
+    cl.parentNode.replaceChild(img, cl);
+  });
+
   // Split page 3 trades into continuation pages if needed
   splitPage3Trades(wrapClone);
 
