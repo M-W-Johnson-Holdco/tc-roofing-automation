@@ -2486,7 +2486,18 @@ function fetchJobData(){
 
   <div style="margin-bottom:12px;">
     <div style="font-size:12px; font-weight:600; margin-bottom:4px;">BLACKOUT DATES <span style="font-weight:400;font-size:11px;">(dates work cannot be scheduled)</span>:</div>
-    <textarea id="wo-blackout-dates" class="dashed-box" style="min-height:60px;width:100%;box-sizing:border-box;resize:vertical;font-size:11px;font-family:Arial,Helvetica,sans-serif;line-height:1.5;"></textarea>
+    <input type="hidden" id="wo-blackout-dates">
+    <table id="wo-blackout-table" style="width:100%;border-collapse:collapse;font-size:11px;font-family:Arial,Helvetica,sans-serif;">
+      <thead>
+        <tr>
+          <th style="width:130px;text-align:left;padding:3px 6px;border:1px solid #999;background:#f0f0f0;font-weight:600;">Date</th>
+          <th style="text-align:left;padding:3px 6px;border:1px solid #999;background:#f0f0f0;font-weight:600;">Description</th>
+          <th style="width:26px;border:1px solid #999;background:#f0f0f0;"></th>
+        </tr>
+      </thead>
+      <tbody id="wo-blackout-tbody"></tbody>
+    </table>
+    <button type="button" onclick="woBlackoutAddRow()" style="margin-top:5px;font-size:10px;padding:2px 8px;background:#e8e8e8;border:1px solid #aaa;border-radius:3px;cursor:pointer;">+ Add Row</button>
   </div>
 
   <div class="page-footer">
@@ -3227,6 +3238,7 @@ function checkRidgeCapOnColorChange() {
   window.clearSig = clearSigFn;
   document.addEventListener('DOMContentLoaded', function() {
     woInitTradesTable();
+    woBlackoutDeserialize('');
     ['sig-c1','sig-c2','sig-c3','sig-h1','sig-h2','sig-pm','sig-ppa',
      'init-1','init-2','init-3','init-4'].forEach(initSig);
   });
@@ -6725,6 +6737,7 @@ function woSetAllFields(data) {
     img.src = data[key];
   });
   if (data['wo-trades-data']) woDeserializeTrades(data['wo-trades-data']);
+  woBlackoutDeserialize(data['wo-blackout-dates'] || '');
 }
 
 // ── INSURANCE ESTIMATE TRADES TABLE ──────────────────────────────────────
@@ -7181,6 +7194,50 @@ function woSave() {
   }).catch(function(e) { woStatus('Error saving: ' + e.message, false); });
 }
 
+// ── BLACKOUT DATES TABLE ─────────────────────────────────────────────────
+function woBlackoutAddRow(date, desc) {
+  var tbody = document.getElementById('wo-blackout-tbody');
+  if (!tbody) return;
+  var tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td style="padding:2px 4px;border:1px solid #ccc;">' +
+      '<input type="date" style="width:120px;font-size:11px;border:none;font-family:Arial,Helvetica,sans-serif;background:transparent;" value="' + (date||'') + '">' +
+    '</td>' +
+    '<td style="padding:2px 4px;border:1px solid #ccc;">' +
+      '<input type="text" style="width:100%;font-size:11px;border:none;font-family:Arial,Helvetica,sans-serif;background:transparent;" value="' + (desc||'').replace(/"/g, '&quot;') + '" placeholder="Description...">' +
+    '</td>' +
+    '<td style="text-align:center;border:1px solid #ccc;">' +
+      '<button type="button" onclick="this.closest('tr').remove();woBlackoutSerialize();" style="font-size:10px;background:none;border:none;cursor:pointer;color:#a00;">✕</button>' +
+    '</td>';
+  var inputs = tr.querySelectorAll('input');
+  inputs.forEach(function(inp) { inp.addEventListener('change', woBlackoutSerialize); inp.addEventListener('input', woBlackoutSerialize); });
+  tbody.appendChild(tr);
+  woBlackoutSerialize();
+}
+
+function woBlackoutSerialize() {
+  var tbody = document.getElementById('wo-blackout-tbody');
+  var hidden = document.getElementById('wo-blackout-dates');
+  if (!tbody || !hidden) return;
+  var rows = [];
+  tbody.querySelectorAll('tr').forEach(function(tr) {
+    var inputs = tr.querySelectorAll('input[type=date], input[type=text]');
+    rows.push({ date: inputs[0] ? inputs[0].value : '', desc: inputs[1] ? inputs[1].value : '' });
+  });
+  hidden.value = JSON.stringify(rows);
+}
+
+function woBlackoutDeserialize(val) {
+  var tbody = document.getElementById('wo-blackout-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!val) { woBlackoutAddRow(); return; }
+  var rows;
+  try { rows = JSON.parse(val); } catch(e) { woBlackoutAddRow(); return; }
+  if (!Array.isArray(rows) || !rows.length) { woBlackoutAddRow(); return; }
+  rows.forEach(function(r) { woBlackoutAddRow(r.date || '', r.desc || ''); });
+}
+
 function woClear() {
   if (!confirm('Clear all work order fields? This cannot be undone.')) return;
   var inputs = document.querySelectorAll('#tab-workorder input, #tab-workorder textarea, #tab-workorder select');
@@ -7196,6 +7253,7 @@ function woClear() {
   document.querySelectorAll('#tab-workorder .cb').forEach(function(cb) {
     cb.classList.remove('checked'); cb.textContent = '';
   });
+  woBlackoutDeserialize('');
   woStatus('Form cleared.', true);
 }
 
@@ -7243,7 +7301,7 @@ function commPrintExport() {
 }
 
 function woApplyRole(role) {
-  var isAdmin = (role === 'admin');
+  var isAdmin = (role === 'admin' || role === 'sales');
   document.querySelectorAll('.wo-admin-only').forEach(function(el) {
     el.style.display = isAdmin ? '' : 'none';
   });
