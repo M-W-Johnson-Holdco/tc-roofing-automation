@@ -1744,7 +1744,7 @@ function fetchJobData(){
         <input type="text" id="wo-job-input" placeholder="e.g. 2025-0142" style="width:100%;">
       </div>
       <button class="btn btn-secondary" onclick="woLoad()">📂 Load</button>
-      <button class="btn btn-primary wo-admin-only" onclick="woSave()">💾 Save</button>
+      <button class="btn btn-primary wo-save-only" onclick="woSave()">💾 Save</button>
       <button class="btn btn-warn wo-admin-only" onclick="woClear()">🗑️ Clear Form</button>
     </div>
     <div id="wo-status" style="margin-top:10px;font-size:0.8rem;min-height:18px;"></div>
@@ -7301,9 +7301,13 @@ function commPrintExport() {
 }
 
 function woApplyRole(role) {
-  var isAdmin = (role === 'admin' || role === 'sales');
+  var isAdmin = (role === 'admin');
+  var canSave = (role === 'admin' || role === 'sales');
   document.querySelectorAll('.wo-admin-only').forEach(function(el) {
     el.style.display = isAdmin ? '' : 'none';
+  });
+  document.querySelectorAll('.wo-save-only').forEach(function(el) {
+    el.style.display = canSave ? '' : 'none';
   });
   // Rebuild commissions iframe nav now that role is known
   var iframe = document.getElementById('comm-iframe');
