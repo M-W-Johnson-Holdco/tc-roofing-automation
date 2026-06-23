@@ -5214,13 +5214,34 @@ function apptWindowLabel(prefix, key) {
     var el = document.getElementById('week-cal-pto-mini');
     if (!el) return;
     if (!ptoEvents.length) { el.style.display = 'none'; el.innerHTML = ''; return; }
-    // bucket by day
+
+    // Build a date->events map, spanning multi-day all-day events across every day they cover
+    var saturday = new Date(monday); saturday.setDate(monday.getDate() + 5);
     var byDay = {};
     ptoEvents.forEach(function(ev) {
-      var dt = ((ev.start||{}).dateTime || (ev.start||{}).date || '').slice(0,10);
-      if (!byDay[dt]) byDay[dt] = [];
-      byDay[dt].push(ev);
+      var startStr = ((ev.start||{}).dateTime || (ev.start||{}).date || '').slice(0,10);
+      var endStr   = ((ev.end||{}).dateTime   || (ev.end||{}).date   || '').slice(0,10);
+      // For all-day events end.date is exclusive (day after last day)
+      // For timed events use same start/end date
+      var cur = new Date(startStr + 'T12:00:00');
+      var endD = endStr ? new Date(endStr + 'T12:00:00') : new Date(cur);
+      // if timed event (dateTime), endD = same day as start
+      if ((ev.start||{}).dateTime) endD = new Date(cur);
+      // Walk each day from start up to (but not including) end, clamped to Mon–Sat
+      while (cur < endD || (cur <= endD && !(ev.start||{}).date)) {
+        var key = toDateStr(cur);
+        if (cur >= monday && cur <= saturday) {
+          if (!byDay[key]) byDay[key] = [];
+          // Only add once per day per event
+          var already = false;
+          for (var x = 0; x < byDay[key].length; x++) { if (byDay[key][x] === ev) { already = true; break; } }
+          if (!already) byDay[key].push(ev);
+        }
+        cur.setDate(cur.getDate() + 1);
+        if (!(ev.start||{}).date) break; // timed events: one day only
+      }
     });
+
     var cols = '';
     for (var i = 0; i < 6; i++) {
       var d = new Date(monday); d.setDate(monday.getDate() + i);
@@ -5228,7 +5249,7 @@ function apptWindowLabel(prefix, key) {
       var dayEvs = byDay[key] || [];
       var chips = dayEvs.map(function(ev) {
         var label = (ev.summary || 'PTO').replace(/\s*\(Job[^)]*\)/,'');
-        return '<div style="background:#7c3aed22;border-left:2px solid #7c3aed;border-radius:3px;padding:2px 4px;font-size:0.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + label.replace(/"/g,'&quot;') + '">' + label + '</div>';
+        return '<div style="background:#7c3aed22;border-left:2px solid #7c3aed;border-radius:3px;padding:2px 4px;font-size:0.65rem;word-break:break-word;" title="' + label.replace(/"/g,'&quot;') + '">' + label + '</div>';
       }).join('');
       cols += '<div style="min-width:80px;flex:1;border-right:1px solid var(--bdr);padding:0 5px 4px;">'
         + '<div style="font-size:0.65rem;font-weight:700;color:var(--txt3);text-align:center;padding:3px 0;border-bottom:1px solid var(--bdr);margin-bottom:3px;">' + DAY_NAMES[i] + '</div>'
