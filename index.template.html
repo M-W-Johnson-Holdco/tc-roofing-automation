@@ -218,6 +218,7 @@
       </div>
       <div id="week-cal-status" style="font-size:0.78rem;color:var(--txt3);margin-bottom:8px;min-height:16px;"></div>
       <div id="week-cal-filters" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:10px;"></div>
+      <div id="week-cal-pto-mini" style="display:none;margin-bottom:10px;"></div>
       <div id="week-cal-grid" style="overflow-x:auto;">
         <div style="color:var(--txt3);font-size:0.82rem;">Select a week and click Load.</div>
       </div>
@@ -5200,12 +5201,50 @@ function apptWindowLabel(prefix, key) {
     return null;
   }
 
+  function isPto(summary) {
+    return (summary || '').toUpperCase().indexOf('PTO') > -1;
+  }
+
   function isFiltered(summary) {
-    // returns true if this event should be SHOWN given activeFilters
+    // PTO events never appear in main grid
+    if (isPto(summary)) return false;
     var keys = Object.keys(activeFilters);
     if (!keys.length) return true; // no filter = show all
     var t = getTypeOf(summary);
     return t ? !!activeFilters[t] : true; // unknown types always show
+  }
+
+  function renderPtoMini(monday, events) {
+    var DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat'];
+    var ptoEvents = events.filter(function(ev) { return isPto(ev.summary || ''); });
+    var el = document.getElementById('week-cal-pto-mini');
+    if (!el) return;
+    if (!ptoEvents.length) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    // bucket by day
+    var byDay = {};
+    ptoEvents.forEach(function(ev) {
+      var dt = ((ev.start||{}).dateTime || (ev.start||{}).date || '').slice(0,10);
+      if (!byDay[dt]) byDay[dt] = [];
+      byDay[dt].push(ev);
+    });
+    var cols = '';
+    for (var i = 0; i < 6; i++) {
+      var d = new Date(monday); d.setDate(monday.getDate() + i);
+      var key = toDateStr(d);
+      var dayEvs = byDay[key] || [];
+      var chips = dayEvs.map(function(ev) {
+        var label = (ev.summary || 'PTO').replace(/\s*\(Job[^)]*\)/,'');
+        return '<div style="background:#7c3aed22;border-left:2px solid #7c3aed;border-radius:3px;padding:2px 4px;font-size:0.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + label.replace(/"/g,'&quot;') + '">' + label + '</div>';
+      }).join('');
+      cols += '<div style="min-width:80px;flex:1;border-right:1px solid var(--bdr);padding:0 5px 4px;">'
+        + '<div style="font-size:0.65rem;font-weight:700;color:var(--txt3);text-align:center;padding:3px 0;border-bottom:1px solid var(--bdr);margin-bottom:3px;">' + DAY_NAMES[i] + '</div>'
+        + (chips || '<div style="font-size:0.62rem;color:var(--txt3);text-align:center;padding:2px 0;">—</div>')
+        + '</div>';
+    }
+    el.style.display = 'block';
+    el.innerHTML =
+      '<div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:4px;letter-spacing:0.04em;">🏖️ PTO</div>'
+      + '<div style="display:flex;border:1px solid #7c3aed44;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div>';
   }
 
   function getMondayOf(dateStr) {
@@ -5324,6 +5363,7 @@ function apptWindowLabel(prefix, key) {
     }
     renderFilters();
     if (cachedMonday) {
+      renderPtoMini(cachedMonday, cachedEvents);
       var gridEl = document.getElementById('week-cal-grid');
       if (gridEl) gridEl.innerHTML = renderGrid(cachedMonday, buildByDay(cachedEvents));
     }
@@ -5358,6 +5398,7 @@ function apptWindowLabel(prefix, key) {
     }).then(function(results) {
       cachedEvents = [].concat.apply([], results);
       renderFilters();
+      renderPtoMini(cachedMonday, cachedEvents);
       var byDay = buildByDay(cachedEvents);
       if (gridEl) gridEl.innerHTML = renderGrid(cachedMonday, byDay);
       if (statusEl) {
