@@ -205,6 +205,24 @@
 
   <!-- ===== SCHEDULER TAB ===== -->
   <div class="section" id="tab-scheduler">
+    <!-- ── WEEK CALENDAR PREVIEW ── -->
+    <div class="card" id="week-cal-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h2 style="margin:0;">🗓️ Week Calendar</h2>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" id="week-cal-prev">◀ Prev</button>
+          <input type="date" id="week-cal-anchor" style="font-size:0.82rem;padding:4px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--surf2);color:var(--txt);">
+          <button class="btn btn-secondary btn-sm" id="week-cal-next">Next ▶</button>
+          <button class="btn btn-primary btn-sm" id="week-cal-load-btn">Load</button>
+        </div>
+      </div>
+      <div id="week-cal-status" style="font-size:0.78rem;color:var(--txt3);margin-bottom:8px;min-height:16px;"></div>
+      <div id="week-cal-filters" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:10px;"></div>
+      <div id="week-cal-grid" style="overflow-x:auto;">
+        <div style="color:var(--txt3);font-size:0.82rem;">Select a week and click Load.</div>
+      </div>
+    </div>
+
     <div class="card">
       <h2>📅 Appointment Scheduler</h2>
       <div class="alert alert-info">Look up a job by Job Number or GUID to schedule or reschedule an appointment. Sends a group SMS notification to the existing thread automatically.</div>
@@ -5060,6 +5078,229 @@ function formatTimeNice(t) {
   return h + ":" + (m < 10 ? "0" + m : m) + " " + ampm + " CST";
 }
 
+// -- Week Calendar Preview --
+(function() {
+  var TYPE_COLORS = [
+    '#4A90D9','#E67E22','#27AE60','#8E44AD','#E74C3C',
+    '#16A085','#D35400','#2980B9','#C0392B','#1ABC9C','#F39C12','#7F8C8D'
+  ];
+  var typeColorMap = {};
+  var activeFilters = {}; // type name -> true/false; empty = all shown
+  var cachedEvents = [];  // last loaded raw events
+  var cachedMonday = null;
+
+  function getApptTypes() { return typeof APPT_TYPES !== 'undefined' ? APPT_TYPES : []; }
+
+  function typeColor(summary) {
+    var apptTypes = getApptTypes();
+    for (var i = 0; i < apptTypes.length; i++) {
+      if ((summary||'').indexOf(apptTypes[i]) > -1) {
+        if (!typeColorMap[apptTypes[i]]) typeColorMap[apptTypes[i]] = TYPE_COLORS[i % TYPE_COLORS.length];
+        return typeColorMap[apptTypes[i]];
+      }
+    }
+    return '#64748b';
+  }
+
+  function getTypeOf(summary) {
+    var apptTypes = getApptTypes();
+    for (var i = 0; i < apptTypes.length; i++) {
+      if ((summary||'').indexOf(apptTypes[i]) > -1) return apptTypes[i];
+    }
+    return null;
+  }
+
+  function isFiltered(summary) {
+    // returns true if this event should be SHOWN given activeFilters
+    var keys = Object.keys(activeFilters);
+    if (!keys.length) return true; // no filter = show all
+    var t = getTypeOf(summary);
+    return t ? !!activeFilters[t] : true; // unknown types always show
+  }
+
+  function getMondayOf(dateStr) {
+    var d = dateStr ? new Date(dateStr + 'T12:00:00') : new Date();
+    var day = d.getDay();
+    var diff = (day === 0) ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    return d;
+  }
+
+  function toDateStr(d) { return d.toISOString().slice(0, 10); }
+
+  function fmt(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+
+  function fmtTime(dtStr) {
+    if (!dtStr) return '';
+    return new Date(dtStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Chicago' });
+  }
+
+  function buildByDay(events) {
+    var byDay = {};
+    events.forEach(function(ev) {
+      if (!isFiltered(ev.summary || '')) return;
+      var dtStr = ((ev.start||{}).dateTime || (ev.start||{}).date || '').slice(0,10);
+      if (!byDay[dtStr]) byDay[dtStr] = [];
+      byDay[dtStr].push(ev);
+    });
+    Object.keys(byDay).forEach(function(k) {
+      byDay[k].sort(function(a,b) {
+        return ((a.start||{}).dateTime||'') < ((b.start||{}).dateTime||'') ? -1 : 1;
+      });
+    });
+    return byDay;
+  }
+
+  function renderGrid(monday, eventsByDay) {
+    var DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat'];
+    var cols = '';
+    for (var i = 0; i < 6; i++) {
+      var d = new Date(monday); d.setDate(monday.getDate() + i);
+      var key = toDateStr(d);
+      var isToday = key === toDateStr(new Date());
+      var events = eventsByDay[key] || [];
+      var chips = events.length
+        ? events.map(function(ev) {
+            var color = typeColor(ev.summary || '');
+            var time = fmtTime((ev.start||{}).dateTime || (ev.start||{}).date);
+            var label = (ev.summary || 'Event').replace(/\s*\(Job[^)]*\)/,'');
+            return '<div style="background:' + color + '22;border-left:3px solid ' + color + ';border-radius:4px;padding:3px 5px;margin-bottom:4px;font-size:0.7rem;line-height:1.3;overflow:hidden;">' +
+              (time ? '<div style="font-weight:700;color:' + color + '">' + time + '</div>' : '') +
+              '<div style="color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (ev.summary||'').replace(/"/g,'&quot;') + '">' + label + '</div>' +
+            '</div>';
+          }).join('')
+        : '<div style="font-size:0.72rem;color:var(--txt3);text-align:center;padding:8px 0;">—</div>';
+      cols += '<div style="min-width:120px;flex:1;border-right:1px solid var(--bdr);padding:0 8px 8px;">' +
+        '<div style="font-weight:700;font-size:0.78rem;text-align:center;padding:6px 0;border-bottom:1px solid var(--bdr);margin-bottom:6px;' + (isToday ? 'color:#4A90D9;' : 'color:var(--txt2);') + '">' +
+          DAY_NAMES[i] + '<br><span style="font-size:0.72rem;font-weight:400;">' + fmt(d) + '</span>' +
+        '</div>' + chips +
+      '</div>';
+    }
+    return '<div style="display:flex;border:1px solid var(--bdr);border-radius:8px;overflow:hidden;min-width:600px;">' + cols + '</div>';
+  }
+
+  function renderFilters() {
+    var filtersEl = document.getElementById('week-cal-filters');
+    if (!filtersEl) return;
+    var apptTypes = getApptTypes();
+    // Collect which types actually appear in cached events
+    var presentTypes = {};
+    cachedEvents.forEach(function(ev) {
+      var t = getTypeOf(ev.summary||'');
+      if (t) presentTypes[t] = true;
+    });
+    var present = apptTypes.filter(function(t){ return presentTypes[t]; });
+    if (!present.length) { filtersEl.style.display = 'none'; return; }
+
+    filtersEl.style.display = 'flex';
+    var allActive = Object.keys(activeFilters).length === 0;
+    var html = '<span style="font-size:0.72rem;color:var(--txt3);align-self:center;margin-right:4px;">Filter:</span>';
+    html += '<button data-wc-filter="__all__" style="font-size:0.72rem;padding:2px 8px;border-radius:12px;border:1px solid var(--bdr);cursor:pointer;' +
+      (allActive ? 'background:#4A90D9;color:#fff;border-color:#4A90D9;' : 'background:var(--surf2);color:var(--txt3);') + '">All</button>';
+    present.forEach(function(t, i) {
+      var color = TYPE_COLORS[apptTypes.indexOf(t) % TYPE_COLORS.length];
+      var on = !allActive && !!activeFilters[t];
+      html += '<button data-wc-filter="' + t.replace(/"/g,'&quot;') + '" style="font-size:0.72rem;padding:2px 8px;border-radius:12px;border:1px solid ' + color + ';cursor:pointer;' +
+        (on ? 'background:' + color + ';color:#fff;' : 'background:' + color + '22;color:var(--txt);') + '">' + t + '</button>';
+    });
+    filtersEl.innerHTML = html;
+  }
+
+  function applyFilter(type) {
+    if (type === '__all__') {
+      activeFilters = {};
+    } else {
+      // Toggle: if already only this one on, reset to all; otherwise set only this type
+      var keys = Object.keys(activeFilters);
+      if (keys.length === 1 && activeFilters[type]) {
+        activeFilters = {};
+      } else {
+        // Multi-select: if shift-held we'd toggle, but for simplicity toggle this type
+        if (activeFilters[type]) {
+          delete activeFilters[type];
+          if (!Object.keys(activeFilters).length) activeFilters = {};
+        } else {
+          activeFilters[type] = true;
+        }
+      }
+    }
+    renderFilters();
+    if (cachedMonday) {
+      var gridEl = document.getElementById('week-cal-grid');
+      if (gridEl) gridEl.innerHTML = renderGrid(cachedMonday, buildByDay(cachedEvents));
+    }
+  }
+
+  function loadWeekCal() {
+    var anchor = (document.getElementById('week-cal-anchor')||{}).value || toDateStr(new Date());
+    cachedMonday = getMondayOf(anchor);
+    var saturday = new Date(cachedMonday); saturday.setDate(cachedMonday.getDate() + 5);
+    var statusEl = document.getElementById('week-cal-status');
+    var gridEl   = document.getElementById('week-cal-grid');
+    if (statusEl) statusEl.textContent = 'Loading…';
+    if (gridEl)   gridEl.innerHTML = '';
+
+    var timeMin = cachedMonday.toISOString().slice(0,10) + 'T00:00:00-06:00';
+    var timeMax = saturday.toISOString().slice(0,10) + 'T23:59:59-06:00';
+
+    getGCalToken().then(function(tok) {
+      var calIds = typeof getAllCalendarIds === 'function' ? getAllCalendarIds() : [];
+      var promises = calIds.map(function(calId) {
+        var url = 'https://www.googleapis.com/calendar/v3/calendars/' +
+          encodeURIComponent(calId) + '/events?singleEvents=true&orderBy=startTime' +
+          '&timeMin=' + encodeURIComponent(timeMin) +
+          '&timeMax=' + encodeURIComponent(timeMax) +
+          '&maxResults=100';
+        return fetch(url, { headers: { Authorization: 'Bearer ' + tok } })
+          .then(function(r){ return r.json(); })
+          .then(function(d){ return (d.items || []); })
+          .catch(function(){ return []; });
+      });
+      return Promise.all(promises);
+    }).then(function(results) {
+      cachedEvents = [].concat.apply([], results);
+      renderFilters();
+      var byDay = buildByDay(cachedEvents);
+      if (gridEl) gridEl.innerHTML = renderGrid(cachedMonday, byDay);
+      if (statusEl) {
+        var shown = [].concat.apply([], Object.keys(byDay).map(function(k){ return byDay[k]; })).length;
+        statusEl.textContent = 'Week of ' + fmt(cachedMonday) + ' – ' + fmt(saturday) + '  ·  ' + cachedEvents.length + ' total event' + (cachedEvents.length !== 1 ? 's' : '');
+      }
+    }).catch(function(e) {
+      if (statusEl) statusEl.textContent = 'Error: ' + e.message;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var anchorEl = document.getElementById('week-cal-anchor');
+    if (anchorEl) anchorEl.value = toDateStr(new Date());
+
+    document.getElementById('week-cal-load-btn') && document.getElementById('week-cal-load-btn').addEventListener('click', loadWeekCal);
+
+    document.getElementById('week-cal-prev') && document.getElementById('week-cal-prev').addEventListener('click', function() {
+      var anchorEl = document.getElementById('week-cal-anchor');
+      var monday = getMondayOf(anchorEl ? anchorEl.value : '');
+      monday.setDate(monday.getDate() - 7);
+      if (anchorEl) anchorEl.value = toDateStr(monday);
+      loadWeekCal();
+    });
+
+    document.getElementById('week-cal-next') && document.getElementById('week-cal-next').addEventListener('click', function() {
+      var anchorEl = document.getElementById('week-cal-anchor');
+      var monday = getMondayOf(anchorEl ? anchorEl.value : '');
+      monday.setDate(monday.getDate() + 7);
+      if (anchorEl) anchorEl.value = toDateStr(monday);
+      loadWeekCal();
+    });
+
+    document.getElementById('week-cal-anchor') && document.getElementById('week-cal-anchor').addEventListener('change', loadWeekCal);
+
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest ? e.target.closest('[data-wc-filter]') : null;
+      if (btn && btn.dataset.wcFilter !== undefined) applyFilter(btn.dataset.wcFilter);
+    });
+  });
+})();
 // -- Create Calendar Event --
 function createCalendarEvent(jobKey, isReschedule, oldEventId) {
   var prefix = isReschedule ? "resched" : "appt";
