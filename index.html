@@ -6492,6 +6492,7 @@ function renderAllEvents() {
 
   var items = allEventsCache.filter(function(ev){
     if (isWorkingLocation(ev)) return false;
+    if (isPto(ev.summary || "")) return false;
     if (!filterVal) return true;
     return (ev.summary || "").indexOf(filterVal) > -1;
   });
