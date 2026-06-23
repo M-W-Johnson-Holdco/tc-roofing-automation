@@ -5008,8 +5008,12 @@ function renderJobResult(entries) {
           '<div><label>End Time</label><input type="time" id="appt-end-' + jobKey + '"></div>' +
         '</div>' +
         '<div style="margin-top:12px;">' +
-          '<label>Notes / Location (optional)</label>' +
-          '<input type="text" id="appt-notes-' + jobKey + '" placeholder="e.g. 123 Main St, Homeowner will be home">' +
+          '<label>Location <span style="color:#64748b;font-weight:400">(address — shown in Google Calendar location field)</span></label>' +
+          '<input type="text" id="appt-location-' + jobKey + '" placeholder="e.g. 123 Main St, Atlanta, GA">' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Notes <span style="color:#64748b;font-weight:400">(appended to event description)</span></label>' +
+          '<input type="text" id="appt-notes-' + jobKey + '" placeholder="e.g. Homeowner will be home, gate code 1234">' +
         '</div>' +
         '<div style="margin-top:12px;">' +
           '<label>Invite Emails <span style="color:#64748b;font-weight:400">(comma separated — Google will email each person a calendar invite)</span></label>' +
@@ -5085,6 +5089,7 @@ function buildSmsPreview(jobKey) {
   var date  = (document.getElementById("appt-date-"  + jobKey) || {}).value || "";
   var start = (document.getElementById("appt-start-" + jobKey) || {}).value || "";
   var notes = (document.getElementById("appt-notes-" + jobKey) || {}).value || "";
+  // location is separate; SMS uses notes only
   var ta = document.getElementById("appt-sms-" + jobKey);
   if (!ta) return;
   var ctx = schedJobContext;
@@ -5098,6 +5103,7 @@ function buildRescheduleSmsPreview(jobKey) {
   var date  = (document.getElementById("resched-date-"  + jobKey) || {}).value || "";
   var start = (document.getElementById("resched-start-" + jobKey) || {}).value || "";
   var notes = (document.getElementById("resched-notes-" + jobKey) || {}).value || "";
+  // location is separate; SMS uses notes only
   var ta = document.getElementById("resched-sms-" + jobKey);
   if (!ta) return;
   var ctx = schedJobContext;
@@ -5400,6 +5406,7 @@ function createCalendarEvent(jobKey, isReschedule, oldEventId) {
   var date = document.getElementById(prefix + "-date-" + jobKey).value;
   var start = document.getElementById(prefix + "-start-" + jobKey).value;
   var end = document.getElementById(prefix + "-end-" + jobKey).value;
+  var location = (document.getElementById(prefix + "-location-" + jobKey) || {}).value || "";
   var notes = document.getElementById(prefix + "-notes-" + jobKey).value;
   var emailsRaw = (document.getElementById(prefix + "-emails-" + jobKey) || {}).value || "";
   var extraNotes = (document.getElementById(prefix + "-extranotes-" + jobKey) || {}).value || "";
@@ -5426,11 +5433,12 @@ function createCalendarEvent(jobKey, isReschedule, oldEventId) {
     .filter(function(e){ return e.indexOf("@") > -1; })
     .map(function(e){ return { email: e }; });
 
-  var calEvBody = buildCalEventBody(type, ctx.name, ctx.jobNum||ctx.jobGuid, formatDateNice(date), formatTimeNice(start), notes);
+  var calEvBody = buildCalEventBody(type, ctx.name, ctx.jobNum||ctx.jobGuid, formatDateNice(date), formatTimeNice(start), location, notes);
 
   var eventBody = {
     summary: title,
     description: calEvBody,
+    location: location,
     start: { dateTime: startDt, timeZone: "America/Chicago" },
     end: { dateTime: endDt, timeZone: "America/Chicago" }
   };
@@ -5603,6 +5611,7 @@ function loadExistingEventsForJob(jobKey, name) {
       var origDate  = start ? start.toLocaleDateString("en-CA",{timeZone:"America/Chicago"}) : ""; // YYYY-MM-DD
       var origStart = start ? start.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"America/Chicago"}) : "";
       var origEnd   = end   ? end.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:"America/Chicago"})   : "";
+      var origLocation = ev.location || "";
       var origNotes = ev.description ? ev.description.split("\n")[0] : "";
       var origEmails = ev.attendees ? ev.attendees.map(function(a){ return a.email; }).join(", ") : "";
       var attendeeCount = ev.attendees ? ev.attendees.length : 0;
@@ -5637,8 +5646,12 @@ function loadExistingEventsForJob(jobKey, name) {
           '<div><label>End Time</label><input type="time" id="resched-end-' + ev.id + '" value="' + origEnd + '"></div>' +
         '</div>' +
         '<div style="margin-top:10px;">' +
-          '<label>Notes / Location</label>' +
-          '<input type="text" id="resched-notes-' + ev.id + '" value="' + origNotes.replace(/"/g,'"') + '" placeholder="Location or notes">' +
+          '<label>Location <span style="color:#64748b;font-weight:400">(address — shown in Google Calendar location field)</span></label>' +
+          '<input type="text" id="resched-location-' + ev.id + '" value="' + origLocation.replace(/"/g,'&#34;') + '" placeholder="e.g. 123 Main St, Atlanta, GA">' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Notes <span style="color:#64748b;font-weight:400">(appended to event description)</span></label>' +
+          '<input type="text" id="resched-notes-' + ev.id + '" value="' + origNotes.replace(/"/g,'"') + '" placeholder="e.g. Homeowner will be home, gate code 1234">' +
         '</div>' +
         '<div style="margin-top:10px;">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
@@ -5902,7 +5915,8 @@ function renderBulkGrid(jobs) {
         '<div style="grid-column:1/-1">' + apptWindowSelect('bulk', idx) + '</div>' +
         '<div><label>Start Time</label><input type="time" id="bulk-start-'+idx+'"></div>' +
         '<div><label>End Time</label><input type="time" id="bulk-end-'+idx+'"></div>' +
-        '<div><label>Notes / Location</label><input type="text" id="bulk-notes-'+idx+'" placeholder="optional"></div>' +
+        '<div><label>Location <span style="color:#64748b;font-weight:400">(address)</span></label><input type="text" id="bulk-location-'+idx+'" placeholder="e.g. 123 Main St, Atlanta, GA"></div>' +
+        '<div><label>Notes <span style="color:#64748b;font-weight:400">(description)</span></label><input type="text" id="bulk-notes-'+idx+'" placeholder="optional"></div>' +
       '</div>' +
       '<div style="margin-top:8px;">' +
         '<label style="font-size:0.7rem;color:#94a3b8;margin-bottom:3px;display:block;">Invite Emails <span style="color:#64748b;font-weight:400">(comma separated — Google sends calendar invite to each)</span></label>' +
@@ -5998,13 +6012,14 @@ function runBulkSchedule() {
     var date  = (document.getElementById("bulk-date-"  + idx)||{}).value || "";
     var start = (document.getElementById("bulk-start-" + idx)||{}).value || "";
     var end   = (document.getElementById("bulk-end-"   + idx)||{}).value || "";
+    var location = (document.getElementById("bulk-location-" + idx)||{}).value || "";
     var notes = (document.getElementById("bulk-notes-" + idx)||{}).value || "";
     var emailsRaw = (document.getElementById("bulk-emails-" + idx)||{}).value || "";
     var extraNotes = (document.getElementById("bulk-extranotes-" + idx)||{}).value || "";
     if (!date || !start || !end) {
       missing.push(job.ctx.name || job.query);
     } else {
-      toSend.push({ job:job, idx:idx, type:type, date:date, start:start, end:end, notes:notes, emailsRaw:emailsRaw, extraNotes:extraNotes });
+      toSend.push({ job:job, idx:idx, type:type, date:date, start:start, end:end, location:location, notes:notes, emailsRaw:emailsRaw, extraNotes:extraNotes });
     }
   });
 
@@ -6047,10 +6062,11 @@ function runBulkSchedule() {
     var spPhone = ctx.spPhone ? spDisplay(ctx.salesperson) : "";
     var smsMsg = buildSchedSms(item.type, firstName, formatDateNice(item.date), formatTimeNice(item.start), item.notes, ctx.jobNum||ctx.jobGuid||"", spPhone);
 
-    var bulkCalEvBody = buildCalEventBody(item.type, ctx.name, ctx.jobNum||ctx.jobGuid, formatDateNice(item.date), formatTimeNice(item.start), item.notes, item.extraNotes||"");
+    var bulkCalEvBody = buildCalEventBody(item.type, ctx.name, ctx.jobNum||ctx.jobGuid, formatDateNice(item.date), formatTimeNice(item.start), item.location||"", item.notes, item.extraNotes||"");
     var eventBody = {
       summary: item.type + " — " + ctx.name + " (Job " + ctx.jobKey + ")",
       description: bulkCalEvBody,
+      location: item.location || "",
       start: { dateTime: item.date + "T" + item.start + ":00", timeZone: "America/Chicago" },
       end:   { dateTime: item.date + "T" + item.end   + ":00", timeZone: "America/Chicago" }
     };
@@ -6440,8 +6456,12 @@ function renderAllEvents() {
           '<div><label>End Time</label><input type="time" id="allev-end-' + ev.id + '" value="' + origEnd + '"></div>' +
         '</div>' +
         '<div style="margin-top:10px;">' +
-          '<label>Notes / Location</label>' +
-          '<input type="text" id="allev-notes-' + ev.id + '" placeholder="Location or notes" value="' + (ev.description ? ev.description.split("\n")[0].replace(/"/g,'&quot;') : "") + '">' +
+          '<label>Location <span style="color:#64748b;font-weight:400">(address — shown in Google Calendar location field)</span></label>' +
+          '<input type="text" id="allev-location-' + ev.id + '" placeholder="e.g. 123 Main St, Atlanta, GA" value="' + (ev.location||''). replace(/"/g,'&quot;') + '">' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Notes <span style="color:#64748b;font-weight:400">(appended to event description)</span></label>' +
+          '<input type="text" id="allev-notes-' + ev.id + '" placeholder="e.g. Homeowner will be home, gate code 1234" value="' + (ev.description ? ev.description.split("\n")[0].replace(/"/g,'&quot;') : "") + '">' +
         '</div>' +
         '<div style="margin-top:10px;">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
@@ -6525,6 +6545,7 @@ document.addEventListener("click", function(e){
     var newDate  = (document.getElementById("allev-date-"       + evId2)||{}).value || "";
     var newStart = (document.getElementById("allev-start-"      + evId2)||{}).value || "";
     var newEnd   = (document.getElementById("allev-end-"        + evId2)||{}).value || "";
+    var newLocation = (document.getElementById("allev-location-" + evId2)||{}).value || "";
     var newNotes = (document.getElementById("allev-notes-"      + evId2)||{}).value || "";
     var newEmails= (document.getElementById("allev-emails-"     + evId2)||{}).value || "";
     var extraN   = (document.getElementById("allev-extranotes-" + evId2)||{}).value || "";
@@ -6544,7 +6565,7 @@ document.addEventListener("click", function(e){
     var newTitle  = newType + " — " + custName2 + (jobNum2 ? " (Job " + jobNum2 + ")" : "");
     var startDt   = newDate + "T" + newStart + ":00";
     var endDt     = newDate + "T" + newEnd   + ":00";
-    var calEvBody2 = buildCalEventBody(newType, custName2, jobNum2, formatDateNice(newDate), formatTimeNice(newStart), newNotes, extraN);
+    var calEvBody2 = buildCalEventBody(newType, custName2, jobNum2, formatDateNice(newDate), formatTimeNice(newStart), newLocation, newNotes, extraN);
 
     var attendees2 = newEmails.split(",").map(function(e){ return e.trim(); })
       .filter(function(e){ return e.indexOf("@") > -1; })
@@ -6553,6 +6574,7 @@ document.addEventListener("click", function(e){
     var newEventBody = {
       summary: newTitle,
       description: calEvBody2,
+      location: newLocation,
       start: { dateTime: startDt, timeZone: "America/Chicago" },
       end:   { dateTime: endDt,   timeZone: "America/Chicago" }
     };
