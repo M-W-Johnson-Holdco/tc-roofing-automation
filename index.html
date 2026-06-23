@@ -5695,6 +5695,7 @@ function loadExistingEventsForJob(jobKey, name) {
   .then(function(allItems){
     var items = allItems.filter(function(ev){
       if (isWorkingLocation(ev)) return false;
+      if (isPto(ev.summary || "")) return false;
       var s = (ev.summary || "").toLowerCase();
       return s.indexOf(searchStr) > -1 || s.indexOf((jobKey || "").toLowerCase()) > -1;
     });
