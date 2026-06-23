@@ -5171,6 +5171,16 @@ function apptWindowLabel(prefix, key) {
 
 
 // -- Week Calendar Preview --
+function isPto(summary) {
+  return (summary || '').toUpperCase().indexOf('PTO') > -1;
+}
+function isWorkingLocation(ev) {
+  return (ev && ev.eventType === 'workingLocation') ||
+    /^(Working from|Working Location|Work from Home|Work from Office|Office|Home|Out of office)$/i.test((ev && ev.summary) || '');
+}
+function isInTheField(summary) {
+  return /in the field/i.test(summary || '');
+}
 (function() {
   var TYPE_COLORS = [
     '#4A90D9','#E67E22','#27AE60','#8E44AD','#E74C3C',
@@ -5200,20 +5210,6 @@ function apptWindowLabel(prefix, key) {
       if ((summary||'').indexOf(apptTypes[i]) > -1) return apptTypes[i];
     }
     return null;
-  }
-
-  function isPto(summary) {
-    return (summary || '').toUpperCase().indexOf('PTO') > -1;
-  }
-
-  function isWorkingLocation(ev) {
-    // Google Calendar "Working Location" events have eventType = "workingLocation"
-    return (ev && ev.eventType === 'workingLocation') ||
-      /^(Working from|Working Location|Work from Home|Work from Office|Office|Home|Out of office)$/i.test((ev && ev.summary) || '');
-  }
-
-  function isInTheField(summary) {
-    return /in the field/i.test(summary || '');
   }
 
   function isFiltered(summary, ev) {
