@@ -5372,6 +5372,8 @@ function isInTheField(summary) {
             var evStart = (ev.start||{}).dateTime || (ev.start||{}).date || '';
             var evEnd   = (ev.end||{}).dateTime   || (ev.end||{}).date   || '';
             var timeLabel = (function() {
+              // All-day events have start.date but no start.dateTime
+              if ((ev.start||{}).date && !(ev.start||{}).dateTime) return 'All Day';
               var s = evStart.slice(11,16); var e = evEnd.slice(11,16);
               if (s === '08:00' && e === '12:00') return 'Morning (8am–12pm)';
               if (s === '12:00' && e === '17:00') return 'Afternoon (12–5pm)';
