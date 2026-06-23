@@ -5712,6 +5712,7 @@ function loadExistingEventsForJob(jobKey, name) {
   })
   .then(function(allItems){
     var items = allItems.filter(function(ev){
+      if (isWorkingLocation(ev)) return false;
       var s = (ev.summary || "").toLowerCase();
       return s.indexOf(searchStr) > -1 || s.indexOf((jobKey || "").toLowerCase()) > -1;
     });
@@ -6505,6 +6506,7 @@ function renderAllEvents() {
   var statusEl  = document.getElementById("all-events-status");
 
   var items = allEventsCache.filter(function(ev){
+    if (isWorkingLocation(ev)) return false;
     if (!filterVal) return true;
     return (ev.summary || "").indexOf(filterVal) > -1;
   });
