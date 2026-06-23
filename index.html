@@ -5191,9 +5191,17 @@ function apptWindowLabel(prefix, key) {
     return (summary || '').toUpperCase().indexOf('PTO') > -1;
   }
 
-  function isFiltered(summary) {
+  function isWorkingLocation(ev) {
+    // Google Calendar "Working Location" events have eventType = "workingLocation"
+    return (ev && ev.eventType === 'workingLocation') ||
+      /^(Working from|Working Location|Work from Home|Work from Office|Office|Home|Out of office)$/i.test((ev && ev.summary) || '');
+  }
+
+  function isFiltered(summary, ev) {
     // PTO events never appear in main grid
     if (isPto(summary)) return false;
+    // Working Location events never appear in main grid
+    if (isWorkingLocation(ev)) return false;
     var keys = Object.keys(activeFilters);
     if (!keys.length) return true; // no filter = show all
     var t = getTypeOf(summary);
@@ -5253,7 +5261,7 @@ function apptWindowLabel(prefix, key) {
   function buildByDay(events) {
     var byDay = {};
     events.forEach(function(ev) {
-      if (!isFiltered(ev.summary || '')) return;
+      if (!isFiltered(ev.summary || '', ev)) return;
       var dtStr = ((ev.start||{}).dateTime || (ev.start||{}).date || '').slice(0,10);
       if (!byDay[dtStr]) byDay[dtStr] = [];
       byDay[dtStr].push(ev);
@@ -5289,7 +5297,7 @@ function apptWindowLabel(prefix, key) {
             var label = (ev.summary || 'Event').replace(/\s*\(Job[^)]*\)/,'');
             return '<div style="background:' + color + '22;border-left:3px solid ' + color + ';border-radius:4px;padding:3px 5px;margin-bottom:4px;font-size:0.7rem;line-height:1.3;overflow:hidden;">' +
               (timeLabel ? '<div style="font-weight:700;color:' + color + '">' + timeLabel + '</div>' : '') +
-              '<div style="color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (ev.summary||'').replace(/"/g,'&quot;') + '">' + label + '</div>' +
+              '<div style="color:var(--txt);word-break:break-word;" title="' + (ev.summary||'').replace(/"/g,'&quot;') + '">' + label + '</div>' +
             '</div>';
           }).join('')
         : '<div style="font-size:0.72rem;color:var(--txt3);text-align:center;padding:8px 0;">—</div>';
