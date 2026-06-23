@@ -4988,6 +4988,10 @@ function renderJobResult(entries) {
           '<label>SMS Preview <span style="color:#64748b;font-weight:400">(auto-built — edit if needed)</span></label>' +
           '<textarea id="appt-sms-' + jobKey + '" rows="4" style="font-family:sans-serif;"></textarea>' +
         '</div>' +
+        '<div style="margin-top:12px;">' +
+          '<label>Internal Notes <span style="color:#64748b;font-weight:400">(not sent — stored locally for your reference)</span></label>' +
+          '<textarea id="appt-internalnotes-' + jobKey + '" rows="3" placeholder="e.g. Customer prefers afternoon. Adjuster name: John Smith."></textarea>' +
+        '</div>' +
         '<div class="btn-row" style="margin-top:10px;">' +
           '<button class="btn btn-primary btn-sm" data-sched-book="' + jobKey + '">📅 Schedule & Send SMS</button>' +
           '<button class="btn btn-secondary btn-sm" data-sched-preview="' + jobKey + '">↻ Preview SMS</button>' +
@@ -5598,6 +5602,10 @@ function loadExistingEventsForJob(jobKey, name) {
         '<div style="margin-top:10px;">' +
           '<label>SMS Preview <span style="color:#64748b;font-weight:400">(auto-built — edit if needed)</span></label>' +
           '<textarea id="resched-sms-' + ev.id + '" rows="4" style="font-family:sans-serif;"></textarea>' +
+        '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<label>Internal Notes <span style="color:#64748b;font-weight:400">(not sent — stored locally for your reference)</span></label>' +
+          '<textarea id="resched-internalnotes-' + ev.id + '" rows="3" placeholder="e.g. Customer prefers afternoon. Adjuster name: John Smith."></textarea>' +
         '</div>' +
         '<div class="btn-row" style="margin-top:10px;">' +
           '<button class="btn btn-primary btn-sm" data-sched-confirm-reschedule="' + ev.id + '">✅ Confirm Reschedule & Send SMS</button>' +
