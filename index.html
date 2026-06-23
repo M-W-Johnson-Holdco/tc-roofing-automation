@@ -4414,6 +4414,27 @@ function appendSheetLog(e){
   });
 }
 
+function appendSchedulerLog(e) {
+  return getGSToken().then(function(t) {
+    var sid = CRED_GS_SHEET_ID;
+    var sn  = encodeURIComponent("Scheduler Log");
+    var url = "https://sheets.googleapis.com/v4/spreadsheets/" + sid +
+              "/values/" + sn + "!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
+    return fetch(url, {
+      method: "POST",
+      headers: { Authorization: "Bearer " + t, "Content-Type": "application/json" },
+      body: JSON.stringify({ values: [[
+        e.timestamp, e.jobNum, e.name, e.apptType,
+        e.date, e.start, e.end, e.action,
+        e.notes, e.internalNotes, e.scheduledBy, e.calEventId
+      ]] })
+    });
+  }).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error("Scheduler sheet append failed: " + t); });
+    return r.json();
+  });
+}
+
 var rcToken=null,rcExpiry=0;
 function getRCToken(){
   if(rcToken&&Date.now()<rcExpiry)return Promise.resolve(rcToken);
@@ -5464,8 +5485,26 @@ function createCalendarEvent(jobKey, isReschedule, oldEventId) {
             secondaryPhone: ctx.phone2 || "",
             conversationId: convId || ""
           };
+          var internalNotes = (document.getElementById(prefix + '-internalnotes-' + jobKey) || {}).value || '';
+          var schedEntry = {
+            timestamp: new Date().toISOString(),
+            jobNum: ctx.jobNum || ctx.jobGuid,
+            name: ctx.name,
+            apptType: type,
+            date: date,
+            start: start,
+            end: end,
+            action: isReschedule ? 'Rescheduled' : 'Scheduled',
+            notes: notes,
+            internalNotes: internalNotes,
+            scheduledBy: currentUser || 'Unknown',
+            calEventId: ev.id || ''
+          };
           return appendSheetLog(entry).then(function(){
             schedLog("success", "Sheet log updated.");
+            return appendSchedulerLog(schedEntry);
+          }).then(function(){
+            schedLog("success", "Scheduler log updated.");
             // Refresh events list
             loadExistingEventsForJob(ctx.jobKey, ctx.name);
             // Collapse the form
