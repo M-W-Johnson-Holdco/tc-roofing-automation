@@ -5574,8 +5574,10 @@ function isInTheField(summary) {
     locEl.textContent = ev.location ? '📍 ' + ev.location : '';
     locEl.style.display = ev.location ? '' : 'none';
     var descEl = document.getElementById('wc-pop-desc');
-    descEl.textContent = ev.description || '';
-    descEl.style.display = ev.description ? '' : 'none';
+    var rawDesc = ev.description || '';
+    var cleanDesc = rawDesc.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').trim();
+    descEl.textContent = cleanDesc;
+    descEl.style.display = cleanDesc ? '' : 'none';
     var rect = chip.getBoundingClientRect();
     var popW = 290, popH = 180;
     var left = rect.left;
