@@ -5198,6 +5198,7 @@ function isInTheField(summary) {
   var activeFilters = {}; // type name -> true/false; empty = all shown
   var cachedEvents = [];  // last loaded raw events
   var cachedMonday = null;
+  var wcEvMap = {};       // event id -> event object, for popover
 
   function getApptTypes() { return typeof APPT_TYPES !== 'undefined' ? APPT_TYPES : []; }
 
@@ -5352,8 +5353,10 @@ function isInTheField(summary) {
 
   function buildByDay(events) {
     var byDay = {};
+    wcEvMap = {};
     events.forEach(function(ev) {
       if (!isFiltered(ev.summary || '', ev)) return;
+      if (ev.id) wcEvMap[ev.id] = ev;
       var dtStr = ((ev.start||{}).dateTime || (ev.start||{}).date || '').slice(0,10);
       if (!byDay[dtStr]) byDay[dtStr] = [];
       byDay[dtStr].push(ev);
@@ -5389,9 +5392,9 @@ function isInTheField(summary) {
               return fmtTime(evStart);
             })();
             var label = (ev.summary || 'Event').replace(/\s*\(Job[^)]*\)/,'');
-            return '<div style="background:' + color + '22;border-left:3px solid ' + color + ';border-radius:4px;padding:3px 5px;margin-bottom:4px;font-size:0.7rem;line-height:1.3;overflow:hidden;">' +
-              (timeLabel ? '<div style="font-weight:700;color:' + color + '">' + timeLabel + '</div>' : '') +
-              '<div style="color:var(--txt);word-break:break-word;" title="' + (ev.summary||'').replace(/"/g,'&quot;') + '">' + label + '</div>' +
+            return '<div data-wcpop-id="' + (ev.id||'').replace(/"/g,'') + '" style="background:' + color + '22;border-left:3px solid ' + color + ';border-radius:4px;padding:3px 5px;margin-bottom:4px;font-size:0.7rem;line-height:1.3;overflow:hidden;cursor:pointer;">' +
+              (timeLabel ? '<div style="font-weight:700;color:' + color + ';pointer-events:none;">' + timeLabel + '</div>' : '') +
+              '<div style="color:var(--txt);word-break:break-word;pointer-events:none;" title="' + (ev.summary||'').replace(/"/g,'&quot;') + '">' + label + '</div>' +
             '</div>';
           }).join('')
         : '<div style="font-size:0.72rem;color:var(--txt3);text-align:center;padding:8px 0;">—</div>';
@@ -5527,8 +5530,62 @@ function isInTheField(summary) {
     document.addEventListener('click', function(e) {
       var btn = e.target.closest ? e.target.closest('[data-wc-filter]') : null;
       if (btn && btn.dataset.wcFilter !== undefined) applyFilter(btn.dataset.wcFilter);
+      var pop = document.getElementById('wc-event-popover');
+      var chip = e.target.closest ? e.target.closest('[data-wcpop-id]') : null;
+      if (chip) {
+        var ev = wcEvMap[chip.getAttribute('data-wcpop-id')];
+        if (ev && pop) showWcPopover(ev, chip, pop);
+      } else if (pop && pop.style.display !== 'none' && !pop.contains(e.target)) {
+        pop.style.display = 'none';
+      }
+    });
+
+    // Create popover element
+    var wcPop = document.createElement('div');
+    wcPop.id = 'wc-event-popover';
+    wcPop.style.cssText = 'position:fixed;z-index:99999;display:none;background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;min-width:210px;max-width:290px;box-shadow:0 4px 20px rgba(0,0,0,0.18);font-size:0.78rem;line-height:1.4;';
+    wcPop.innerHTML =
+      '<div id="wc-pop-close" style="float:right;cursor:pointer;font-size:0.85rem;color:var(--txt3);margin-left:8px;line-height:1;padding:1px 3px;" title="Close">✕</div>' +
+      '<div id="wc-pop-title" style="font-weight:700;color:var(--txt);margin-bottom:6px;padding-right:18px;word-break:break-word;"></div>' +
+      '<div id="wc-pop-time" style="color:var(--txt2);margin-bottom:4px;font-size:0.73rem;"></div>' +
+      '<div id="wc-pop-loc" style="color:var(--txt2);margin-bottom:4px;font-size:0.73rem;"></div>' +
+      '<div id="wc-pop-desc" style="color:var(--txt3);font-size:0.72rem;max-height:90px;overflow-y:auto;white-space:pre-wrap;"></div>';
+    document.body.appendChild(wcPop);
+    document.getElementById('wc-pop-close').addEventListener('click', function(e) {
+      e.stopPropagation();
+      wcPop.style.display = 'none';
     });
   });
+
+  function showWcPopover(ev, chip, pop) {
+    document.getElementById('wc-pop-title').textContent = ev.summary || 'Event';
+    var evStart = (ev.start||{}).dateTime || (ev.start||{}).date || '';
+    var evEnd   = (ev.end||{}).dateTime   || (ev.end||{}).date   || '';
+    var timeEl  = document.getElementById('wc-pop-time');
+    if ((ev.start||{}).date && !(ev.start||{}).dateTime) {
+      var d = new Date(evStart + 'T12:00:00');
+      timeEl.textContent = d.toLocaleDateString('en-US', {weekday:'short',month:'short',day:'numeric'}) + ' · All Day';
+    } else {
+      var ds = new Date(evStart), de = new Date(evEnd);
+      timeEl.textContent = ds.toLocaleDateString('en-US', {weekday:'short',month:'short',day:'numeric'}) +
+        ' · ' + fmtTime(evStart) + ' – ' + fmtTime(evEnd);
+    }
+    var locEl = document.getElementById('wc-pop-loc');
+    locEl.textContent = ev.location ? '📍 ' + ev.location : '';
+    locEl.style.display = ev.location ? '' : 'none';
+    var descEl = document.getElementById('wc-pop-desc');
+    descEl.textContent = ev.description || '';
+    descEl.style.display = ev.description ? '' : 'none';
+    var rect = chip.getBoundingClientRect();
+    var popW = 290, popH = 180;
+    var left = rect.left;
+    if (left + popW + 10 > window.innerWidth) left = window.innerWidth - popW - 10;
+    var top = rect.bottom + 6;
+    if (top + popH > window.innerHeight) top = rect.top - popH - 6;
+    pop.style.left = Math.max(6, left) + 'px';
+    pop.style.top  = Math.max(6, top)  + 'px';
+    pop.style.display = 'block';
+  }
 })();
 // -- Create Calendar Event --
 function createCalendarEvent(jobKey, isReschedule, oldEventId) {
