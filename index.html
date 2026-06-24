@@ -5543,13 +5543,13 @@ function isInTheField(summary) {
     // Create popover element
     var wcPop = document.createElement('div');
     wcPop.id = 'wc-event-popover';
-    wcPop.style.cssText = 'position:fixed;z-index:99999;display:none;background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;min-width:210px;max-width:290px;box-shadow:0 4px 20px rgba(0,0,0,0.18);font-size:0.78rem;line-height:1.4;';
+    wcPop.style.cssText = 'position:fixed;z-index:99999;display:none;background:#2a2825;border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 14px;min-width:210px;max-width:290px;box-shadow:0 6px 24px rgba(0,0,0,0.6);font-size:0.78rem;line-height:1.4;';
     wcPop.innerHTML =
-      '<div id="wc-pop-close" style="float:right;cursor:pointer;font-size:0.85rem;color:var(--txt3);margin-left:8px;line-height:1;padding:1px 3px;" title="Close">✕</div>' +
-      '<div id="wc-pop-title" style="font-weight:700;color:var(--txt);margin-bottom:6px;padding-right:18px;word-break:break-word;"></div>' +
-      '<div id="wc-pop-time" style="color:var(--txt2);margin-bottom:4px;font-size:0.73rem;"></div>' +
-      '<div id="wc-pop-loc" style="color:var(--txt2);margin-bottom:4px;font-size:0.73rem;"></div>' +
-      '<div id="wc-pop-desc" style="color:var(--txt3);font-size:0.72rem;max-height:90px;overflow-y:auto;white-space:pre-wrap;"></div>';
+      '<div id="wc-pop-close" style="float:right;cursor:pointer;font-size:0.85rem;color:#888;margin-left:8px;line-height:1;padding:1px 3px;" title="Close">✕</div>' +
+      '<div id="wc-pop-title" style="font-weight:700;color:#f0ede8;margin-bottom:6px;padding-right:18px;word-break:break-word;"></div>' +
+      '<div id="wc-pop-time" style="color:#a09890;margin-bottom:4px;font-size:0.73rem;"></div>' +
+      '<div id="wc-pop-loc" style="color:#a09890;margin-bottom:4px;font-size:0.73rem;"></div>' +
+      '<div id="wc-pop-desc" style="color:#6a6560;font-size:0.72rem;max-height:90px;overflow-y:auto;white-space:pre-wrap;"></div>';
     document.body.appendChild(wcPop);
     document.getElementById('wc-pop-close').addEventListener('click', function(e) {
       e.stopPropagation();
