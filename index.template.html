@@ -3518,6 +3518,9 @@ function printDoc() {
   liveInputs.forEach(function(orig, i) {
     var cl = cloneInputs[i]; if (!cl) return;
     if (orig.tagName === 'TEXTAREA') { cl.textContent = orig.value; }
+    else if (orig.type === 'checkbox') {
+      if (orig.checked) cl.setAttribute('checked', ''); else cl.removeAttribute('checked');
+    }
     else { cl.setAttribute('value', orig.value); }
   });
   var liveSelects = wrap.querySelectorAll('select');
@@ -3528,6 +3531,25 @@ function printDoc() {
       if (opt.value === orig.value) opt.setAttribute('selected', 'selected');
       else opt.removeAttribute('selected');
     });
+  });
+  // Sync .cb span checkboxes (class + textContent based)
+  var liveCbs = wrap.querySelectorAll('.cb');
+  var cloneCbs = wrapClone.querySelectorAll('.cb');
+  liveCbs.forEach(function(orig, i) {
+    var cl = cloneCbs[i]; if (!cl) return;
+    cl.textContent = orig.textContent;
+    if (orig.classList.contains('checked')) cl.classList.add('checked');
+    else cl.classList.remove('checked');
+  });
+  // Sync .wo-cb span checkboxes (data-attribute + inline style based)
+  var liveWoCbs = wrap.querySelectorAll('.wo-cb');
+  var cloneWoCbs = wrapClone.querySelectorAll('.wo-cb');
+  liveWoCbs.forEach(function(orig, i) {
+    var cl = cloneWoCbs[i]; if (!cl) return;
+    var chk = orig.getAttribute('data-checked') === '1';
+    cl.setAttribute('data-checked', chk ? '1' : '0');
+    cl.textContent = chk ? '✓' : '';
+    cl.style.background = chk ? '#9fc45a' : '';
   });
 
   // Force cover page visible in clone
