@@ -4437,6 +4437,7 @@ function getGSToken(){
 }
 var TC_CSV_SHEET_ID = "1vCz8x85_SW3AZdhiDPTY7n0jwo84YpPmdBG9zo8RRR4";
 var TC_CSV_SHEET_NAME = "TC_CSV_Cache";
+var TC_CSV_AUTORUN_KEY = "tc_csv_last_autorun";
 function autoLoadTCCsv(){
   var statusEl = document.getElementById("csv-auto-status");
   var textarea = document.getElementById("csv-input");
@@ -4450,8 +4451,7 @@ function autoLoadTCCsv(){
       return;
     }
     var timestamp = d.values[0][0]||"";
-    var dataRows = d.values.slice(1); // row 1 = headers, row 2+ = data
-    // Reconstruct CSV text
+    var dataRows = d.values.slice(1);
     var csvText = dataRows.map(function(row){
       return row.map(function(val){
         var s = String(val);
@@ -4463,7 +4463,20 @@ function autoLoadTCCsv(){
     }).join("\n");
     textarea.value = csvText;
     var jobCount = Math.max(0, dataRows.length - 1);
-    if(statusEl) statusEl.textContent = "✅ Auto-loaded: " + jobCount + " jobs — " + timestamp;
+
+    var lastRun = localStorage.getItem(TC_CSV_AUTORUN_KEY)||"";
+    if(timestamp && timestamp !== lastRun && isWithinTextingHours()){
+      // New report that hasn't been auto-run yet — fire Run Now
+      if(statusEl) statusEl.textContent = "✅ New report loaded (" + jobCount + " jobs) — auto-starting... — " + timestamp;
+      localStorage.setItem(TC_CSV_AUTORUN_KEY, timestamp);
+      setTimeout(function(){ runAutomation(); }, 1500);
+    } else if(timestamp && timestamp !== lastRun && !isWithinTextingHours()){
+      // New report but outside texting hours — load only, don't run
+      if(statusEl) statusEl.textContent = "✅ Auto-loaded: " + jobCount + " jobs — " + timestamp + " (outside texting hours, not auto-run)";
+    } else {
+      // Same report already processed
+      if(statusEl) statusEl.textContent = "✅ " + jobCount + " jobs — " + timestamp + " (already processed)";
+    }
   }).catch(function(err){
     if(statusEl) statusEl.textContent = "Could not auto-load (" + err.message + ") — upload a CSV file manually.";
   });
