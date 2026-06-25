@@ -185,10 +185,17 @@
     <div class="status-bar idle" id="status-bar"><div class="dot" id="status-dot"></div><span id="status-text">Ready — paste CSV and click Run Now</span></div>
     <div class="card">
       <h2>Controls</h2>
-      <div class="alert alert-warn">⚠️ Paste your AccuLynx CSV data below before running.</div>
-      <label>Paste AccuLynx CSV Data Here</label>
-      <textarea id="csv-input" rows="6" placeholder="Paste full CSV content here (including header row)..."></textarea>
-      <div class="small">Tip: Open CSV from AccuLynx email, Select All (Ctrl+A), Copy, Paste here.</div>
+      <div class="alert alert-warn">⚠️ Load your AccuLynx CSV before running — upload the file or paste the contents below.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+        <label style="margin:0;">AccuLynx CSV Data</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="csv-file-name" style="font-size:0.78rem;color:var(--txt3);"></span>
+          <label for="csv-file-input" class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;">&#128196; Upload CSV File</label>
+          <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display:none;">
+        </div>
+      </div>
+      <textarea id="csv-input" rows="6" placeholder="Paste full CSV content here (including header row), or click Upload CSV File above..."></textarea>
+      <div class="small">Tip: Click <strong>Download CSV</strong> in the AccuLynx email → save the file → click <strong>Upload CSV File</strong> above. Or open the CSV, Select All, Copy, and paste here.</div>
       <br>
       <div class="btn-row">
         <button class="btn btn-primary" id="run-btn">&#9654; Run Now</button>
@@ -4799,6 +4806,20 @@ function addLog(type,msg){
 function setStatus(state,text){var bar=document.getElementById("status-bar");var dot=document.getElementById("status-dot");var txt=document.getElementById("status-text");if(bar)bar.className="status-bar "+state;if(dot)dot.className="dot"+(state==="running"?" pulse":"");if(txt)txt.textContent=text;}
 function updateStats(){document.getElementById("stat-sent").textContent=stats.sent;document.getElementById("stat-skipped").textContent=stats.skipped;document.getElementById("stat-errors").textContent=stats.errors;document.getElementById("stat-jobs").textContent=stats.jobs;}
 function updateNextRun(){var cst=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Chicago"}));var next=new Date(cst);next.setHours(8,5,0,0);if(cst>=next)next.setDate(next.getDate()+1);var diff=next-cst,h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);var el=document.getElementById("next-run-time");if(el)el.textContent="in "+h+"h "+m+"m";}
+
+document.getElementById("csv-file-input").addEventListener("change",function(e){
+  var file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    document.getElementById("csv-input").value=ev.target.result||"";
+    document.getElementById("csv-file-name").textContent=file.name;
+    addLog("info","CSV loaded from file: "+file.name);
+  };
+  reader.onerror=function(){addLog("warn","Failed to read file.");};
+  reader.readAsText(file);
+  e.target.value="";
+});
 
 document.addEventListener("click",function(e){
   var t=e.target;
