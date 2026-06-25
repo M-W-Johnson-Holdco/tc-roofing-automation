@@ -4030,6 +4030,10 @@ function toggleMaskedFields() {
             <div class="btn-row" style="margin-top:8px;">
               <button class="btn btn-primary" id="tn-save-btn" disabled>💾 Save Notes</button>
             </div>
+            <div id="tn-history" style="margin-top:18px;display:none;">
+              <div style="font-size:0.75rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Save History</div>
+              <div id="tn-history-box" style="max-height:220px;overflow-y:auto;border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;background:var(--surf2);"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -8047,10 +8051,13 @@ renderReminderSmsTmplList();
 // TRADE NOTES
 // =====================================================================
 var TN_SHEET_NAME = "Trade Notes";
+var TN_HISTORY_SHEET_NAME = "Trade Notes History";
 var TN_TRADES = [
-  "Roofing","Gutters","Siding","Windows","Painting",
-  "Insulation","Fascia / Soffit","Flat Roof","Skylights",
-  "Chimney","Deck / Fence","Interior","HVAC","Electrical","Plumbing","General"
+  "Chimney","Deck/Porch","Door","Exterior Painting","Fascia & Soffit",
+  "Fence","Flat Roofing","Flooring","Garage","Gazebo","Gutters","HVAC",
+  "Interior","Lighting","Mailbox","Metal Roofing","Painting","Pergola",
+  "Roof Repair","Roofing","Siding","Skylight","Solar Panels",
+  "Tile Roofing","Windows"
 ];
 var tnCurrentJob = "";
 var tnCurrentTrade = "";
@@ -8087,7 +8094,37 @@ function tnSelectTrade(trade){
   if(saveBtn) saveBtn.disabled = false;
   tnSetSaveStatus("");
   tnRenderTradeList();
+  var histPanel = document.getElementById("tn-history");
+  if(histPanel) histPanel.style.display = "block";
+  tnLoadHistory(trade);
 }
+
+function tnLoadHistory(trade){
+  var box = document.getElementById("tn-history-box");
+  if(!box) return;
+  box.innerHTML = "<div style='color:var(--txt3);font-size:0.78rem;'>Loading history...</div>";
+  getGSToken().then(function(t){
+    var sid = CRED_GS_SHEET_ID;
+    var range = encodeURIComponent(TN_HISTORY_SHEET_NAME+"!A:E");
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+range,{headers:{Authorization:"Bearer "+t}});
+  }).then(function(r){return r.json();}).then(function(d){
+    var rows = (d.values||[]).slice(1); // skip header
+    var matches = rows.filter(function(r){ return (r[0]||"").trim()===tnCurrentJob && (r[1]||"")===trade; });
+    matches.reverse(); // most recent first
+    if(!matches.length){ box.innerHTML="<div style='color:var(--txt3);font-size:0.78rem;'>No history yet.</div>"; return; }
+    box.innerHTML = matches.map(function(r){
+      return "<div style='border-bottom:1px solid var(--bdr);padding:6px 0;'>"
+        +"<div style='display:flex;justify-content:space-between;margin-bottom:2px;'>"
+        +"<span style='font-size:0.75rem;font-weight:700;color:var(--accent);'>"+escHtml(r[4]||"Unknown")+"</span>"
+        +"<span style='font-size:0.72rem;color:var(--txt3);'>"+escHtml(r[3]||"")+"</span>"
+        +"</div>"
+        +"<div style='font-size:0.78rem;color:var(--txt2);white-space:pre-wrap;'>"+escHtml(r[2]||"")+"</div>"
+        +"</div>";
+    }).join("");
+  }).catch(function(){ box.innerHTML="<div style='color:var(--txt3);font-size:0.78rem;'>Could not load history.</div>"; });
+}
+
+function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 function tnLoadJob(){
   var jobNum = (document.getElementById("tn-job-input").value||"").trim();
@@ -8153,14 +8190,21 @@ function tnSaveNotes(){
     return fetch(url,{method:method,headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:body});
   }).then(function(r){return r.json();}).then(function(d){
     if(d.error){ throw new Error(d.error.message); }
-    // Update local map
-    tnNotesMap[tnCurrentTrade] = tnNotesMap[tnCurrentTrade]||{};
-    tnNotesMap[tnCurrentTrade].notes = notes;
-    tnSetSaveStatus("✅ Saved at "+new Date().toLocaleTimeString(), "#8DC63F");
-    if(saveBtn) saveBtn.disabled = false;
-    tnRenderTradeList();
-    // If we just appended, reload to get the correct row index for future updates
-    if(!existing || !existing.rowIndex){ tnLoadJob(); }
+    // Append to history sheet
+    var sid = CRED_GS_SHEET_ID;
+    var histRange = encodeURIComponent(TN_HISTORY_SHEET_NAME+"!A:E");
+    var histUrl = "https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+histRange+":append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
+    return getGSToken().then(function(t){
+      return fetch(histUrl,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[rowData]})});
+    }).then(function(){
+      tnNotesMap[tnCurrentTrade] = tnNotesMap[tnCurrentTrade]||{};
+      tnNotesMap[tnCurrentTrade].notes = notes;
+      tnSetSaveStatus("✅ Saved at "+new Date().toLocaleTimeString(), "#8DC63F");
+      if(saveBtn) saveBtn.disabled = false;
+      tnRenderTradeList();
+      tnLoadHistory(tnCurrentTrade);
+      if(!existing || !existing.rowIndex){ tnLoadJob(); }
+    });
   }).catch(function(e){
     tnSetSaveStatus("❌ Save failed: "+e.message, "#e74c3c");
     if(saveBtn) saveBtn.disabled = false;
