@@ -8102,17 +8102,18 @@ function tnRenderThread(messages){
   var box = document.getElementById("tn-thread");
   if(!box) return;
   if(!messages.length){
-    box.innerHTML="<div style='color:var(--txt3);font-size:0.82rem;padding:8px 0;'>No notes yet — be the first to add one.</div>";
+    box.innerHTML="<div style='text-align:center;color:var(--txt3);font-size:0.8rem;padding:24px 0;'>No notes yet — be the first to add one.</div>";
     return;
   }
   box.innerHTML = messages.map(function(m){
     var isMine = (m.author||"") === (currentUser||"");
-    return "<div style='margin-bottom:12px;'>"
-      +"<div style='display:flex;align-items:baseline;gap:8px;margin-bottom:3px;'>"
-      +"<span style='font-size:0.78rem;font-weight:700;color:"+(isMine?"var(--accent)":"#4A90D9")+"'>"+escHtml(m.author||"Unknown")+"</span>"
-      +"<span style='font-size:0.7rem;color:var(--txt3);'>"+escHtml(m.timestamp||"")+"</span>"
-      +"</div>"
-      +"<div style='background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;font-size:0.83rem;color:var(--txt);white-space:pre-wrap;line-height:1.5;'>"+escHtml(m.note||"")+"</div>"
+    var bubble = isMine
+      ? "background:#248A3D;color:#fff;border-radius:18px 18px 4px 18px;margin-left:20%;"
+      : "background:var(--surf);color:var(--txt);border:1px solid var(--bdr);border-radius:18px 18px 18px 4px;margin-right:20%;";
+    return "<div style='margin-bottom:10px;display:flex;flex-direction:column;align-items:"+(isMine?"flex-end":"flex-start")+";'>"
+      +(!isMine?"<div style='font-size:0.7rem;font-weight:700;color:#4A90D9;margin-bottom:2px;padding-left:4px;'>"+escHtml(m.author||"Unknown")+"</div>":"")
+      +"<div style='"+bubble+"padding:8px 12px;max-width:85%;font-size:0.83rem;white-space:pre-wrap;line-height:1.45;word-break:break-word;'>"+escHtml(m.note||"")+"</div>"
+      +"<div style='font-size:0.65rem;color:var(--txt3);margin-top:2px;padding:"+(isMine?"0 4px 0 0":"0 0 0 4px")+"'>"+escHtml(m.timestamp||"")+"</div>"
       +"</div>";
   }).join("");
   box.scrollTop = box.scrollHeight;
