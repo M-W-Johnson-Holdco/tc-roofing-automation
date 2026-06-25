@@ -8101,13 +8101,14 @@ function tnRenderTradeList(){
   if(!list) return;
   list.innerHTML = "";
   TN_TRADES.forEach(function(trade){
-    var hasNotes = tnNotesMap[trade] && tnNotesMap[trade].notes && tnNotesMap[trade].notes.trim();
+    var hasNotes = !!tnNotesMap[trade];
+    var isActive = trade === tnCurrentTrade;
     var btn = document.createElement("button");
     btn.className = "btn btn-secondary btn-sm";
     btn.style.cssText = "text-align:left;width:100%;padding:6px 10px;font-size:0.8rem;position:relative;";
     btn.textContent = trade;
-    if(hasNotes){ btn.style.borderLeft = "3px solid #8DC63F"; }
-    if(trade === tnCurrentTrade){ btn.style.background = "var(--accent)"; btn.style.color = "#000"; btn.style.fontWeight = "700"; }
+    if(hasNotes){ btn.style.color = "#39FF14"; btn.style.fontWeight = "600"; }
+    if(isActive){ btn.style.background = "var(--accent)"; btn.style.color = "#000"; btn.style.fontWeight = "700"; }
     btn.addEventListener("click", function(){ tnSelectTrade(trade); });
     list.appendChild(btn);
   });
