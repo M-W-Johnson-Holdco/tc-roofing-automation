@@ -4026,13 +4026,12 @@ function toggleMaskedFields() {
               <label id="tn-trade-label" style="margin:0;font-weight:700;font-size:0.95rem;">Select a trade →</label>
               <span id="tn-save-status" style="font-size:0.75rem;color:var(--txt3);"></span>
             </div>
-            <textarea id="tn-notes" rows="12" placeholder="Select a trade from the list to view or add notes..." style="width:100%;resize:vertical;" disabled></textarea>
-            <div class="btn-row" style="margin-top:8px;">
-              <button class="btn btn-primary" id="tn-save-btn" disabled>💾 Save Notes</button>
+            <div id="tn-thread" style="min-height:180px;max-height:340px;overflow-y:auto;border:1px solid var(--bdr);border-radius:8px;padding:10px 12px;background:var(--surf2);margin-bottom:10px;">
+              <div style="color:var(--txt3);font-size:0.82rem;">Select a trade to view notes.</div>
             </div>
-            <div id="tn-history" style="margin-top:18px;display:none;">
-              <div style="font-size:0.75rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Save History</div>
-              <div id="tn-history-box" style="max-height:220px;overflow-y:auto;border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;background:var(--surf2);"></div>
+            <textarea id="tn-notes" rows="3" placeholder="Add a note..." style="width:100%;resize:vertical;" disabled></textarea>
+            <div class="btn-row" style="margin-top:8px;">
+              <button class="btn btn-primary" id="tn-save-btn" disabled>➕ Add Note</button>
             </div>
           </div>
         </div>
@@ -8083,48 +8082,58 @@ function tnRenderTradeList(){
   });
 }
 
+function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
 function tnSelectTrade(trade){
   tnCurrentTrade = trade;
-  var entry = tnNotesMap[trade] || {notes:""};
   var textarea = document.getElementById("tn-notes");
   var label = document.getElementById("tn-trade-label");
   var saveBtn = document.getElementById("tn-save-btn");
-  if(textarea){ textarea.value = entry.notes||""; textarea.disabled = false; textarea.focus(); }
+  if(textarea){ textarea.value=""; textarea.disabled=false; textarea.focus(); }
   if(label) label.textContent = trade;
-  if(saveBtn) saveBtn.disabled = false;
+  if(saveBtn) saveBtn.disabled=false;
   tnSetSaveStatus("");
   tnRenderTradeList();
-  var histPanel = document.getElementById("tn-history");
-  if(histPanel) histPanel.style.display = "block";
-  tnLoadHistory(trade);
+  tnRenderThread([]);
+  tnLoadThread(trade);
 }
 
-function tnLoadHistory(trade){
-  var box = document.getElementById("tn-history-box");
+function tnRenderThread(messages){
+  var box = document.getElementById("tn-thread");
   if(!box) return;
-  box.innerHTML = "<div style='color:var(--txt3);font-size:0.78rem;'>Loading history...</div>";
-  getGSToken().then(function(t){
-    var sid = CRED_GS_SHEET_ID;
-    var range = encodeURIComponent(TN_HISTORY_SHEET_NAME+"!A:E");
-    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+range,{headers:{Authorization:"Bearer "+t}});
-  }).then(function(r){return r.json();}).then(function(d){
-    var rows = (d.values||[]).slice(1); // skip header
-    var matches = rows.filter(function(r){ return (r[0]||"").trim()===tnCurrentJob && (r[1]||"")===trade; });
-    matches.reverse(); // most recent first
-    if(!matches.length){ box.innerHTML="<div style='color:var(--txt3);font-size:0.78rem;'>No history yet.</div>"; return; }
-    box.innerHTML = matches.map(function(r){
-      return "<div style='border-bottom:1px solid var(--bdr);padding:6px 0;'>"
-        +"<div style='display:flex;justify-content:space-between;margin-bottom:2px;'>"
-        +"<span style='font-size:0.75rem;font-weight:700;color:var(--accent);'>"+escHtml(r[4]||"Unknown")+"</span>"
-        +"<span style='font-size:0.72rem;color:var(--txt3);'>"+escHtml(r[3]||"")+"</span>"
-        +"</div>"
-        +"<div style='font-size:0.78rem;color:var(--txt2);white-space:pre-wrap;'>"+escHtml(r[2]||"")+"</div>"
-        +"</div>";
-    }).join("");
-  }).catch(function(){ box.innerHTML="<div style='color:var(--txt3);font-size:0.78rem;'>Could not load history.</div>"; });
+  if(!messages.length){
+    box.innerHTML="<div style='color:var(--txt3);font-size:0.82rem;padding:8px 0;'>No notes yet — be the first to add one.</div>";
+    return;
+  }
+  box.innerHTML = messages.map(function(m){
+    var isMine = (m.author||"") === (currentUser||"");
+    return "<div style='margin-bottom:12px;'>"
+      +"<div style='display:flex;align-items:baseline;gap:8px;margin-bottom:3px;'>"
+      +"<span style='font-size:0.78rem;font-weight:700;color:"+(isMine?"var(--accent)":"#4A90D9")+"'>"+escHtml(m.author||"Unknown")+"</span>"
+      +"<span style='font-size:0.7rem;color:var(--txt3);'>"+escHtml(m.timestamp||"")+"</span>"
+      +"</div>"
+      +"<div style='background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;font-size:0.83rem;color:var(--txt);white-space:pre-wrap;line-height:1.5;'>"+escHtml(m.note||"")+"</div>"
+      +"</div>";
+  }).join("");
+  box.scrollTop = box.scrollHeight;
 }
 
-function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function tnLoadThread(trade){
+  var box = document.getElementById("tn-thread");
+  if(box) box.innerHTML="<div style='color:var(--txt3);font-size:0.82rem;'>Loading...</div>";
+  getGSToken().then(function(t){
+    var range = encodeURIComponent(TN_SHEET_NAME+"!A:E");
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+CRED_GS_SHEET_ID+"/values/"+range,{headers:{Authorization:"Bearer "+t}});
+  }).then(function(r){return r.json();}).then(function(d){
+    var rows = (d.values||[]).slice(1);
+    var msgs = rows.filter(function(r){ return (r[0]||"").trim()===tnCurrentJob && (r[1]||"")===trade; })
+      .map(function(r){ return {note:r[2]||"", timestamp:r[3]||"", author:r[4]||"Unknown"}; });
+    tnRenderThread(msgs);
+    // Update trade list dot
+    if(msgs.length) tnNotesMap[trade] = true; else delete tnNotesMap[trade];
+    tnRenderTradeList();
+  }).catch(function(){ if(box) box.innerHTML="<div style='color:#e74c3c;font-size:0.82rem;'>Could not load notes.</div>"; });
+}
 
 function tnLoadJob(){
   var jobNum = (document.getElementById("tn-job-input").value||"").trim();
@@ -8138,82 +8147,53 @@ function tnLoadJob(){
   if(textarea){ textarea.value=""; textarea.disabled=true; }
   if(saveBtn) saveBtn.disabled=true;
   document.getElementById("tn-trade-label").textContent = "Select a trade →";
+  var thread = document.getElementById("tn-thread");
+  if(thread) thread.innerHTML="<div style='color:var(--txt3);font-size:0.82rem;'>Select a trade to view notes.</div>";
   getGSToken().then(function(t){
-    var sid = CRED_GS_SHEET_ID;
     var range = encodeURIComponent(TN_SHEET_NAME+"!A:E");
-    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+range,{headers:{Authorization:"Bearer "+t}});
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+CRED_GS_SHEET_ID+"/values/"+range,{headers:{Authorization:"Bearer "+t}});
   }).then(function(r){return r.json();}).then(function(d){
-    var rows = d.values||[];
-    // rows: [JobNumber, Trade, Notes, LastUpdated, UpdatedBy]
-    rows.forEach(function(row, i){
-      if(i===0) return; // skip header
-      if((row[0]||"").trim() === jobNum){
-        var trade = row[1]||"";
-        tnNotesMap[trade] = {notes: row[2]||"", rowIndex: i+1, lastUpdated: row[3]||"", updatedBy: row[4]||""};
-      }
+    var rows = (d.values||[]).slice(1);
+    rows.forEach(function(row){
+      if((row[0]||"").trim()===jobNum && (row[1]||"")){ tnNotesMap[row[1]]=true; }
     });
     var count = Object.keys(tnNotesMap).length;
-    tnSetStatus("Job #"+jobNum+" loaded — "+count+" trade note"+(count===1?"":"s")+" found.", "#8DC63F");
-    document.getElementById("tn-workspace").style.display = "block";
+    tnSetStatus("Job #"+jobNum+" loaded — "+count+" trade"+(count===1?" has":" trades have")+" notes.", "#8DC63F");
+    document.getElementById("tn-workspace").style.display="block";
     tnRenderTradeList();
-  }).catch(function(e){
-    tnSetStatus("Error loading notes: "+e.message, "#e74c3c");
-  });
+  }).catch(function(e){ tnSetStatus("Error: "+e.message, "#e74c3c"); });
 }
 
-function tnSaveNotes(){
+function tnPostNote(){
   if(!tnCurrentJob || !tnCurrentTrade) return;
-  var notes = (document.getElementById("tn-notes").value)||"";
+  var textarea = document.getElementById("tn-notes");
+  var note = (textarea?textarea.value:"").trim();
+  if(!note){ tnSetSaveStatus("Type a note first.", "#e74c3c"); return; }
   var saveBtn = document.getElementById("tn-save-btn");
-  if(saveBtn) saveBtn.disabled = true;
-  tnSetSaveStatus("Saving...", "var(--txt3)");
-  var now = new Date().toLocaleString("en-US",{timeZone:"America/Chicago"});
-  var updatedBy = currentUser||"Unknown";
-  var rowData = [tnCurrentJob, tnCurrentTrade, notes, now+" CST", updatedBy];
-  var existing = tnNotesMap[tnCurrentTrade];
+  if(saveBtn) saveBtn.disabled=true;
+  tnSetSaveStatus("Posting...", "var(--txt3)");
+  var now = new Date().toLocaleString("en-US",{timeZone:"America/Chicago"})+" CST";
+  var author = currentUser||"Unknown";
+  var rowData = [tnCurrentJob, tnCurrentTrade, note, now, author];
   getGSToken().then(function(t){
-    var sid = CRED_GS_SHEET_ID;
-    var url, method, body;
-    if(existing && existing.rowIndex){
-      // Update existing row in place
-      var range = encodeURIComponent(TN_SHEET_NAME+"!A"+existing.rowIndex+":E"+existing.rowIndex);
-      url = "https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+range+"?valueInputOption=RAW";
-      method = "PUT";
-      body = JSON.stringify({range: TN_SHEET_NAME+"!A"+existing.rowIndex+":E"+existing.rowIndex, values:[rowData]});
-    } else {
-      // Append new row
-      var range2 = encodeURIComponent(TN_SHEET_NAME+"!A:E");
-      url = "https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+range2+":append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
-      method = "POST";
-      body = JSON.stringify({values:[rowData]});
-    }
-    return fetch(url,{method:method,headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:body});
+    var range = encodeURIComponent(TN_SHEET_NAME+"!A:E");
+    var url = "https://sheets.googleapis.com/v4/spreadsheets/"+CRED_GS_SHEET_ID+"/values/"+range+":append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
+    return fetch(url,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[rowData]})});
   }).then(function(r){return r.json();}).then(function(d){
     if(d.error){ throw new Error(d.error.message); }
-    // Append to history sheet
-    var sid = CRED_GS_SHEET_ID;
-    var histRange = encodeURIComponent(TN_HISTORY_SHEET_NAME+"!A:E");
-    var histUrl = "https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+histRange+":append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
-    return getGSToken().then(function(t){
-      return fetch(histUrl,{method:"POST",headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({values:[rowData]})});
-    }).then(function(){
-      tnNotesMap[tnCurrentTrade] = tnNotesMap[tnCurrentTrade]||{};
-      tnNotesMap[tnCurrentTrade].notes = notes;
-      tnSetSaveStatus("✅ Saved at "+new Date().toLocaleTimeString(), "#8DC63F");
-      if(saveBtn) saveBtn.disabled = false;
-      tnRenderTradeList();
-      tnLoadHistory(tnCurrentTrade);
-      if(!existing || !existing.rowIndex){ tnLoadJob(); }
-    });
+    if(textarea) textarea.value="";
+    tnSetSaveStatus("✅ Posted", "#8DC63F");
+    if(saveBtn) saveBtn.disabled=false;
+    tnLoadThread(tnCurrentTrade);
   }).catch(function(e){
-    tnSetSaveStatus("❌ Save failed: "+e.message, "#e74c3c");
-    if(saveBtn) saveBtn.disabled = false;
+    tnSetSaveStatus("❌ "+e.message, "#e74c3c");
+    if(saveBtn) saveBtn.disabled=false;
   });
 }
 
 document.addEventListener("click", function(e){
   if(e.target.id==="tn-load-btn"){ tnLoadJob(); return; }
-  if(e.target.id==="tn-save-btn"){ tnSaveNotes(); return; }
+  if(e.target.id==="tn-save-btn"){ tnPostNote(); return; }
   if(e.target.id==="tn-clear-btn"){
     tnCurrentJob=""; tnCurrentTrade=""; tnNotesMap={};
     document.getElementById("tn-job-input").value="";
