@@ -8179,6 +8179,8 @@ function tnLoadMeta(trade){
       document.getElementById("tn-subquote").value = match.row[5]||"";
       tnCurrentMetaRow = match.rowIndex;
       tnToggleInsFunds();
+      tnFormatMoney("tn-insfunds");
+      tnFormatMoney("tn-subquote");
     } else {
       tnCurrentMetaRow = null;
     }
@@ -8328,6 +8330,25 @@ function tnToggleInsFunds(){
 document.addEventListener("change", function(e){
   if(e.target.id==="tn-type"){ tnToggleInsFunds(); }
 });
+
+function tnFormatMoney(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  var raw = el.value.replace(/[^0-9.]/g,"");
+  var num = parseFloat(raw);
+  el.value = isNaN(num) ? "" : "$"+num.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function tnUnformatMoney(id){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.value = el.value.replace(/[^0-9.]/g,"");
+}
+document.addEventListener("focus", function(e){
+  if(e.target.id==="tn-subquote"||e.target.id==="tn-insfunds"){ tnUnformatMoney(e.target.id); }
+}, true);
+document.addEventListener("blur", function(e){
+  if(e.target.id==="tn-subquote"||e.target.id==="tn-insfunds"){ tnFormatMoney(e.target.id); }
+}, true);
 
 document.addEventListener("click", function(e){
   if(e.target.id==="tn-load-btn"){ tnLoadJob(); return; }
