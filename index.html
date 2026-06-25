@@ -8111,7 +8111,7 @@ function tnRenderThread(messages){
       ? "background:#248A3D;color:#fff;border-radius:18px 18px 4px 18px;margin-left:20%;"
       : "background:var(--surf);color:var(--txt);border:1px solid var(--bdr);border-radius:18px 18px 18px 4px;margin-right:20%;";
     return "<div style='margin-bottom:10px;display:flex;flex-direction:column;align-items:"+(isMine?"flex-end":"flex-start")+";'>"
-      +(!isMine?"<div style='font-size:0.7rem;font-weight:700;color:#4A90D9;margin-bottom:2px;padding-left:4px;'>"+escHtml(m.author||"Unknown")+"</div>":"")
+      +"<div style='font-size:0.7rem;font-weight:700;color:"+(isMine?"#248A3D":"#4A90D9")+";margin-bottom:2px;"+(isMine?"padding-right:4px;":"padding-left:4px;")+">"+escHtml(m.author||"Unknown")+"</div>"
       +"<div style='"+bubble+"padding:8px 12px;max-width:85%;font-size:0.83rem;white-space:pre-wrap;line-height:1.45;word-break:break-word;'>"+escHtml(m.note||"")+"</div>"
       +"<div style='font-size:0.65rem;color:var(--txt3);margin-top:2px;padding:"+(isMine?"0 4px 0 0":"0 0 0 4px")+"'>"+escHtml(m.timestamp||"")+"</div>"
       +"</div>";
