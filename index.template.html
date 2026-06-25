@@ -8125,7 +8125,7 @@ function tnRenderTradeList(){
     btn.style.cssText = "text-align:left;width:100%;padding:6px 10px;font-size:0.8rem;position:relative;";
     btn.textContent = trade;
     if(hasNotes){ btn.style.color = "#39FF14"; btn.style.fontWeight = "600"; }
-    if(isActive){ btn.style.background = "var(--accent)"; btn.style.color = "#000"; btn.style.fontWeight = "700"; }
+    if(isActive){ btn.style.background = "#FF69B4"; btn.style.color = "#fff"; btn.style.fontWeight = "700"; }
     btn.addEventListener("click", function(){ tnSelectTrade(trade); });
     list.appendChild(btn);
   });
