@@ -4022,9 +4022,39 @@ function toggleMaskedFields() {
             <div id="tn-trade-list" style="display:flex;flex-direction:column;gap:4px;"></div>
           </div>
           <div style="flex:1;min-width:260px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
               <label id="tn-trade-label" style="margin:0;font-weight:700;font-size:0.95rem;">Select a trade →</label>
               <span id="tn-save-status" style="font-size:0.75rem;color:var(--txt3);"></span>
+            </div>
+            <div id="tn-meta-row" style="display:none;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:10px 12px;margin-bottom:10px;">
+              <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+                <div>
+                  <label style="font-size:0.72rem;margin-bottom:3px;display:block;">Current Status</label>
+                  <select id="tn-status" style="font-size:0.82rem;padding:5px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--surf);color:var(--txt);">
+                    <option value="">— Select —</option>
+                    <option>Supplementing</option>
+                    <option>WND</option>
+                    <option>Pending Sub Quote</option>
+                    <option>Scheduled</option>
+                    <option>Completed</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:0.72rem;margin-bottom:3px;display:block;">Type</label>
+                  <select id="tn-type" style="font-size:0.82rem;padding:5px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--surf);color:var(--txt);">
+                    <option value="">— Select —</option>
+                    <option>Insurance</option>
+                    <option>Retail</option>
+                    <option>Combo</option>
+                  </select>
+                </div>
+                <div style="flex:1;min-width:140px;">
+                  <label style="font-size:0.72rem;margin-bottom:3px;display:block;">Sub Quote</label>
+                  <input type="text" id="tn-subquote" placeholder="e.g. $4,200" style="width:100%;font-size:0.82rem;padding:5px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--surf);color:var(--txt);">
+                </div>
+                <button class="btn btn-secondary btn-sm" id="tn-meta-save-btn">Save</button>
+                <span id="tn-meta-save-status" style="font-size:0.72rem;color:var(--txt3);align-self:center;"></span>
+              </div>
             </div>
             <div id="tn-thread" style="min-height:180px;max-height:340px;overflow-y:auto;border:1px solid var(--bdr);border-radius:8px;padding:10px 12px;background:var(--surf2);margin-bottom:10px;">
               <div style="color:var(--txt3);font-size:0.82rem;">Select a trade to view notes.</div>
@@ -8050,7 +8080,7 @@ renderReminderSmsTmplList();
 // TRADE NOTES
 // =====================================================================
 var TN_SHEET_NAME = "Trade Notes";
-var TN_HISTORY_SHEET_NAME = "Trade Notes History";
+var TN_META_SHEET_NAME = "Trade Notes Meta";
 var TN_TRADES = [
   "Chimney","Deck/Porch","Door","Exterior Painting","Fascia & Soffit",
   "Fence","Flat Roofing","Flooring","Garage","Gazebo","Gutters","HVAC",
@@ -8060,7 +8090,8 @@ var TN_TRADES = [
 ];
 var tnCurrentJob = "";
 var tnCurrentTrade = "";
-var tnNotesMap = {}; // trade -> {notes, rowIndex}
+var tnCurrentMetaRow = null;
+var tnNotesMap = {};
 
 function tnSetStatus(msg, color){ var el=document.getElementById("tn-job-status"); if(el){el.textContent=msg;el.style.color=color||"var(--txt3)";} }
 function tnSetSaveStatus(msg, color){ var el=document.getElementById("tn-save-status"); if(el){el.textContent=msg;el.style.color=color||"var(--txt3)";} }
@@ -8084,6 +8115,8 @@ function tnRenderTradeList(){
 
 function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
+function tnSetMetaSaveStatus(msg,color){ var el=document.getElementById("tn-meta-save-status"); if(el){el.textContent=msg;el.style.color=color||"var(--txt3)";} }
+
 function tnSelectTrade(trade){
   tnCurrentTrade = trade;
   var textarea = document.getElementById("tn-notes");
@@ -8093,9 +8126,75 @@ function tnSelectTrade(trade){
   if(label) label.textContent = trade;
   if(saveBtn) saveBtn.disabled=false;
   tnSetSaveStatus("");
+  tnSetMetaSaveStatus("");
+  // Show meta row, reset fields while loading
+  var metaRow = document.getElementById("tn-meta-row");
+  if(metaRow) metaRow.style.display="block";
+  document.getElementById("tn-status").value="";
+  document.getElementById("tn-type").value="";
+  document.getElementById("tn-subquote").value="";
   tnRenderTradeList();
   tnRenderThread([]);
+  tnLoadMeta(trade);
   tnLoadThread(trade);
+}
+
+function tnLoadMeta(trade){
+  getGSToken().then(function(t){
+    var range = encodeURIComponent(TN_META_SHEET_NAME+"!A:G");
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+CRED_GS_SHEET_ID+"/values/"+range,{headers:{Authorization:"Bearer "+t}});
+  }).then(function(r){return r.json();}).then(function(d){
+    var rows = (d.values||[]).slice(1);
+    var match = null;
+    rows.forEach(function(row,i){
+      if((row[0]||"").trim()===tnCurrentJob && (row[1]||"")===trade){ match={row:row,rowIndex:i+2}; }
+    });
+    if(match){
+      document.getElementById("tn-status").value = match.row[2]||"";
+      document.getElementById("tn-type").value   = match.row[3]||"";
+      document.getElementById("tn-subquote").value = match.row[4]||"";
+      tnCurrentMetaRow = match.rowIndex;
+    } else {
+      tnCurrentMetaRow = null;
+    }
+  }).catch(function(){});
+}
+
+function tnSaveMeta(){
+  if(!tnCurrentJob||!tnCurrentTrade) return;
+  var status   = document.getElementById("tn-status").value;
+  var type     = document.getElementById("tn-type").value;
+  var subquote = document.getElementById("tn-subquote").value.trim();
+  var now      = new Date().toLocaleString("en-US",{timeZone:"America/Chicago"})+" CST";
+  var author   = currentUser||"Unknown";
+  var rowData  = [tnCurrentJob, tnCurrentTrade, status, type, subquote, now, author];
+  var metaBtn  = document.getElementById("tn-meta-save-btn");
+  if(metaBtn) metaBtn.disabled=true;
+  tnSetMetaSaveStatus("Saving...","var(--txt3)");
+  getGSToken().then(function(t){
+    var sid = CRED_GS_SHEET_ID;
+    var url, method, body;
+    if(tnCurrentMetaRow){
+      var range = encodeURIComponent(TN_META_SHEET_NAME+"!A"+tnCurrentMetaRow+":G"+tnCurrentMetaRow);
+      url = "https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+range+"?valueInputOption=RAW";
+      method = "PUT";
+      body = JSON.stringify({range:TN_META_SHEET_NAME+"!A"+tnCurrentMetaRow+":G"+tnCurrentMetaRow,values:[rowData]});
+    } else {
+      var range2 = encodeURIComponent(TN_META_SHEET_NAME+"!A:G");
+      url = "https://sheets.googleapis.com/v4/spreadsheets/"+sid+"/values/"+range2+":append?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
+      method = "POST";
+      body = JSON.stringify({values:[rowData]});
+    }
+    return fetch(url,{method:method,headers:{Authorization:"Bearer "+t,"Content-Type":"application/json"},body:body});
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.error) throw new Error(d.error.message);
+    tnSetMetaSaveStatus("✅ Saved","#8DC63F");
+    if(metaBtn) metaBtn.disabled=false;
+    if(!tnCurrentMetaRow) tnLoadMeta(tnCurrentTrade);
+  }).catch(function(e){
+    tnSetMetaSaveStatus("❌ "+e.message,"#e74c3c");
+    if(metaBtn) metaBtn.disabled=false;
+  });
 }
 
 function tnRenderThread(messages){
@@ -8195,6 +8294,7 @@ function tnPostNote(){
 document.addEventListener("click", function(e){
   if(e.target.id==="tn-load-btn"){ tnLoadJob(); return; }
   if(e.target.id==="tn-save-btn"){ tnPostNote(); return; }
+  if(e.target.id==="tn-meta-save-btn"){ tnSaveMeta(); return; }
   if(e.target.id==="tn-clear-btn"){
     tnCurrentJob=""; tnCurrentTrade=""; tnNotesMap={};
     document.getElementById("tn-job-input").value="";
