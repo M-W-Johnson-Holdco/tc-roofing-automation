@@ -4115,13 +4115,14 @@ var store = {
 // =====================================================================
 
 // Tab visibility per role — true = visible
-// Tabs: dashboard, weather, scheduler, templates, config, logs, commissions, workorder, pto, smartsched, prewo
+// Tabs: dashboard, weather, scheduler, templates, config, logs, commissions, workorder, pto, smartsched, prewo, tradenotes
+// Trade Notes write access: admin, claims, production — all others are view-only
 var ROLE_TABS = {
-  admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true  },
-  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:false, workorder:false, pto:true, smartsched:false, prewo:false },
-  sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false },
-  production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true  },
-  viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true  }
+  admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
+  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:false, workorder:false, pto:true, smartsched:false, prewo:false, tradenotes:true  },
+  sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false, tradenotes:true  },
+  production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
+  viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  }
 };
 
 var currentUserEmail = "";
@@ -4139,7 +4140,8 @@ function applyRolePermissions(role) {
   var tabMap = {
     dashboard: "dashboard", weather: "weather", scheduler: "scheduler",
     templates: "templates", config: "config", logs: "logs", commissions: "commissions",
-    workorder: "workorder", pto: "pto", smartsched: "smartsched", prewo: "prewo"
+    workorder: "workorder", pto: "pto", smartsched: "smartsched", prewo: "prewo",
+    tradenotes: "tradenotes"
   };
   // Find first visible tab to activate
   var firstVisible = null;
@@ -4213,6 +4215,7 @@ function completeLogin(googleEmail, googleName, gsToken) {
 
     applyRolePermissions(currentUserRole);
     woApplyRole(currentUserRole);
+    tnApplyRole(currentUserRole);
     addSignOutButton();
 
   }).catch(function(e) {
@@ -4261,6 +4264,7 @@ function initGoogleAuth() {
     if (badge) badge.textContent = "👤 " + currentUser + " (" + currentUserRole + ")";
     applyRolePermissions(currentUserRole);
     woApplyRole(currentUserRole);
+    tnApplyRole(currentUserRole);
     addSignOutButton();
     return;
   }
@@ -8094,6 +8098,19 @@ var tnCurrentMetaRow = null;
 var tnNotesMap = {};
 
 function tnSetStatus(msg, color){ var el=document.getElementById("tn-job-status"); if(el){el.textContent=msg;el.style.color=color||"var(--txt3)";} }
+
+var tnCanWrite = false;
+function tnApplyRole(role){
+  tnCanWrite = (role === "admin" || role === "claims" || role === "production");
+  var addNote = document.getElementById("tn-save-btn");
+  var noteArea = document.getElementById("tn-notes");
+  var metaSave = document.getElementById("tn-meta-save-btn");
+  if(!tnCanWrite){
+    if(addNote){ addNote.style.display = "none"; }
+    if(noteArea){ noteArea.disabled = true; noteArea.placeholder = "View only — your role cannot add notes."; }
+    if(metaSave){ metaSave.style.display = "none"; }
+  }
+}
 function tnSetSaveStatus(msg, color){ var el=document.getElementById("tn-save-status"); if(el){el.textContent=msg;el.style.color=color||"var(--txt3)";} }
 
 function tnRenderTradeList(){
@@ -8123,9 +8140,9 @@ function tnSelectTrade(trade){
   var textarea = document.getElementById("tn-notes");
   var label = document.getElementById("tn-trade-label");
   var saveBtn = document.getElementById("tn-save-btn");
-  if(textarea){ textarea.value=""; textarea.disabled=false; textarea.focus(); }
+  if(textarea){ textarea.value=""; textarea.disabled=!tnCanWrite; if(tnCanWrite) textarea.focus(); }
   if(label) label.textContent = trade;
-  if(saveBtn) saveBtn.disabled=false;
+  if(saveBtn){ saveBtn.disabled=!tnCanWrite; saveBtn.style.display=tnCanWrite?"":"none"; }
   tnSetSaveStatus("");
   tnSetMetaSaveStatus("");
   // Show meta row, reset fields while loading
