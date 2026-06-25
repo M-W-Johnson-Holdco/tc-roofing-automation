@@ -4048,6 +4048,10 @@ function toggleMaskedFields() {
                     <option>Combo</option>
                   </select>
                 </div>
+                <div id="tn-insfunds-wrap" style="flex:1;min-width:140px;display:none;">
+                  <label style="font-size:0.72rem;margin-bottom:3px;display:block;">Insurance Funds</label>
+                  <input type="text" id="tn-insfunds" placeholder="e.g. $8,500" style="width:100%;font-size:0.82rem;padding:5px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--surf);color:var(--txt);">
+                </div>
                 <div style="flex:1;min-width:140px;">
                   <label style="font-size:0.72rem;margin-bottom:3px;display:block;">Sub Quote</label>
                   <input type="text" id="tn-subquote" placeholder="e.g. $4,200" style="width:100%;font-size:0.82rem;padding:5px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--surf);color:var(--txt);">
@@ -8150,6 +8154,7 @@ function tnSelectTrade(trade){
   if(metaRow) metaRow.style.display="block";
   document.getElementById("tn-status").value="";
   document.getElementById("tn-type").value="";
+  document.getElementById("tn-insfunds").value="";
   document.getElementById("tn-subquote").value="";
   tnRenderTradeList();
   tnRenderThread([]);
@@ -8168,10 +8173,12 @@ function tnLoadMeta(trade){
       if((row[0]||"").trim()===tnCurrentJob && (row[1]||"")===trade){ match={row:row,rowIndex:i+2}; }
     });
     if(match){
-      document.getElementById("tn-status").value = match.row[2]||"";
-      document.getElementById("tn-type").value   = match.row[3]||"";
-      document.getElementById("tn-subquote").value = match.row[4]||"";
+      document.getElementById("tn-status").value   = match.row[2]||"";
+      document.getElementById("tn-type").value     = match.row[3]||"";
+      document.getElementById("tn-insfunds").value = match.row[4]||"";
+      document.getElementById("tn-subquote").value = match.row[5]||"";
       tnCurrentMetaRow = match.rowIndex;
+      tnToggleInsFunds();
     } else {
       tnCurrentMetaRow = null;
     }
@@ -8182,10 +8189,11 @@ function tnSaveMeta(){
   if(!tnCurrentJob||!tnCurrentTrade) return;
   var status   = document.getElementById("tn-status").value;
   var type     = document.getElementById("tn-type").value;
+  var insfunds = document.getElementById("tn-insfunds").value.trim();
   var subquote = document.getElementById("tn-subquote").value.trim();
   var now      = new Date().toLocaleString("en-US",{timeZone:"America/Chicago"})+" CST";
   var author   = currentUser||"Unknown";
-  var rowData  = [tnCurrentJob, tnCurrentTrade, status, type, subquote, now, author];
+  var rowData  = [tnCurrentJob, tnCurrentTrade, status, type, insfunds, subquote, now, author];
   var metaBtn  = document.getElementById("tn-meta-save-btn");
   if(metaBtn) metaBtn.disabled=true;
   tnSetMetaSaveStatus("Saving...","var(--txt3)");
@@ -8311,6 +8319,15 @@ function tnPostNote(){
     if(saveBtn) saveBtn.disabled=false;
   });
 }
+
+function tnToggleInsFunds(){
+  var type = (document.getElementById("tn-type")||{}).value||"";
+  var wrap = document.getElementById("tn-insfunds-wrap");
+  if(wrap) wrap.style.display = (type==="Insurance"||type==="Combo") ? "" : "none";
+}
+document.addEventListener("change", function(e){
+  if(e.target.id==="tn-type"){ tnToggleInsFunds(); }
+});
 
 document.addEventListener("click", function(e){
   if(e.target.id==="tn-load-btn"){ tnLoadJob(); return; }
