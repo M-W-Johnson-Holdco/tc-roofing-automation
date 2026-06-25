@@ -185,7 +185,6 @@
     <div class="status-bar idle" id="status-bar"><div class="dot" id="status-dot"></div><span id="status-text">Ready — paste CSV and click Run Now</span></div>
     <div class="card">
       <h2>Controls</h2>
-      <div class="alert alert-warn">⚠️ Load your AccuLynx CSV before running — upload the file or paste the contents below.</div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
         <label style="margin:0;">AccuLynx CSV Data</label>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -194,8 +193,8 @@
           <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display:none;">
         </div>
       </div>
-      <textarea id="csv-input" rows="6" placeholder="Paste full CSV content here (including header row), or click Upload CSV File above..."></textarea>
-      <div class="small">Tip: Click <strong>Download CSV</strong> in the AccuLynx email → save the file → click <strong>Upload CSV File</strong> above. Or open the CSV, Select All, Copy, and paste here.</div>
+      <textarea id="csv-input" rows="6" placeholder="Auto-loading latest TC report..."></textarea>
+      <div id="csv-auto-status" class="small" style="margin-top:4px;min-height:16px;"></div>
       <br>
       <div class="btn-row">
         <button class="btn btn-primary" id="run-btn">&#9654; Run Now</button>
@@ -4436,6 +4435,39 @@ function getGSToken(){
   return fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"client_id="+encodeURIComponent(CRED_GS_CLIENT_ID)+"&client_secret="+encodeURIComponent(CRED_GS_CLIENT_SECRET)+"&refresh_token="+encodeURIComponent(CRED_GS_REFRESH_TOKEN)+"&grant_type=refresh_token"})
   .then(function(r){return r.json();}).then(function(d){if(!d.access_token)throw new Error("Google token failed");gsToken=d.access_token;gsExpiry=Date.now()+(d.expires_in-60)*1000;return gsToken;});
 }
+var TC_CSV_SHEET_ID = "1vCz8x85_SW3AZdhiDPTY7n0jwo84YpPmdBG9zo8RRR4";
+var TC_CSV_SHEET_NAME = "TC_CSV_Cache";
+function autoLoadTCCsv(){
+  var statusEl = document.getElementById("csv-auto-status");
+  var textarea = document.getElementById("csv-input");
+  if(statusEl) statusEl.textContent = "Loading latest report from Google Sheets...";
+  getGSToken().then(function(t){
+    var range = encodeURIComponent(TC_CSV_SHEET_NAME + "!A1:AH600");
+    return fetch("https://sheets.googleapis.com/v4/spreadsheets/"+TC_CSV_SHEET_ID+"/values/"+range,{headers:{Authorization:"Bearer "+t}});
+  }).then(function(r){return r.json();}).then(function(d){
+    if(!d.values||d.values.length<2){
+      if(statusEl) statusEl.textContent = "No report cached yet — upload a CSV file or wait for the 9am/1pm/6pm auto-fetch.";
+      return;
+    }
+    var timestamp = d.values[0][0]||"";
+    var dataRows = d.values.slice(1); // row 1 = headers, row 2+ = data
+    // Reconstruct CSV text
+    var csvText = dataRows.map(function(row){
+      return row.map(function(val){
+        var s = String(val);
+        if(s.indexOf(",")!==-1||s.indexOf('"')!==-1||s.indexOf("\n")!==-1){
+          s = '"'+s.replace(/"/g,'""')+'"';
+        }
+        return s;
+      }).join(",");
+    }).join("\n");
+    textarea.value = csvText;
+    var jobCount = Math.max(0, dataRows.length - 1);
+    if(statusEl) statusEl.textContent = "✅ Auto-loaded: " + jobCount + " jobs — " + timestamp;
+  }).catch(function(err){
+    if(statusEl) statusEl.textContent = "Could not auto-load (" + err.message + ") — upload a CSV file manually.";
+  });
+}
 function getSheetLog(){
   return getGSToken().then(function(t){
     var sid=CRED_GS_SHEET_ID;
@@ -4823,7 +4855,7 @@ document.getElementById("csv-file-input").addEventListener("change",function(e){
 
 document.addEventListener("click",function(e){
   var t=e.target;
-  if(t.classList.contains("tab")&&t.dataset.tab){document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");t.classList.add("active");return;}
+  if(t.classList.contains("tab")&&t.dataset.tab){document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");t.classList.add("active");if(t.dataset.tab==="dashboard")autoLoadTCCsv();return;}
   if(t.id==="run-btn"){runAutomation();return;}
   if(t.id==="clear-log-btn"){["log-box","log-box-2"].forEach(function(id){var b=document.getElementById(id);if(b)b.innerHTML="";});return;}
   if(t.id==="weather-save-msg-btn"){store.set("weather_msg",document.getElementById("weather-msg-edit").value);alert("Weather message saved!");return;}
@@ -4865,6 +4897,7 @@ loadLogo();
 updateWeatherPreview();
 updateNextRun();
 setInterval(updateNextRun,60000);
+autoLoadTCCsv();
 
 // =====================================================================
 // SCHEDULER — Google Calendar + SMS notifications
