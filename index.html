@@ -185,10 +185,17 @@
     <div class="status-bar idle" id="status-bar"><div class="dot" id="status-dot"></div><span id="status-text">Ready — paste CSV and click Run Now</span></div>
     <div class="card">
       <h2>Controls</h2>
-      <div class="alert alert-warn">⚠️ Paste your AccuLynx CSV data below before running.</div>
-      <label>Paste AccuLynx CSV Data Here</label>
-      <textarea id="csv-input" rows="6" placeholder="Paste full CSV content here (including header row)..."></textarea>
-      <div class="small">Tip: Open CSV from AccuLynx email, Select All (Ctrl+A), Copy, Paste here.</div>
+      <div class="alert alert-warn">⚠️ Load your AccuLynx CSV before running — upload the file or paste the contents below.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+        <label style="margin:0;">AccuLynx CSV Data</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="csv-file-name" style="font-size:0.78rem;color:var(--txt3);"></span>
+          <label for="csv-file-input" class="btn btn-secondary btn-sm" style="cursor:pointer;margin:0;">&#128196; Upload CSV File</label>
+          <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display:none;">
+        </div>
+      </div>
+      <textarea id="csv-input" rows="6" placeholder="Paste full CSV content here (including header row), or click Upload CSV File above..."></textarea>
+      <div class="small">Tip: Click <strong>Download CSV</strong> in the AccuLynx email → save the file → click <strong>Upload CSV File</strong> above. Or open the CSV, Select All, Copy, and paste here.</div>
       <br>
       <div class="btn-row">
         <button class="btn btn-primary" id="run-btn">&#9654; Run Now</button>
@@ -3555,6 +3562,20 @@ function printDoc() {
   // Force cover page visible in clone
   var cc = wrapClone.querySelector('#wo-cover-page');
   if (cc) { cc.style.display = 'flex'; }
+  // Sync canvas signatures — cloneNode copies the element but not pixel data;
+  // replace each canvas in the clone with an <img> of its data URL
+  var liveCanvases  = Array.from(wrap.querySelectorAll('canvas'));
+  var cloneCanvases = Array.from(wrapClone.querySelectorAll('canvas'));
+  liveCanvases.forEach(function(cv, i) {
+    var cl = cloneCanvases[i]; if (!cl) return;
+    var img = document.createElement('img');
+    img.src = cv.toDataURL();
+    img.width  = cv.width;
+    img.height = cv.height;
+    img.style.cssText = cl.style.cssText;
+    cl.parentNode.replaceChild(img, cl);
+  });
+
   // Split page 3 trades into continuation pages if needed
   splitPage3Trades(wrapClone);
 
@@ -4785,6 +4806,20 @@ function addLog(type,msg){
 function setStatus(state,text){var bar=document.getElementById("status-bar");var dot=document.getElementById("status-dot");var txt=document.getElementById("status-text");if(bar)bar.className="status-bar "+state;if(dot)dot.className="dot"+(state==="running"?" pulse":"");if(txt)txt.textContent=text;}
 function updateStats(){document.getElementById("stat-sent").textContent=stats.sent;document.getElementById("stat-skipped").textContent=stats.skipped;document.getElementById("stat-errors").textContent=stats.errors;document.getElementById("stat-jobs").textContent=stats.jobs;}
 function updateNextRun(){var cst=new Date(new Date().toLocaleString("en-US",{timeZone:"America/Chicago"}));var next=new Date(cst);next.setHours(8,5,0,0);if(cst>=next)next.setDate(next.getDate()+1);var diff=next-cst,h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);var el=document.getElementById("next-run-time");if(el)el.textContent="in "+h+"h "+m+"m";}
+
+document.getElementById("csv-file-input").addEventListener("change",function(e){
+  var file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    document.getElementById("csv-input").value=ev.target.result||"";
+    document.getElementById("csv-file-name").textContent=file.name;
+    addLog("info","CSV loaded from file: "+file.name);
+  };
+  reader.onerror=function(){addLog("warn","Failed to read file.");};
+  reader.readAsText(file);
+  e.target.value="";
+});
 
 document.addEventListener("click",function(e){
   var t=e.target;
@@ -7683,44 +7718,34 @@ function woFetchAllRows() {
 
 // Sync existing vent counts from commissions calculator iframe into WO fields
 function woSyncVentFromCalc() {
-  try {
-    var iframe = document.querySelector('#tab-commissions iframe');
-    if (!iframe || !iframe.contentDocument) return;
-    var iDoc = iframe.contentDocument;
-    var ventSection = iDoc.getElementById('mr-vent');
-    if (!ventSection) { woStatus('Commissions calculator vent data not loaded yet.', false); return; }
-    // inputs order: ridge(0,1,2) | box(3,4,5) | power(6,7,8,9 w/coverRR) | solar(10,11,12) | turbine(13,14,15) | dome(16,17,18)
-    var inputs = ventSection.querySelectorAll('input[type="number"]');
-    var map = [
-      ['wo-f16', 0],   // Ridge Vent exist
-      ['wo-f19', 3],   // Box Vents exist
-      ['wo-f23', 6],   // Power Vents exist
-      ['wo-f25', 10],  // Solar Power Vents exist
-      ['wo-f27', 13],  // Turbine exist
-      ['wo-f21', 16]   // Dome Vents exist
+  var jobNum = (document.getElementById('wo-job-input').value || '').trim();
+  if (!jobNum) { woStatus('Enter a job number first.', false); return; }
+  woStatus('Fetching vent data…', true);
+  window.fetchUpgradesJobData(jobNum, function(match, err) {
+    if (err)    { woStatus('Sync error: ' + err, false); return; }
+    if (!match) { woStatus('No form response found for job ' + jobNum + '.', false); return; }
+    var n = function(i){ return parseFloat(match[i]) || 0; };
+    // Column mapping: 2=Ridge(FT) 3=Power 4=Solar 5=Turbine 6=Dome 7=Box 9=SatDishes
+    var ventMap = [
+      ['wo-f16', n(2)],   // Ridge Vent (FT)
+      ['wo-f19', n(7)],   // Box Vents
+      ['wo-f21', n(6)],   // Dome Vents
+      ['wo-f23', n(3)],   // Power Vents
+      ['wo-f25', n(4)],   // Solar Power Vents
+      ['wo-f27', n(5)],   // Turbine
     ];
     var synced = 0;
-    map.forEach(function(pair) {
+    ventMap.forEach(function(pair) {
       var el = document.getElementById(pair[0]);
-      var inp = inputs[pair[1]];
-      if (el && inp) {
-        var val = inp.value;
-        if (val && val !== '0') { el.value = val; synced++; }
-      }
+      if (el && pair[1]) { el.value = pair[1]; synced++; }
     });
-    // Satellite count — read directly from iframe's satCount variable
-    try {
-      var sat = iframe.contentWindow.satCount;
-      if (typeof sat === 'number' && sat > 0) {
-        var satEl = document.getElementById('wo-f42');
-        if (satEl) { satEl.value = sat; synced++; }
-      }
-    } catch(se) {}
-    if (synced > 0) woStatus('✓ Synced ' + synced + ' vent/satellite counts from calculator', true);
-    else woStatus('No non-zero vent/satellite counts found in calculator.', false);
-  } catch(e) { woStatus('Sync error: ' + e.message, false); }
+    var sat = n(9);
+    var satEl = document.getElementById('wo-f42');
+    if (satEl && sat) { satEl.value = sat; synced++; }
+    if (synced > 0) woStatus('✓ Synced ' + synced + ' vent/satellite counts from form responses', true);
+    else woStatus('No non-zero vent/satellite counts found for job ' + jobNum + '.', false);
+  });
 }
-
 function woLoad() {
   var jobNum = (document.getElementById('wo-job-input').value || '').trim();
   if (!jobNum) { woStatus('Enter a job number first.', false); return; }
@@ -7732,7 +7757,6 @@ function woLoad() {
       return;
     }
     woSetAllFields(found.data);
-    woSyncVentFromCalc();
     woStatus('✓ Loaded work order for job ' + jobNum, true);
   }).catch(function(e) { woStatus('Error: ' + e.message, false); });
 }
@@ -7784,50 +7808,6 @@ function woSave() {
     if (!r.ok) return r.text().then(function(txt) { throw new Error('Save failed: ' + txt); });
     woStatus('✓ Work order saved for job ' + jobNum + ' at ' + new Date().toLocaleTimeString(), true);
   }).catch(function(e) { woStatus('Error saving: ' + e.message, false); });
-}
-
-// ── BLACKOUT DATES TABLE ─────────────────────────────────────────────────
-function woBlackoutAddRow(date, desc) {
-  var tbody = document.getElementById('wo-blackout-tbody');
-  if (!tbody) return;
-  var tr = document.createElement('tr');
-  tr.innerHTML =
-    '<td style="padding:2px 4px;border:1px solid #ccc;">' +
-      '<input type="date" style="width:120px;font-size:11px;border:none;font-family:Arial,Helvetica,sans-serif;background:transparent;" value="' + (date||'') + '">' +
-    '</td>' +
-    '<td style="padding:2px 4px;border:1px solid #ccc;">' +
-      '<input type="text" style="width:100%;font-size:11px;border:none;font-family:Arial,Helvetica,sans-serif;background:transparent;" value="' + (desc||'').replace(/"/g, '&quot;') + '" placeholder="Description...">' +
-    '</td>' +
-    '<td style="text-align:center;border:1px solid #ccc;">' +
-      '<button type="button" onclick="this.closest('tr').remove();woBlackoutSerialize();" style="font-size:10px;background:none;border:none;cursor:pointer;color:#a00;">✕</button>' +
-    '</td>';
-  var inputs = tr.querySelectorAll('input');
-  inputs.forEach(function(inp) { inp.addEventListener('change', woBlackoutSerialize); inp.addEventListener('input', woBlackoutSerialize); });
-  tbody.appendChild(tr);
-  woBlackoutSerialize();
-}
-
-function woBlackoutSerialize() {
-  var tbody = document.getElementById('wo-blackout-tbody');
-  var hidden = document.getElementById('wo-blackout-dates');
-  if (!tbody || !hidden) return;
-  var rows = [];
-  tbody.querySelectorAll('tr').forEach(function(tr) {
-    var inputs = tr.querySelectorAll('input[type=date], input[type=text]');
-    rows.push({ date: inputs[0] ? inputs[0].value : '', desc: inputs[1] ? inputs[1].value : '' });
-  });
-  hidden.value = JSON.stringify(rows);
-}
-
-function woBlackoutDeserialize(val) {
-  var tbody = document.getElementById('wo-blackout-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  if (!val) { woBlackoutAddRow(); return; }
-  var rows;
-  try { rows = JSON.parse(val); } catch(e) { woBlackoutAddRow(); return; }
-  if (!Array.isArray(rows) || !rows.length) { woBlackoutAddRow(); return; }
-  rows.forEach(function(r) { woBlackoutAddRow(r.date || '', r.desc || ''); });
 }
 
 function woClear() {
@@ -7890,6 +7870,50 @@ function commPrintExport() {
     win.focus();
     setTimeout(function(){ try{win.print();}catch(ex){} }, 600);
   } catch(e) { alert('Export error: '+e.message); win.close(); }
+}
+
+// -- BLACKOUT DATES TABLE --
+function woBlackoutAddRow(date, desc) {
+  var tbody = document.getElementById('wo-blackout-tbody');
+  if (!tbody) return;
+  var tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td style="padding:2px 4px;border:1px solid #ccc;">' +
+      '<input type="date" style="width:120px;font-size:11px;border:none;font-family:Arial,Helvetica,sans-serif;background:transparent;" value="' + (date||'') + '">' +
+    '</td>' +
+    '<td style="padding:2px 4px;border:1px solid #ccc;">' +
+      '<input type="text" style="width:100%;font-size:11px;border:none;font-family:Arial,Helvetica,sans-serif;background:transparent;" value="' + (desc||'').replace(/"/g, '&quot;') + '" placeholder="Description...">' +
+    '</td>' +
+    '<td style="text-align:center;border:1px solid #ccc;">' +
+      '<button type="button" onclick="this.closest(\'tr\').remove();woBlackoutSerialize();" style="font-size:10px;background:none;border:none;cursor:pointer;color:#a00;">&#x2715;</button>' +
+    '</td>';
+  var inputs = tr.querySelectorAll('input');
+  inputs.forEach(function(inp) { inp.addEventListener('change', woBlackoutSerialize); inp.addEventListener('input', woBlackoutSerialize); });
+  tbody.appendChild(tr);
+  woBlackoutSerialize();
+}
+
+function woBlackoutSerialize() {
+  var tbody = document.getElementById('wo-blackout-tbody');
+  var hidden = document.getElementById('wo-blackout-dates');
+  if (!tbody || !hidden) return;
+  var rows = [];
+  tbody.querySelectorAll('tr').forEach(function(tr) {
+    var inputs = tr.querySelectorAll('input[type=date], input[type=text]');
+    rows.push({ date: inputs[0] ? inputs[0].value : '', desc: inputs[1] ? inputs[1].value : '' });
+  });
+  hidden.value = JSON.stringify(rows);
+}
+
+function woBlackoutDeserialize(val) {
+  var tbody = document.getElementById('wo-blackout-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!val) { woBlackoutAddRow(); return; }
+  var rows;
+  try { rows = JSON.parse(val); } catch(e) { woBlackoutAddRow(); return; }
+  if (!Array.isArray(rows) || !rows.length) { woBlackoutAddRow(); return; }
+  rows.forEach(function(r) { woBlackoutAddRow(r.date || '', r.desc || ''); });
 }
 
 function woApplyRole(role) {
