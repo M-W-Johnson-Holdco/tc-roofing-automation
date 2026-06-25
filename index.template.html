@@ -4033,9 +4033,10 @@ var CRED_GS_PERMS_TAB         = "UserPermissions"; // sheet tab for user roles
 // =====================================================================
 
 var store = {
-  get: function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
-  set: function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
-  del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+  _p: "tc_",
+  get: function(k){ try{ return localStorage.getItem(this._p+k); }catch(e){ return null; } },
+  set: function(k,v){ try{ localStorage.setItem(this._p+k,v); }catch(e){} },
+  del: function(k){ try{ localStorage.removeItem(this._p+k); }catch(e){} }
 };
 
 // =====================================================================
