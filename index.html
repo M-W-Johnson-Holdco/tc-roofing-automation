@@ -1247,10 +1247,10 @@ function setSlider(key,val){
 }
 function setUpgradeAmt(key,val){
   const amt=parseFloat(val)||0;
-  upgradeAmtOverride[key]=amt; // stores total HO charge
   // back-calculate pct: commission = amt - upgCost; pct = commission/upgCost * 100
   const upgCost=lastUpgCost[key]||0;
   if(upgCost>0){
+    upgradeAmtOverride[key]=amt; // stores total HO charge (pct mode only)
     const commission=amt-upgCost;
     const pct=Math.round((commission/upgCost)*100);
     sliderPct[key]=Math.min(1000,Math.max(0,pct));
@@ -1258,7 +1258,8 @@ function setUpgradeAmt(key,val){
     const sl=document.getElementById('sl-'+key);
     if(sl){sl.value=sliderPct[key];sl.style.background=`linear-gradient(to right,var(--gold) ${sliderPct[key]/10}%,var(--surf3) ${sliderPct[key]/10}%)`;}
   } else {
-    // dollar mode: typed amount IS the commission directly
+    // dollar mode: typed amount IS the commission directly; clear any stale pct-mode override
+    delete upgradeAmtOverride[key];
     sliderPct[key]=Math.min(15000,Math.max(0,Math.round(amt)));
     const spEl=document.getElementById('sp-'+key);
     if(spEl) spEl.textContent='$'+sliderPct[key];
