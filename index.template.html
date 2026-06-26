@@ -1257,6 +1257,13 @@ function setUpgradeAmt(key,val){
     document.getElementById('sp-'+key).textContent=sliderPct[key]+'%';
     const sl=document.getElementById('sl-'+key);
     if(sl){sl.value=sliderPct[key];sl.style.background=`linear-gradient(to right,var(--gold) ${sliderPct[key]/10}%,var(--surf3) ${sliderPct[key]/10}%)`;}
+  } else {
+    // dollar mode: typed amount IS the commission directly
+    sliderPct[key]=Math.min(1000,Math.max(0,Math.round(amt)));
+    const spEl=document.getElementById('sp-'+key);
+    if(spEl) spEl.textContent='$'+sliderPct[key];
+    const sl=document.getElementById('sl-'+key);
+    if(sl){sl.value=sliderPct[key];sl.style.background=`linear-gradient(to right,var(--gold) ${sliderPct[key]/10}%,var(--surf3) ${sliderPct[key]/10}%)`;}
   }
   calc();
 }
@@ -1268,7 +1275,7 @@ function showSliderResult(key,upgCost,pct){
   const siEl=document.getElementById('si-'+key);
   const sl=document.getElementById('sl-'+key);
   const uaRow=document.getElementById('ua-wrap-'+key);
-  if(uaRow) uaRow.parentElement.style.display=isDollar?'none':'';
+  if(uaRow) uaRow.parentElement.style.display=''; // always show HO Charge input
   let commission,hoCharge;
   if(isDollar){
     hoCharge=sliderPct[key]||0;
@@ -1276,6 +1283,8 @@ function showSliderResult(key,upgCost,pct){
     if(spEl) spEl.textContent='$'+hoCharge;
     if(siEl) siEl.innerHTML='<span>$0</span><span>$500</span><span>$1,000</span>';
     if(sl){sl.max=1000;sl.step=10;sl.style.background=`linear-gradient(to right,var(--gold) ${hoCharge/10}%,var(--surf3) ${hoCharge/10}%)`;}
+    const ua=document.getElementById('ua-'+key);
+    if(ua &amp;&amp; document.activeElement!==ua) ua.value=hoCharge>0?hoCharge.toFixed(2):'';
   } else {
     if(upgradeAmtOverride[key]!==undefined){
       hoCharge=upgradeAmtOverride[key];
