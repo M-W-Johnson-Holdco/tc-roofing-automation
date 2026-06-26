@@ -1131,7 +1131,7 @@ function sliderSection(key){
       <span class=&quot;slider-pct&quot; id=&quot;sp-${key}&quot;>${pct}%</span>
     </div>
     <div class=&quot;slider-info&quot; id=&quot;si-${key}&quot;><span>0% — at cost</span><span>500%</span><span>1000% — 10× cost</span></div>
-    <input type=&quot;range&quot; class=&quot;margin-slider&quot; min=&quot;0&quot; max=&quot;1000&quot; step=&quot;1&quot; value=&quot;${pct}&quot;
+    <input type=&quot;range&quot; class=&quot;margin-slider&quot; min=&quot;0&quot; max=&quot;15000&quot; step=&quot;1&quot; value=&quot;${pct}&quot;
       id=&quot;sl-${key}&quot; oninput=&quot;setSlider('${key}',this.value)&quot;/>
     <div style=&quot;display:flex;align-items:center;gap:7px;margin-top:8px&quot;>
       <div style=&quot;font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap&quot;>HO Charge</div>
@@ -1259,11 +1259,11 @@ function setUpgradeAmt(key,val){
     if(sl){sl.value=sliderPct[key];sl.style.background=`linear-gradient(to right,var(--gold) ${sliderPct[key]/10}%,var(--surf3) ${sliderPct[key]/10}%)`;}
   } else {
     // dollar mode: typed amount IS the commission directly
-    sliderPct[key]=Math.min(1000,Math.max(0,Math.round(amt)));
+    sliderPct[key]=Math.min(15000,Math.max(0,Math.round(amt)));
     const spEl=document.getElementById('sp-'+key);
     if(spEl) spEl.textContent='$'+sliderPct[key];
     const sl=document.getElementById('sl-'+key);
-    if(sl){sl.value=sliderPct[key];sl.style.background=`linear-gradient(to right,var(--gold) ${sliderPct[key]/10}%,var(--surf3) ${sliderPct[key]/10}%)`;}
+    if(sl){sl.value=sliderPct[key];sl.style.background=`linear-gradient(to right,var(--gold) ${sliderPct[key]/150}%,var(--surf3) ${sliderPct[key]/150}%)`;}
   }
   calc();
 }
@@ -1281,8 +1281,8 @@ function showSliderResult(key,upgCost,pct){
     hoCharge=sliderPct[key]||0;
     commission=hoCharge;
     if(spEl) spEl.textContent='$'+hoCharge;
-    if(siEl) siEl.innerHTML='<span>$0</span><span>$500</span><span>$1,000</span>';
-    if(sl){sl.max=1000;sl.step=10;sl.style.background=`linear-gradient(to right,var(--gold) ${hoCharge/10}%,var(--surf3) ${hoCharge/10}%)`;}
+    if(siEl) siEl.innerHTML='<span>$0</span><span>$7,500</span><span>$15,000</span>';
+    if(sl){sl.max=15000;sl.step=50;sl.style.background=`linear-gradient(to right,var(--gold) ${hoCharge/150}%,var(--surf3) ${hoCharge/150}%)`;}
     const ua=document.getElementById('ua-'+key);
     if(ua &amp;&amp; document.activeElement!==ua) ua.value=hoCharge>0?hoCharge.toFixed(2):'';
   } else {
