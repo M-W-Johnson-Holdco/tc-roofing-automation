@@ -1628,7 +1628,7 @@ function saveToPayrollSheet(){
 // Save material selections + HO charges to Work Order
 function saveToWO(){
   const jobNum=((document.getElementById('fc-wo')||{}).value||'').trim();
-  const payload=Object.assign({},lastCalcData,{_jobNum:jobNum});
+  const payload=Object.assign({},lastCalcData,{_jobNum:jobNum,_ventCounts:ventCounts});
   if(typeof window.parent!=='undefined'&amp;&amp;window.parent!==window&amp;&amp;typeof window.parent.receiveCalcData==='function'){
     window.parent.receiveCalcData(payload);
   } else if(typeof window.parent!=='undefined'&amp;&amp;window.parent!==window){
@@ -4938,7 +4938,24 @@ window.receiveCalcData = function(d) {
       var upgEl = document.getElementById(ids.upg);
       if (upgEl && entry.hoCharge > 0) { upgEl.value = entry.hoCharge.toFixed(2); upgEl.dispatchEvent(new Event('input')); }
     });
-    woSyncVentFromCalc();
+    // Populate vent counts directly from calc data
+    var vc = d._ventCounts;
+    if (vc) {
+      var vm = {
+        ridge:   {e:'wo-f16', de:'wo-vent-de-ridge',   dn:'wo-f17'},
+        box:     {e:'wo-f19', de:'wo-vent-de-box',      dn:'wo-f20'},
+        dome:    {e:'wo-f21', de:'wo-vent-de-dome',     dn:'wo-f22'},
+        power:   {e:'wo-f23', de:'wo-vent-de-power',    dn:'wo-f24', cr:'wo-vent-de-power-cover'},
+        solar:   {e:'wo-f25', de:'wo-vent-de-solar',    dn:'wo-f26'},
+        turbine: {e:'wo-f27', de:'wo-vent-de-turbine',  dn:'wo-f28'},
+      };
+      Object.keys(vm).forEach(function(k) {
+        var f = vm[k], c = vc[k]; if (!c) return;
+        function sv(id,val){var el=document.getElementById(id);if(el&&val){el.value=val;}}
+        sv(f.e, c.exist); sv(f.de, c.desiredExist); sv(f.dn, c.desired);
+        if (f.cr) sv(f.cr, c.coverRR);
+      });
+    }
   }
   function switchToWO() {
     document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
