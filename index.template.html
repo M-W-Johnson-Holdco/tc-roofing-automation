@@ -4938,6 +4938,7 @@ window.receiveCalcData = function(d) {
       var upgEl = document.getElementById(ids.upg);
       if (upgEl && entry.hoCharge > 0) { upgEl.value = entry.hoCharge.toFixed(2); upgEl.dispatchEvent(new Event('input')); }
     });
+    woSyncVentFromCalc();
   }
   function switchToWO() {
     document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
