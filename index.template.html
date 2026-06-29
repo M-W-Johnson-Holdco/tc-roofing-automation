@@ -4713,20 +4713,30 @@ function processRows(rows,log,today){
   // Clear stale flags from any previous run against the same row objects
   rows.forEach(function(r){ delete r["_skipDupePhone"]; });
   // When multiple jobs share the same customer phone, inject a dedup number as secondary
-  // on the 2nd+ jobs so RC creates a separate group thread for each job
+  // on the 2nd+ jobs so RC creates a separate group thread for each job.
+  // Seed from the historical log first so jobs sent in prior runs are also detected.
   var phoneCount={};
+  log.forEach(function(entry){
+    var p=toE164(entry.phone||"");
+    var jn=entry.jobNum||entry.jobGuid||"";
+    if(!p||!jn)return;
+    if(!phoneCount[p])phoneCount[p]=[];
+    if(phoneCount[p].indexOf(jn)===-1)phoneCount[p].push(jn);
+  });
   rows.forEach(function(r){
     var p=toE164(r["Phone Number"]||"");
     if(!p)return;
     var jn=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
-    phoneCount[p]=(phoneCount[p]||[]);
+    if(!phoneCount[p])phoneCount[p]=[];
+    // If this job is already in phoneCount (from the log), don't double-count it
+    if(phoneCount[p].indexOf(jn)!==-1)return;
     phoneCount[p].push(jn);
     var idx=phoneCount[p].length;
     if(idx===2){
       // 2nd job — inject dedup secondary so RC creates a separate thread
       if(!toE164(r["Secondary Phone"]||"")){
         r["Secondary Phone"]=DEDUP_PHONE;
-        addLog("info","📱 Jobs "+phoneCount[p][0]+" and "+jn+" share phone — auto-adding secondary "+DEDUP_PHONE+" to Job "+jn+" for separate RC thread");
+        addLog("info","📱 Job "+jn+" shares phone with "+phoneCount[p][0]+" (prior or current run) — auto-adding secondary "+DEDUP_PHONE+" for separate RC thread");
       }
     } else if(idx>=3){
       // 3rd+ job — mark for skip
