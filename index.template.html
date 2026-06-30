@@ -1600,6 +1600,20 @@ function resetCalc(){
   clearState();toast('↺ Reset');
 }
 
+// Build per-material detail for payroll row
+function getMaterialsData(){
+  const mats=[];
+  MATS.filter(m=>m.key!=='vent').forEach(m=>{
+    const tier=existingTier[m.key]||((m.existingOpts&amp;&amp;m.existingOpts[0].val)||'tier1');
+    const baseOpt=m.existingOpts?m.existingOpts.find(o=>o.val===tier):null;
+    const entry=lastCalcData[m.key]||{};
+    mats.push({key:m.key,base:baseOpt?baseOpt.label:'',upgrade:entry.selName||'',upgCost:lastUpgCost[m.key]||0,hoCharge:entry.hoCharge||0});
+  });
+  const ve=lastCalcData['vent']||{};
+  mats.push({key:'vent',base:'',upgrade:'Mixed',upgCost:ve.upgCost||0,hoCharge:ve.hoCharge||0});
+  return mats;
+}
+
 // Save commission record to Google Sheet for payroll
 function saveToPayrollSheet(){
   const jobNum=(document.getElementById('fc-wo').value||'').trim();
@@ -1616,7 +1630,8 @@ function saveToPayrollSheet(){
     totalCharged:parseAmt(document.getElementById('c-charged').textContent),
     grandTotal:parseAmt(document.getElementById('grand-total').textContent),
     commission:parseAmt(document.getElementById('c-total-comm').textContent),
-    notes:document.getElementById('fc-notes').value||''
+    notes:document.getElementById('fc-notes').value||'',
+    materials:getMaterialsData()
   };
   const btn=document.getElementById('save-payroll-btn');
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
@@ -4427,10 +4442,11 @@ var TEMPLATES = [
    check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="other trade(s) completed")return false;var d=pd(row["Current Status Date"]);return d&&wc(d,today,7);}},
   {id:"T6",name:"Settlement Reached",trigger:"Invoiced Date — within 5 days",
    check:function(row,today){var d=pd(row["Invoiced Date"]);return d&&wc(d,today,5);}},
-  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — within 3 days (skips if T2 ready)",
+  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — day after, within 3 days (skips if T2 ready)",
    check:function(row,today){
      var d=pd(row["Met With Adjuster Date"]);if(!d)return false;
-     if(!wc(d,today,3))return false;
+     var da=new Date(d);da.setDate(da.getDate()+1);
+     if(!wc(da,today,3))return false;
      var t2d=pd(row["Current Status Date"]);
      if(t2d&&(row["Current Status"]||"").toLowerCase()==="lgib"&&wc(t2d,today,5))return false;
      return true;
@@ -4847,7 +4863,15 @@ function processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti)
 
 // ── UPGRADES COMMISSION → GOOGLE SHEET ──
 var COMM_TAB = 'UpgradesCommissions';
-var COMM_HEADER = ['Timestamp','Job #','Rep','Date Signed','Squares','Claim Mode','Discount','Total Upgrade Cost','Total HO Charge','Grand Total (after discount)','Commission','Notes'];
+var COMM_HEADER = ['Timestamp','Job #','Rep','Date Signed','Squares','Claim Mode','Discount','Total Upgrade Cost','Total HO Charge','Grand Total (after discount)','Commission','Notes',
+  'Shingles Base','Shingles Upgrade','Shingles Upg Cost','Shingles HO Charge',
+  'Ridge Cap Base','Ridge Cap Upgrade','Ridge Cap Upg Cost','Ridge Cap HO Charge',
+  'Starter Base','Starter Upgrade','Starter Upg Cost','Starter HO Charge',
+  'Underlayment Base','Underlayment Upgrade','Underlayment Upg Cost','Underlayment HO Charge',
+  'Valley Base','Valley Upgrade','Valley Upg Cost','Valley HO Charge',
+  'Pipe Boots Base','Pipe Boots Upgrade','Pipe Boots Upg Cost','Pipe Boots HO Charge',
+  'Warranty Base','Warranty Upgrade','Warranty Upg Cost','Warranty HO Charge',
+  'Vent Upg Cost','Vent HO Charge'];
 
 function ensureCommSheet(tok) {
   var sid = CRED_GS_SHEET_ID;
@@ -4886,7 +4910,12 @@ window.saveUpgradesCommission = function(data) {
         if((rows[i][1]||'').trim()==='Job #') continue; // skip header row regardless of position
         if((rows[i][1]||'').trim()===data.jobNum.trim()){rowNum=i+1;break;}
       }
-      var vals=[[new Date().toISOString(),data.jobNum,data.rep,data.dateSigned,data.sq,data.mode,data.discount,data.totalCost,data.totalCharged,data.grandTotal,data.commission,data.notes]];
+      var matCols=[];
+      (data.materials||[]).forEach(function(m){
+        if(m.key==='vent'){matCols.push(m.upgCost,m.hoCharge);}
+        else{matCols.push(m.base,m.upgrade,m.upgCost,m.hoCharge);}
+      });
+      var vals=[[new Date().toISOString(),data.jobNum,data.rep,data.dateSigned,data.sq,data.mode,data.discount,data.totalCost,data.totalCharged,data.grandTotal,data.commission,data.notes].concat(matCols)];
       var tn=encodeURIComponent(COMM_TAB);
       if(rowNum>0){
         return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+sid+'/values/'+tn+'!A'+rowNum+'?valueInputOption=RAW',{
