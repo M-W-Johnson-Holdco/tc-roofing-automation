@@ -5647,7 +5647,7 @@ function isInTheField(summary) {
     el.style.display = 'block';
     el.innerHTML =
       '<div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:4px;letter-spacing:0.04em;">🏖️ PTO</div>'
-      + '<div style="display:flex;border:1px solid #7c3aed44;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div>';
+      + '<div style="overflow-x:auto;"><div style="display:flex;border:1px solid #7c3aed44;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div></div>';
   }
 
   function renderItfMini(monday, events) {
@@ -5693,7 +5693,7 @@ function isInTheField(summary) {
     el.style.display = 'block';
     el.innerHTML =
       '<div style="font-size:0.7rem;font-weight:700;color:#0ea5e9;margin-bottom:4px;letter-spacing:0.04em;">🚗 In the Field</div>'
-      + '<div style="display:flex;border:1px solid #0ea5e944;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div>';
+      + '<div style="overflow-x:auto;"><div style="display:flex;border:1px solid #0ea5e944;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div></div>';
   }
 
   function getMondayOf(dateStr) {
