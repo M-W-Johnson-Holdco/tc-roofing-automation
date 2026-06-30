@@ -5020,25 +5020,31 @@ window.receiveCalcData = function(d) {
     if (woTab) woTab.classList.add('active');
   }
   if (jobNum) {
-    // Set job # field so WO knows which job we're editing
     var jobInput = document.getElementById('wo-job-input');
+    var alreadyLoaded = jobInput && (jobInput.value || '').trim().toLowerCase() === jobNum.toLowerCase();
     if (jobInput) jobInput.value = jobNum;
-    // Load existing WO for this job, then overlay upgrades
-    woFetchAllRows().then(function(rows) {
-      var found = rows.find(function(r){ return r.jobNum.toLowerCase() === jobNum.toLowerCase(); });
-      if (found) {
-        woSetAllFields(found.data);
-        woStatus('✓ Loaded WO for job ' + jobNum + ' — upgrades applied', true);
-      } else {
-        woStatus('Job ' + jobNum + ' not found in WO — upgrade fields pre-filled', false);
-      }
+    if (alreadyLoaded) {
+      // WO already has this job loaded in session — skip re-fetch to avoid overwriting in-browser changes
       applyUpgrades();
       switchToWO();
-    }).catch(function(e) {
-      applyUpgrades();
-      switchToWO();
-      woStatus('⚠ Could not load WO (' + e.message + ') — upgrade fields pre-filled', false);
-    });
+      woStatus('✓ Upgrades applied to WO for job ' + jobNum, true);
+    } else {
+      woFetchAllRows().then(function(rows) {
+        var found = rows.find(function(r){ return r.jobNum.toLowerCase() === jobNum.toLowerCase(); });
+        if (found) {
+          woSetAllFields(found.data);
+          woStatus('✓ Loaded WO for job ' + jobNum + ' — upgrades applied', true);
+        } else {
+          woStatus('Job ' + jobNum + ' not found in WO — upgrade fields pre-filled', false);
+        }
+        applyUpgrades();
+        switchToWO();
+      }).catch(function(e) {
+        applyUpgrades();
+        switchToWO();
+        woStatus('⚠ Could not load WO (' + e.message + ') — upgrade fields pre-filled', false);
+      });
+    }
   } else {
     // No job # in calc — just apply upgrades to whatever is currently on the WO
     applyUpgrades();
