@@ -5021,30 +5021,34 @@ window.receiveCalcData = function(d) {
   }
   if (jobNum) {
     var jobInput = document.getElementById('wo-job-input');
-    var alreadyLoaded = jobInput && (jobInput.value || '').trim().toLowerCase() === jobNum.toLowerCase();
     if (jobInput) jobInput.value = jobNum;
-    if (alreadyLoaded) {
-      // WO already has this job loaded in session — skip re-fetch to avoid overwriting in-browser changes
+    woFetchAllRows().then(function(rows) {
+      var found = rows.find(function(r){ return r.jobNum.toLowerCase() === jobNum.toLowerCase(); });
+      if (found) {
+        // Merge: only fill fields that are currently blank to avoid overwriting in-browser work
+        WO_FIELD_IDS.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (!el || found.data[id] === undefined) return;
+          var cur = el.type === 'checkbox' ? null : (el.tagName === 'SELECT' ? el.value : el.value);
+          if (el.type === 'checkbox') {
+            if (!el.checked && found.data[id]) { el.checked = true; }
+          } else if (el.tagName === 'SELECT') {
+            if (!cur && found.data[id]) { el.value = found.data[id]; if (el.onchange) el.onchange(); }
+          } else {
+            if (!cur && found.data[id]) { el.value = found.data[id]; el.dispatchEvent(new Event('input', {bubbles:true})); }
+          }
+        });
+        woStatus('✓ Loaded WO for job ' + jobNum + ' — upgrades applied', true);
+      } else {
+        woStatus('Job ' + jobNum + ' not found in WO — upgrade fields pre-filled', false);
+      }
       applyUpgrades();
       switchToWO();
-      woStatus('✓ Upgrades applied to WO for job ' + jobNum, true);
-    } else {
-      woFetchAllRows().then(function(rows) {
-        var found = rows.find(function(r){ return r.jobNum.toLowerCase() === jobNum.toLowerCase(); });
-        if (found) {
-          woSetAllFields(found.data);
-          woStatus('✓ Loaded WO for job ' + jobNum + ' — upgrades applied', true);
-        } else {
-          woStatus('Job ' + jobNum + ' not found in WO — upgrade fields pre-filled', false);
-        }
-        applyUpgrades();
-        switchToWO();
-      }).catch(function(e) {
-        applyUpgrades();
-        switchToWO();
-        woStatus('⚠ Could not load WO (' + e.message + ') — upgrade fields pre-filled', false);
-      });
-    }
+    }).catch(function(e) {
+      applyUpgrades();
+      switchToWO();
+      woStatus('⚠ Could not load WO (' + e.message + ') — upgrade fields pre-filled', false);
+    });
   } else {
     // No job # in calc — just apply upgrades to whatever is currently on the WO
     applyUpgrades();
