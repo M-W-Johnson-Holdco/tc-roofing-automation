@@ -4175,7 +4175,7 @@ var store = {
 // Trade Notes write access: admin, claims, production — all others are view-only
 var ROLE_TABS = {
   admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
-  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:false, workorder:false, pto:true, smartsched:false, prewo:false, tradenotes:true  },
+  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  },
   sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false, tradenotes:true  },
   production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
   viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  }

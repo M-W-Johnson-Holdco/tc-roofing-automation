@@ -55,9 +55,12 @@
   .var-chip:hover{background:#4A90D9;color:#fff}
   .mms-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
   .img-upload-box{background:#0f1117;border:1px dashed #2a3050;border-radius:8px;padding:14px;text-align:center}
-  .section-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .section-tabs{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
   .tab{padding:8px 18px;border-radius:20px;border:1px solid #2a3050;background:#1a1f2e;color:#94a3b8;cursor:pointer;font-size:0.82rem;font-weight:600;transition:all 0.2s}
   .tab.active{background:#4A90D9;color:#fff;border-color:#4A90D9}
+  #admin-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#0f1420;border-radius:10px;border:1px solid #1e2a40;}
+  #admin-subtabs .tab{font-size:0.75rem;padding:5px 13px;border-radius:14px;}
+  #admin-subtabs .tab.active{background:#6366f1;border-color:#6366f1;}
   .section{display:none}.section.active{display:block}
   .alert{padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px}
   .alert-warn{background:#2d2008;color:#fcd34d;border:1px solid #854d0e}
@@ -165,15 +168,18 @@
     <div class="tab active" data-tab="dashboard">Text Automation</div>
     <div class="tab" data-tab="weather">🌧️ Weather Blast</div>
     <div class="tab" data-tab="scheduler">📅 Scheduler</div>
-    <div class="tab" data-tab="templates">Text &amp; Image Templates</div>
-    <div class="tab" data-tab="config">Configuration</div>
-    <div class="tab" data-tab="logs">Run Logs</div>
+    <div class="tab" data-tab="admin">⚙️ Admin</div>
     <div class="tab" data-tab="commissions">💰 Upgrades Commissions</div>
     <div class="tab" data-tab="workorder">📋 Work Order</div>
     <div class="tab" data-tab="pto">🏖️ PTO</div>
     <div class="tab" data-tab="prewo">📝 Pre-WO Form</div>
     <div class="tab" data-tab="smartsched">Smart 🏠 Scheduler</div>
     <div class="tab" data-tab="tradenotes">Trade Notes 🔨</div>
+  </div>
+  <div id="admin-subtabs">
+    <div class="tab" data-tab="templates">Text &amp; Image Templates</div>
+    <div class="tab" data-tab="config">Configuration</div>
+    <div class="tab" data-tab="logs">Run Logs</div>
   </div>
 
   <div class="section active" id="tab-dashboard">
@@ -785,6 +791,7 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
       <div class=&quot;no-print&quot; style=&quot;margin-top:6px&quot;>
         <button class=&quot;btn btn-export&quot; style=&quot;display:none&quot; onclick=&quot;exportPDF()&quot;>⬇ Export PDF Cheat Sheet</button>
         <button id=&quot;save-payroll-btn&quot; class=&quot;btn&quot; style=&quot;width:100%;margin-top:7px;background:#2a7a4f;color:#fff;font-weight:700&quot; onclick=&quot;saveToPayrollSheet()&quot;>💾 Save to Payroll Sheet</button>
+        <button id=&quot;save-wo-btn&quot; class=&quot;btn&quot; style=&quot;width:100%;margin-top:7px;background:#1a5276;color:#fff;font-weight:700&quot; onclick=&quot;saveToWO()&quot;>📋 Save to Work Order</button>
         <div style=&quot;display:flex;gap:7px;margin-top:7px&quot;>
           <button class=&quot;btn&quot; style=&quot;flex:1;font-size:12px&quot; onclick=&quot;resetCalc()&quot;>↺ Reset</button>
           <button class=&quot;btn&quot; style=&quot;flex:1;font-size:12px&quot; onclick=&quot;setPage('pg-hist')&quot;>📋 History</button>
@@ -993,6 +1000,7 @@ let matSel={};
 let sliderPct={};
 let upgradeAmtOverride={};
 let lastUpgCost={};
+let lastCalcData={};
 let existingTier={};
 let upgradesDiscount=0;
 let ventCounts={ridge:{exist:0,desiredExist:0,desired:0},box:{exist:0,desiredExist:0,desired:0},power:{exist:0,desiredExist:0,desired:0,coverRR:0},solar:{exist:0,desiredExist:0,desired:0},turbine:{exist:0,desiredExist:0,desired:0},dome:{exist:0,desiredExist:0,desired:0}};
@@ -1298,7 +1306,7 @@ function showSliderResult(key,upgCost,pct){
     }
     if(spEl) spEl.textContent=pct+'%';
     if(siEl) siEl.innerHTML='<span>0% — at cost</span><span>500%</span><span>1000% — 10× cost</span>';
-    if(sl){sl.max=1000;sl.step=1;sl.style.background=`linear-gradient(to right,var(--gold) ${pct/10}%,var(--surf3) ${pct/10}%)`;}
+    if(sl){sl.max=1000;sl.step=1;sl.style.background=`linear-gradient(to right,var(--gold) ${pct/10}%,var(--surf3) ${pct/10}%)`;}  // pct mode max stays 1000 (=1000%)
   }
   const sc=document.getElementById('sc-'+key);
   const sk=document.getElementById('sk-'+key);
@@ -1395,6 +1403,7 @@ function calc(){try{
         warrCommission=warrHOCharge-upgCost;
       }
       totUpgradeCost+=upgCost;totHOCharge+=warrHOCharge;totComm+=warrCommission;
+      lastCalcData['warr']={selName:selOpt.name,hoCharge:warrHOCharge};
       const rc=document.getElementById('mrc-warr');
       if(rc) rc.textContent=upgCost>0?('$'+upgCost.toFixed(2)):'Included';
       // Use showSliderResult so Min HO Charge = 0% cost, Your Commission = actual margin earned
@@ -1428,6 +1437,7 @@ function calc(){try{
 
     totUpgradeCost+=upgCost;
     totHOCharge+=hoCharge;totComm+=commission;
+    lastCalcData[m.key]={selName:selOpt.name,hoCharge};
 
     // Update upgrade cost display and slider
     const rc=document.getElementById(`mrc-${m.key}`);
@@ -1440,6 +1450,7 @@ function calc(){try{
 
   // VENTILATION — upgrade cost: Existing, Desired Existing, Desired New columns
   let ventUpgradeCost=0;
+  const ventTypeCosts={};
   const ventM=MATS.find(m=>m.key==='vent');
   ['ridge','box','power','solar','turbine','dome'].forEach((k,i)=>{
     const opt=ventM.opts[i];
@@ -1464,10 +1475,13 @@ function calc(){try{
     if(desiredNew>0&&(k==='power'||k==='solar')){
       cost+=desiredNew*50;
     }
+    ventTypeCosts[k]=cost;
     ventUpgradeCost+=cost;
   });
   // Power vent cover R&R: $70 per unit
-  ventUpgradeCost+=(ventCounts.power.coverRR||0)*70;
+  const coverCost=(ventCounts.power.coverRR||0)*70;
+  ventTypeCosts['power']=(ventTypeCosts['power']||0)+coverCost;
+  ventUpgradeCost+=coverCost;
   ventUpgradeCost=Math.max(0,ventUpgradeCost);
   maxComm+=ventUpgradeCost;
 
@@ -1480,6 +1494,7 @@ function calc(){try{
     finalVentComm=finalVentHO-ventUpgradeCost;
   }
   totHOCharge+=finalVentHO;totComm+=finalVentComm;
+  lastCalcData['vent']={hoCharge:finalVentHO,upgCost:ventUpgradeCost,perType:ventTypeCosts};
   showSliderResult('vent',ventUpgradeCost,ventPct);
   totUpgradeCost+=ventUpgradeCost;
 
@@ -1591,6 +1606,20 @@ function resetCalc(){
   clearState();toast('↺ Reset');
 }
 
+// Build per-material detail for payroll row
+function getMaterialsData(){
+  const mats=[];
+  MATS.filter(m=>m.key!=='vent').forEach(m=>{
+    const tier=existingTier[m.key]||((m.existingOpts&amp;&amp;m.existingOpts[0].val)||'tier1');
+    const baseOpt=m.existingOpts?m.existingOpts.find(o=>o.val===tier):null;
+    const entry=lastCalcData[m.key]||{};
+    mats.push({key:m.key,base:baseOpt?baseOpt.label:'',upgrade:entry.selName||'',upgCost:lastUpgCost[m.key]||0,hoCharge:entry.hoCharge||0});
+  });
+  const ve=lastCalcData['vent']||{};
+  mats.push({key:'vent',base:'',upgrade:'Mixed',upgCost:ve.upgCost||0,hoCharge:ve.hoCharge||0});
+  return mats;
+}
+
 // Save commission record to Google Sheet for payroll
 function saveToPayrollSheet(){
   const jobNum=(document.getElementById('fc-wo').value||'').trim();
@@ -1607,7 +1636,8 @@ function saveToPayrollSheet(){
     totalCharged:parseAmt(document.getElementById('c-charged').textContent),
     grandTotal:parseAmt(document.getElementById('grand-total').textContent),
     commission:parseAmt(document.getElementById('c-total-comm').textContent),
-    notes:document.getElementById('fc-notes').value||''
+    notes:document.getElementById('fc-notes').value||'',
+    materials:getMaterialsData()
   };
   const btn=document.getElementById('save-payroll-btn');
   if(btn){btn.disabled=true;btn.textContent='Saving...';}
@@ -1618,6 +1648,18 @@ function saveToPayrollSheet(){
   window.parent.saveUpgradesCommission(data)
     .then(()=>{toast('✓ Saved to Payroll Sheet');if(btn){btn.disabled=false;btn.textContent='✓ Saved';setTimeout(()=>{btn.textContent='💾 Save to Payroll Sheet';},3000);}})
     .catch(e=>{alert('Save failed: '+e.message);if(btn){btn.disabled=false;btn.textContent='⚠ Failed — Retry';}});
+}
+
+// Save material selections + HO charges to Work Order
+function saveToWO(){
+  const jobNum=((document.getElementById('fc-wo')||{}).value||'').trim();
+  const payload=Object.assign({},lastCalcData,{_jobNum:jobNum,_ventCounts:ventCounts});
+  if(typeof window.parent!=='undefined'&amp;&amp;window.parent!==window&amp;&amp;typeof window.parent.receiveCalcData==='function'){
+    window.parent.receiveCalcData(payload);
+  } else if(typeof window.parent!=='undefined'&amp;&amp;window.parent!==window){
+    window.parent.postMessage({type:'saveToWO',data:payload},'*');
+  }
+  toast('📋 Sent to Work Order');
 }
 
 // PDF
@@ -2205,7 +2247,7 @@ function fetchJobData(){
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr id="wo-row-shingle">
         <td>Shingles</td>
         <td>
           <select class="lg" id="shingle-type" onchange="updateShingleColors(); checkWarrantyEligibility()">
@@ -2224,7 +2266,7 @@ function fetchJobData(){
             <option value="">Choose...</option>
           </select>
         </td>
-        <td class="wo-upg-col" style="text-align:right"><input type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
+        <td class="wo-upg-col" style="text-align:right"><input id="wo-shingle-upg" type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
       </tr>
       <tr>
         <td>Ridge Cap</td>
@@ -2238,7 +2280,7 @@ function fetchJobData(){
           </select>
         </td>
         <td></td>
-        <td class="wo-upg-col" style="text-align:right"><input type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
+        <td class="wo-upg-col" style="text-align:right"><input id="wo-ridge-upg" type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
       </tr>
       <tr>
         <td>Starter</td>
@@ -2250,7 +2292,7 @@ function fetchJobData(){
           </select>
         </td>
         <td></td>
-        <td class="wo-upg-col" style="text-align:right"><input type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
+        <td class="wo-upg-col" style="text-align:right"><input id="wo-starter-upg" type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
       </tr>
       <tr>
         <td>Underlayment</td>
@@ -2263,7 +2305,7 @@ function fetchJobData(){
           </select>
         </td>
         <td></td>
-        <td class="wo-upg-col" style="text-align:right"><input type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
+        <td class="wo-upg-col" style="text-align:right"><input id="wo-underlay-upg" type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
       </tr>
       <tr>
         <td>Valley</td>
@@ -2276,7 +2318,7 @@ function fetchJobData(){
           </select>
         </td>
         <td></td>
-        <td class="wo-upg-col" style="text-align:right"><input type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
+        <td class="wo-upg-col" style="text-align:right"><input id="wo-valley-upg" type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
       </tr>
       <tr>
         <td>Gutter Apron</td>
@@ -2301,7 +2343,7 @@ function fetchJobData(){
           </select>
         </td>
         <td></td>
-        <td class="wo-upg-col" style="text-align:right"><input type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
+        <td class="wo-upg-col" style="text-align:right"><input id="wo-pipeboot-upg" type="text" class="fi md currency upgrade-cost" oninput="calcUpgradesTotal()"></td>
       </tr>
       <tr>
         <td>Miscellaneous</td>
@@ -4133,7 +4175,7 @@ var store = {
 // Trade Notes write access: admin, claims, production — all others are view-only
 var ROLE_TABS = {
   admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
-  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:false, workorder:false, pto:true, smartsched:false, prewo:false, tradenotes:true  },
+  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  },
   sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false, tradenotes:true  },
   production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
   viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  }
@@ -4153,10 +4195,10 @@ function applyRolePermissions(role) {
   var perms = ROLE_TABS[role] || ROLE_TABS["viewer"];
   var tabMap = {
     dashboard: "dashboard", weather: "weather", scheduler: "scheduler",
-    templates: "templates", config: "config", logs: "logs", commissions: "commissions",
-    workorder: "workorder", pto: "pto", smartsched: "smartsched", prewo: "prewo",
-    tradenotes: "tradenotes"
+    commissions: "commissions", workorder: "workorder", pto: "pto",
+    smartsched: "smartsched", prewo: "prewo", tradenotes: "tradenotes"
   };
+  var adminTabMap = { templates: "templates", config: "config", logs: "logs" };
   // Find first visible tab to activate
   var firstVisible = null;
   Object.keys(tabMap).forEach(function(key) {
@@ -4171,6 +4213,22 @@ function applyRolePermissions(role) {
       if (sectEl) sectEl.style.display = "none";
     }
   });
+  // Handle admin sub-tabs and parent tab visibility
+  var anyAdmin = false;
+  Object.keys(adminTabMap).forEach(function(key) {
+    var tabEl  = document.querySelector("#admin-subtabs .tab[data-tab='" + adminTabMap[key] + "']");
+    var sectEl = document.getElementById("tab-" + adminTabMap[key]);
+    if (perms[key]) {
+      if (tabEl)  tabEl.style.display = "";
+      if (sectEl) sectEl.style.display = "";
+      anyAdmin = true;
+    } else {
+      if (tabEl)  tabEl.style.display = "none";
+      if (sectEl) sectEl.style.display = "none";
+    }
+  });
+  var adminParent = document.querySelector(".tab[data-tab='admin']");
+  if (adminParent) adminParent.style.display = anyAdmin ? "" : "none";
   // Activate the first visible tab
   if (firstVisible) {
     document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); });
@@ -4406,10 +4464,11 @@ var TEMPLATES = [
    check:function(row,today){if((row["Current Status"]||"").toLowerCase()!=="other trade(s) completed")return false;var d=pd(row["Current Status Date"]);return d&&wc(d,today,7);}},
   {id:"T6",name:"Settlement Reached",trigger:"Invoiced Date — within 5 days",
    check:function(row,today){var d=pd(row["Invoiced Date"]);return d&&wc(d,today,5);}},
-  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — within 3 days (skips if T2 ready)",
+  {id:"T7",name:"Post-Adjuster",trigger:"Met With Adjuster Date — day after, within 3 days (skips if T2 ready)",
    check:function(row,today){
      var d=pd(row["Met With Adjuster Date"]);if(!d)return false;
-     if(!wc(d,today,3))return false;
+     var da=new Date(d);da.setDate(da.getDate()+1);
+     if(!wc(da,today,3))return false;
      var t2d=pd(row["Current Status Date"]);
      if(t2d&&(row["Current Status"]||"").toLowerCase()==="lgib"&&wc(t2d,today,5))return false;
      return true;
@@ -4713,20 +4772,30 @@ function processRows(rows,log,today){
   // Clear stale flags from any previous run against the same row objects
   rows.forEach(function(r){ delete r["_skipDupePhone"]; });
   // When multiple jobs share the same customer phone, inject a dedup number as secondary
-  // on the 2nd+ jobs so RC creates a separate group thread for each job
+  // on the 2nd+ jobs so RC creates a separate group thread for each job.
+  // Seed from the historical log first so jobs sent in prior runs are also detected.
   var phoneCount={};
+  log.forEach(function(entry){
+    var p=toE164(entry.phone||"");
+    var jn=entry.jobNum||entry.jobGuid||"";
+    if(!p||!jn)return;
+    if(!phoneCount[p])phoneCount[p]=[];
+    if(phoneCount[p].indexOf(jn)===-1)phoneCount[p].push(jn);
+  });
   rows.forEach(function(r){
     var p=toE164(r["Phone Number"]||"");
     if(!p)return;
     var jn=r["Job Number"]||extractGuid(r["Job Number Url"]||"")||"?";
-    phoneCount[p]=(phoneCount[p]||[]);
+    if(!phoneCount[p])phoneCount[p]=[];
+    // If this job is already in phoneCount (from the log), don't double-count it
+    if(phoneCount[p].indexOf(jn)!==-1)return;
     phoneCount[p].push(jn);
     var idx=phoneCount[p].length;
     if(idx===2){
       // 2nd job — inject dedup secondary so RC creates a separate thread
       if(!toE164(r["Secondary Phone"]||"")){
         r["Secondary Phone"]=DEDUP_PHONE;
-        addLog("info","📱 Jobs "+phoneCount[p][0]+" and "+jn+" share phone — auto-adding secondary "+DEDUP_PHONE+" to Job "+jn+" for separate RC thread");
+        addLog("info","📱 Job "+jn+" shares phone with "+phoneCount[p][0]+" (prior or current run) — auto-adding secondary "+DEDUP_PHONE+" for separate RC thread");
       }
     } else if(idx>=3){
       // 3rd+ job — mark for skip
@@ -4816,7 +4885,15 @@ function processTemplates(row,log,today,jobKey,fullName,custPhone,custPhone2,ti)
 
 // ── UPGRADES COMMISSION → GOOGLE SHEET ──
 var COMM_TAB = 'UpgradesCommissions';
-var COMM_HEADER = ['Timestamp','Job #','Rep','Date Signed','Squares','Claim Mode','Discount','Total Upgrade Cost','Total HO Charge','Grand Total (after discount)','Commission','Notes'];
+var COMM_HEADER = ['Timestamp','Job #','Rep','Date Signed','Squares','Claim Mode','Discount','Total Upgrade Cost','Total HO Charge','Grand Total (after discount)','Commission','Notes',
+  'Shingles Base','Shingles Upgrade','Shingles Upg Cost','Shingles HO Charge',
+  'Ridge Cap Base','Ridge Cap Upgrade','Ridge Cap Upg Cost','Ridge Cap HO Charge',
+  'Starter Base','Starter Upgrade','Starter Upg Cost','Starter HO Charge',
+  'Underlayment Base','Underlayment Upgrade','Underlayment Upg Cost','Underlayment HO Charge',
+  'Valley Base','Valley Upgrade','Valley Upg Cost','Valley HO Charge',
+  'Pipe Boots Base','Pipe Boots Upgrade','Pipe Boots Upg Cost','Pipe Boots HO Charge',
+  'Warranty Base','Warranty Upgrade','Warranty Upg Cost','Warranty HO Charge',
+  'Vent Upg Cost','Vent HO Charge'];
 
 function ensureCommSheet(tok) {
   var sid = CRED_GS_SHEET_ID;
@@ -4855,7 +4932,12 @@ window.saveUpgradesCommission = function(data) {
         if((rows[i][1]||'').trim()==='Job #') continue; // skip header row regardless of position
         if((rows[i][1]||'').trim()===data.jobNum.trim()){rowNum=i+1;break;}
       }
-      var vals=[[new Date().toISOString(),data.jobNum,data.rep,data.dateSigned,data.sq,data.mode,data.discount,data.totalCost,data.totalCharged,data.grandTotal,data.commission,data.notes]];
+      var matCols=[];
+      (data.materials||[]).forEach(function(m){
+        if(m.key==='vent'){matCols.push(m.upgCost,m.hoCharge);}
+        else{matCols.push(m.base,m.upgrade,m.upgCost,m.hoCharge);}
+      });
+      var vals=[[new Date().toISOString(),data.jobNum,data.rep,data.dateSigned,data.sq,data.mode,data.discount,data.totalCost,data.totalCharged,data.grandTotal,data.commission,data.notes].concat(matCols)];
       var tn=encodeURIComponent(COMM_TAB);
       if(rowNum>0){
         return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+sid+'/values/'+tn+'!A'+rowNum+'?valueInputOption=RAW',{
@@ -4871,6 +4953,136 @@ window.saveUpgradesCommission = function(data) {
     })
     .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(t);});return r.json();});
 };
+
+// Receive material selections from Commissions Calculator iframe and populate Work Order
+window.receiveCalcData = function(d) {
+  var jobNum = (d._jobNum || '').trim();
+  var matMap = {
+    shingle: {sel:'shingle-type',      upg:'wo-shingle-upg'},
+    ridge:   {sel:'ridgecap-type',     upg:'wo-ridge-upg'},
+    starter: {sel:'starter-type',      upg:'wo-starter-upg'},
+    under:   {sel:'underlayment-type', upg:'wo-underlay-upg'},
+    valley:  {sel:'valley-type',       upg:'wo-valley-upg'},
+    boot:    {sel:'wo-f13',            upg:'wo-pipeboot-upg'},
+    warr:    {sel:'warranty-sel',      upg:'wo-f37'},
+  };
+  var nameMap = {
+    'GAF Royal Sov. Ridge':                     'GAF Royal Sovereign Ridge',
+    'Secure Grip Synthetic':                    'Supplier Underlayment',
+    '3-in-1 Neoprene':                          '3n1 Neoprene',
+    'Lead Pipe Boot':                           'Lead Pipeboot',
+    'No Warranty / GAF Lim. Lifetime (incl.)':  'GAF Limited Lifetime Warranty',
+  };
+  function normalize(name) {
+    var s = (name||'').replace(/\s*\(\d+LF\)/i,'').trim();
+    return nameMap[name] || nameMap[s] || s;
+  }
+  function setDropdown(selId, targetText) {
+    var sel = document.getElementById(selId);
+    if (!sel || !targetText) return;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].text === targetText) { sel.selectedIndex = i; sel.dispatchEvent(new Event('change')); return; }
+    }
+  }
+  function applyUpgrades() {
+    Object.keys(matMap).forEach(function(key) {
+      var entry = d[key];
+      if (!entry) return;
+      var ids = matMap[key];
+      setDropdown(ids.sel, normalize(entry.selName));
+      var upgEl = document.getElementById(ids.upg);
+      if (upgEl && entry.hoCharge > 0) { upgEl.value = entry.hoCharge.toFixed(2); upgEl.dispatchEvent(new Event('input')); }
+    });
+    // Populate vent counts directly from calc data
+    var vc = d._ventCounts;
+    if (vc) {
+      var vm = {
+        ridge:   {e:'wo-f16', de:'wo-vent-de-ridge',   dn:'wo-f17'},
+        box:     {e:'wo-f19', de:'wo-vent-de-box',      dn:'wo-f20'},
+        dome:    {e:'wo-f21', de:'wo-vent-de-dome',     dn:'wo-f22'},
+        power:   {e:'wo-f23', de:'wo-vent-de-power',    dn:'wo-f24', cr:'wo-vent-de-power-cover'},
+        solar:   {e:'wo-f25', de:'wo-vent-de-solar',    dn:'wo-f26'},
+        turbine: {e:'wo-f27', de:'wo-vent-de-turbine',  dn:'wo-f28'},
+      };
+      var ventEntry = d.vent || {};
+      var ventUpg = ventEntry.upgCost || 0;
+      var ventHO  = ventEntry.hoCharge || 0;
+      var ratio   = ventUpg > 0 ? ventHO / ventUpg : (ventHO > 0 ? 1 : 0);
+      var perType = ventEntry.perType || {};
+      var ventCostMap = {
+        ridge:'wo-f29', box:'wo-f30', dome:'wo-f31', power:'wo-f32', solar:'wo-f33', turbine:'wo-f34'
+      };
+      Object.keys(vm).forEach(function(k) {
+        var f = vm[k], c = vc[k]; if (!c) return;
+        function sv(id,val){var el=document.getElementById(id);if(el&&val){el.value=val;}}
+        sv(f.e, c.exist); sv(f.de, c.desiredExist); sv(f.dn, c.desired);
+        if (f.cr) sv(f.cr, c.coverRR);
+        // Populate upgrade cost field with proportional HO charge
+        var typeCost = perType[k] || 0;
+        if (typeCost > 0 && ventCostMap[k]) {
+          var typeHO = ventUpg > 0 ? typeCost * ratio : 0;
+          sv(ventCostMap[k], typeHO.toFixed(2));
+          var upgEl = document.getElementById(ventCostMap[k]);
+          if (upgEl) upgEl.dispatchEvent(new Event('input'));
+        }
+      });
+      // Dollar-mode: total vent HO with no per-type cost — put in first cost field
+      if (ventUpg === 0 && ventHO > 0) {
+        var el = document.getElementById('wo-f29');
+        if (el) { el.value = ventHO.toFixed(2); el.dispatchEvent(new Event('input')); }
+      }
+    }
+  }
+  function switchToWO() {
+    document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+    document.querySelectorAll('.tab').forEach(function(tb){tb.classList.remove('active');});
+    var woSec = document.getElementById('tab-workorder');
+    if (woSec) woSec.classList.add('active');
+    var woTab = document.querySelector('.tab[data-tab="workorder"]');
+    if (woTab) woTab.classList.add('active');
+  }
+  if (jobNum) {
+    var jobInput = document.getElementById('wo-job-input');
+    if (jobInput) jobInput.value = jobNum;
+    woFetchAllRows().then(function(rows) {
+      var found = rows.find(function(r){ return r.jobNum.toLowerCase() === jobNum.toLowerCase(); });
+      if (found) {
+        // Merge: only fill fields that are currently blank to avoid overwriting in-browser work
+        WO_FIELD_IDS.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (!el || found.data[id] === undefined) return;
+          var cur = el.type === 'checkbox' ? null : (el.tagName === 'SELECT' ? el.value : el.value);
+          if (el.type === 'checkbox') {
+            if (!el.checked && found.data[id]) { el.checked = true; }
+          } else if (el.tagName === 'SELECT') {
+            if (!cur && found.data[id]) { el.value = found.data[id]; if (el.onchange) el.onchange(); }
+          } else {
+            if (!cur && found.data[id]) { el.value = found.data[id]; el.dispatchEvent(new Event('input', {bubbles:true})); }
+          }
+        });
+        woStatus('✓ Loaded WO for job ' + jobNum + ' — upgrades applied', true);
+      } else {
+        woStatus('Job ' + jobNum + ' not found in WO — upgrade fields pre-filled', false);
+      }
+      applyUpgrades();
+      switchToWO();
+    }).catch(function(e) {
+      applyUpgrades();
+      switchToWO();
+      woStatus('⚠ Could not load WO (' + e.message + ') — upgrade fields pre-filled', false);
+    });
+  } else {
+    // No job # in calc — just apply upgrades to whatever is currently on the WO
+    applyUpgrades();
+    switchToWO();
+  }
+};
+
+// Also handle postMessage fallback
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.type !== 'saveToWO') return;
+  if (typeof window.receiveCalcData === 'function') window.receiveCalcData(e.data.data);
+});
 
 // Fetch job measurement data from the upgrades sheet and pass match row to callback(row, error)
 var UPGRADES_FETCH_SHEET_ID = '1pgp5aW8e24JuYGDZGO9Wt5koer-sSU7FrBlwL55jevU';
@@ -4959,7 +5171,28 @@ document.getElementById("csv-file-input").addEventListener("change",function(e){
 
 document.addEventListener("click",function(e){
   var t=e.target;
-  if(t.classList.contains("tab")&&t.dataset.tab){document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");t.classList.add("active");if(t.dataset.tab==="dashboard")autoLoadTCCsv();return;}
+  if(t.classList.contains("tab")&&t.dataset.tab){
+    var adminSub=document.getElementById("admin-subtabs");
+    var isAdminChild=adminSub&&adminSub.contains(t);
+    document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
+    document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});
+    if(t.dataset.tab==="admin"){
+      t.classList.add("active");
+      if(adminSub){adminSub.style.display="flex";var first=adminSub.querySelector(".tab");if(first){first.classList.add("active");var fs=document.getElementById("tab-"+first.dataset.tab);if(fs)fs.classList.add("active");}}
+    } else if(isAdminChild){
+      var adminTab=document.querySelector(".tab[data-tab='admin']");
+      if(adminTab)adminTab.classList.add("active");
+      if(adminSub)adminSub.style.display="flex";
+      t.classList.add("active");
+      var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");
+    } else {
+      if(adminSub)adminSub.style.display="none";
+      var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");
+      t.classList.add("active");
+      if(t.dataset.tab==="dashboard")autoLoadTCCsv();
+    }
+    return;
+  }
   if(t.id==="run-btn"){runAutomation();return;}
   if(t.id==="clear-log-btn"){["log-box","log-box-2"].forEach(function(id){var b=document.getElementById(id);if(b)b.innerHTML="";});return;}
   if(t.id==="weather-save-msg-btn"){store.set("weather_msg",document.getElementById("weather-msg-edit").value);alert("Weather message saved!");return;}
@@ -5457,7 +5690,7 @@ function isInTheField(summary) {
     el.style.display = 'block';
     el.innerHTML =
       '<div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:4px;letter-spacing:0.04em;">🏖️ PTO</div>'
-      + '<div style="display:flex;border:1px solid #7c3aed44;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div>';
+      + '<div style="overflow-x:auto;"><div style="display:flex;border:1px solid #7c3aed44;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div></div>';
   }
 
   function renderItfMini(monday, events) {
@@ -5503,7 +5736,7 @@ function isInTheField(summary) {
     el.style.display = 'block';
     el.innerHTML =
       '<div style="font-size:0.7rem;font-weight:700;color:#0ea5e9;margin-bottom:4px;letter-spacing:0.04em;">🚗 In the Field</div>'
-      + '<div style="display:flex;border:1px solid #0ea5e944;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div>';
+      + '<div style="overflow-x:auto;"><div style="display:flex;border:1px solid #0ea5e944;border-radius:6px;overflow:hidden;min-width:500px;">' + cols + '</div></div>';
   }
 
   function getMondayOf(dateStr) {
@@ -7431,7 +7664,8 @@ document.addEventListener("click", function(e){
 // WORK ORDER TAB
 // =====================================================================
 var WO_CB_IDS = ['wo-cb-hoa','wo-cb-remove-flashing','wo-cb-saturday','wo-cb-checking','wo-cb-savings','wo-cb-visa','wo-cb-mc','wo-cb-amex','wo-cb-discover','wo-cb-aw1','wo-cb-aw2','wo-cb-aw3','wo-cb-aw4','wo-cb-aw5','wo-cb-aw6','wo-cb-aw7','wo-cb-aw8','wo-cb-aw9'];
-var WO_FIELD_IDS = ['wo-tax-not-included', 'shingle-type', 'shingle-color', 'ridgecap-type', 'starter-type', 'underlayment-type', 'valley-type', 'warranty-sel', 'pd1', 'pa1', 'pp1', 'pb1', 'pd2', 'pa2', 'pp2', 'pb2', 'pd3', 'pa3', 'pp3', 'pb3', 'pd4', 'pa4', 'pp4', 'pb4', 'pd5', 'pa5', 'pp5', 'pb5', 'total-remaining', 'wo-f1', 'wo-f2', 'wo-f3', 'wo-f4', 'wo-f5', 'wo-f6', 'wo-f7', 'wo-f8', 'wo-f9', 'wo-f10', 'wo-f11', 'wo-f12', 'wo-f13', 'wo-f14', 'wo-f15', 'wo-f16', 'wo-f17', 'wo-f18', 'wo-f19', 'wo-f20', 'wo-f21', 'wo-f22', 'wo-f23', 'wo-f24', 'wo-f25', 'wo-f26', 'wo-f27', 'wo-f28', 'wo-f29', 'wo-f30', 'wo-f31', 'wo-f32', 'wo-f33', 'wo-f34', 'wo-f35', 'wo-f36', 'wo-f37', 'wo-f38', 'wo-f39', 'wo-f40', 'wo-f41', 'wo-f42', 'wo-f43', 'wo-f44', 'wo-f45', 'wo-f46', 'wo-f47', 'wo-f78', 'wo-f79', 'wo-f80', 'wo-f81', 'wo-f82', 'wo-f83', 'wo-f84', 'wo-f85', 'wo-f86', 'wo-f87', 'wo-f88', 'wo-f89', 'wo-f90', 'wo-f91', 'wo-f92', 'wo-f93', 'wo-f94', 'wo-f95', 'wo-f96', 'wo-f97', 'wo-f98', 'wo-f99', 'wo-f100', 'wo-f101', 'wo-f102', 'wo-f103', 'wo-f104', 'wo-f105', 'wo-f106', 'wo-f107', 'wo-f108', 'wo-f109', 'wo-f110', 'wo-f111', 'wo-f112', 'wo-f113', 'wo-f114', 'wo-f115', 'wo-f116', 'wo-f117', 'wo-f118', 'wo-f119', 'wo-f120', 'wo-f121', 'wo-f122', 'wo-f123', 'wo-f124', 'wo-f125', 'wo-f126', 'wo-f127', 'wo-f128', 'wo-f129', 'wo-f130', 'wo-f131', 'wo-f132', 'wo-ins-est-date', 'wo-trades-data', 'wo-f-hoa-plan', 'wo-blackout-dates', 'wo-vent-de-ridge', 'wo-vent-de-box', 'wo-vent-de-dome', 'wo-vent-de-power', 'wo-vent-de-power-cover', 'wo-vent-de-solar', 'wo-vent-de-turbine'];
+var WO_FIELD_IDS = ['wo-tax-not-included', 'shingle-type', 'shingle-color', 'ridgecap-type', 'starter-type', 'underlayment-type', 'valley-type', 'warranty-sel', 'pd1', 'pa1', 'pp1', 'pb1', 'pd2', 'pa2', 'pp2', 'pb2', 'pd3', 'pa3', 'pp3', 'pb3', 'pd4', 'pa4', 'pp4', 'pb4', 'pd5', 'pa5', 'pp5', 'pb5', 'total-remaining', 'wo-f1', 'wo-f2', 'wo-f3', 'wo-f4', 'wo-f5', 'wo-f6', 'wo-f7', 'wo-f8', 'wo-f9', 'wo-f10', 'wo-f11', 'wo-f12', 'wo-f13', 'wo-f14', 'wo-f15', 'wo-f16', 'wo-f17', 'wo-f18', 'wo-f19', 'wo-f20', 'wo-f21', 'wo-f22', 'wo-f23', 'wo-f24', 'wo-f25', 'wo-f26', 'wo-f27', 'wo-f28', 'wo-f29', 'wo-f30', 'wo-f31', 'wo-f32', 'wo-f33', 'wo-f34', 'wo-f35', 'wo-f36', 'wo-f37', 'wo-f38', 'wo-f39', 'wo-f40', 'wo-f41', 'wo-f42', 'wo-f43', 'wo-f44', 'wo-f45', 'wo-f46', 'wo-f47', 'wo-f78', 'wo-f79', 'wo-f80', 'wo-f81', 'wo-f82', 'wo-f83', 'wo-f84', 'wo-f85', 'wo-f86', 'wo-f87', 'wo-f88', 'wo-f89', 'wo-f90', 'wo-f91', 'wo-f92', 'wo-f93', 'wo-f94', 'wo-f95', 'wo-f96', 'wo-f97', 'wo-f98', 'wo-f99', 'wo-f100', 'wo-f101', 'wo-f102', 'wo-f103', 'wo-f104', 'wo-f105', 'wo-f106', 'wo-f107', 'wo-f108', 'wo-f109', 'wo-f110', 'wo-f111', 'wo-f112', 'wo-f113', 'wo-f114', 'wo-f115', 'wo-f116', 'wo-f117', 'wo-f118', 'wo-f119', 'wo-f120', 'wo-f121', 'wo-f122', 'wo-f123', 'wo-f124', 'wo-f125', 'wo-f126', 'wo-f127', 'wo-f128', 'wo-f129', 'wo-f130', 'wo-f131', 'wo-f132', 'wo-ins-est-date', 'wo-trades-data', 'wo-f-hoa-plan', 'wo-blackout-dates', 'wo-vent-de-ridge', 'wo-vent-de-box', 'wo-vent-de-dome', 'wo-vent-de-power', 'wo-vent-de-power-cover', 'wo-vent-de-solar', 'wo-vent-de-turbine',
+  'wo-shingle-upg', 'wo-ridge-upg', 'wo-starter-upg', 'wo-underlay-upg', 'wo-valley-upg', 'wo-pipeboot-upg'];
 var WO_SIG_IDS   = ['sig-h1', 'sig-h2', 'sig-pm', 'sig-c1', 'sig-c2', 'sig-c3', 'sig-ppa'];
 var WO_SHEET_TAB = "WorkOrders";
 
