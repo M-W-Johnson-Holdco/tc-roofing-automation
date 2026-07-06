@@ -5174,6 +5174,7 @@ function syncUpgradeOptionsToSheets(jobNum) {
       { headers: { Authorization: 'Bearer ' + t } })
     .then(function(r) { return r.json(); })
     .then(function(d) {
+      if (d.error) throw new Error(d.error.message || JSON.stringify(d.error));
       var rows = d.values || [];
       var rowIndex = -1;
       for (var i = 1; i < rows.length; i++) {
@@ -5186,22 +5187,29 @@ function syncUpgradeOptionsToSheets(jobNum) {
         JSON.stringify(opts.option3 || null),
         new Date().toISOString()
       ];
+      var writeUrl, writeMethod, writeBody;
       if (rowIndex > 0) {
         var range = encodeURIComponent(UPG_OPT_TAB + '!A' + rowIndex + ':E' + rowIndex);
-        return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + range + '?valueInputOption=RAW', {
-          method: 'PUT',
-          headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ range: UPG_OPT_TAB + '!A' + rowIndex + ':E' + rowIndex, majorDimension: 'ROWS', values: [rowData] })
-        });
+        writeUrl = 'https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + range + '?valueInputOption=RAW';
+        writeMethod = 'PUT';
+        writeBody = JSON.stringify({ range: UPG_OPT_TAB + '!A' + rowIndex + ':E' + rowIndex, majorDimension: 'ROWS', values: [rowData] });
       } else {
-        return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + sn + '!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS', {
-          method: 'POST',
-          headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ values: [rowData] })
-        });
+        writeUrl = 'https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + sn + '!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS';
+        writeMethod = 'POST';
+        writeBody = JSON.stringify({ values: [rowData] });
       }
+      return fetch(writeUrl, {
+        method: writeMethod,
+        headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },
+        body: writeBody
+      }).then(function(r2) { return r2.json(); }).then(function(d2) {
+        if (d2.error) throw new Error(d2.error.message || JSON.stringify(d2.error));
+      });
     });
-  }).catch(function(e) { console.warn('[UpgradeOptions] Sheet sync failed:', e.message); });
+  }).catch(function(e) {
+    console.warn('[UpgradeOptions] Sheet sync failed:', e.message);
+    woStatus('⚠ Options saved locally; sheet sync failed: ' + e.message, false);
+  });
 }
 
 function woSyncOptionsFromSheets() {
