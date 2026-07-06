@@ -4645,19 +4645,19 @@ function getGSToken(){
   if(gsToken&&Date.now()<gsExpiry)return Promise.resolve(gsToken);
   // Try persisted token from localStorage (survives page reload)
   try{
-    var c=JSON.parse(localStorage.getItem('_gs_token')||'null');
+    var c=JSON.parse(localStorage.getItem('_gs_token_tc')||'null');
     if(c&&c.token&&Date.now()<c.expiry){gsToken=c.token;gsExpiry=c.expiry;return Promise.resolve(gsToken);}
   }catch(e){}
   return fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"client_id="+encodeURIComponent(CRED_GS_CLIENT_ID)+"&client_secret="+encodeURIComponent(CRED_GS_CLIENT_SECRET)+"&refresh_token="+encodeURIComponent(CRED_GS_REFRESH_TOKEN)+"&grant_type=refresh_token"})
   .then(function(r){return r.json();}).then(function(d){
     if(!d.access_token)throw new Error("Google token failed");
     gsToken=d.access_token;gsExpiry=Date.now()+(d.expires_in-60)*1000;
-    try{localStorage.setItem('_gs_token',JSON.stringify({token:gsToken,expiry:gsExpiry}));}catch(e){}
+    try{localStorage.setItem('_gs_token_tc',JSON.stringify({token:gsToken,expiry:gsExpiry}));}catch(e){}
     return gsToken;
   }).catch(function(e){
     // Offline fallback — use expired cached token if available
     try{
-      var c=JSON.parse(localStorage.getItem('_gs_token')||'null');
+      var c=JSON.parse(localStorage.getItem('_gs_token_tc')||'null');
       if(c&&c.token){gsToken=c.token;return gsToken;}
     }catch(ex){}
     throw e;
