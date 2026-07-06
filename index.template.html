@@ -5121,6 +5121,7 @@ window.receiveUpgradeOption = function(slot, data) {
   saveUpgradeOptionLocal(slot, jobNum, data);
   woRefreshOptionButtons(jobNum);
   woStatus('✓ Option ' + slot + ' saved for job ' + jobNum, true);
+  toast('✓ Option ' + slot + ' saved for job ' + jobNum + ' — syncing to sheet…');
   syncUpgradeOptionsToSheets(jobNum);
 };
 
@@ -5208,7 +5209,7 @@ function syncUpgradeOptionsToSheets(jobNum) {
     });
   }).catch(function(e) {
     console.warn('[UpgradeOptions] Sheet sync failed:', e.message);
-    woStatus('⚠ Options saved locally; sheet sync failed: ' + e.message, false);
+    toast('⚠ Sheet sync failed: ' + e.message);
   });
 }
 
