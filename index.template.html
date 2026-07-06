@@ -8270,14 +8270,38 @@ function woLoad() {
   woFetchAllRows().then(function(rows) {
     var found = rows.find(function(r) { return r.jobNum.toLowerCase() === jobNum.toLowerCase(); });
     if (!found) {
-      woStatus('No work order found for job ' + jobNum + '. Fill in and save to create one.', false);
+      var local = woLoadLocal(jobNum);
+      if (local) {
+        woSetAllFields(local);
+        woStatus('✓ Loaded work order for job ' + jobNum + ' (local cache)', true);
+      } else {
+        woStatus('No work order found for job ' + jobNum + '. Fill in and save to create one.', false);
+      }
+      woRefreshOptionButtons(jobNum);
       return;
     }
     woSetAllFields(found.data);
+    woSaveLocal(jobNum, found.data);
     woStatus('✓ Loaded work order for job ' + jobNum, true);
     woRefreshOptionButtons(jobNum);
-  }).catch(function(e) { woStatus('Error: ' + e.message, false); });
+  }).catch(function(e) {
+    var local = woLoadLocal(jobNum);
+    if (local) {
+      woSetAllFields(local);
+      woStatus('✓ Loaded work order for job ' + jobNum + ' (offline — local cache)', true);
+    } else {
+      woStatus('Error: ' + e.message, false);
+    }
+    woRefreshOptionButtons(jobNum);
+  });
   woRefreshOptionButtons(jobNum);
+}
+
+function woSaveLocal(jobNum, data) {
+  try { localStorage.setItem('WO_' + jobNum, JSON.stringify(data)); } catch(e) {}
+}
+function woLoadLocal(jobNum) {
+  try { return JSON.parse(localStorage.getItem('WO_' + jobNum) || 'null'); } catch(e) { return null; }
 }
 
 function woSave() {
@@ -8286,6 +8310,7 @@ function woSave() {
   if (!jobNum) { woStatus('Enter a job number before saving.', false); return; }
   var data = woGetAllFields();
   var json = JSON.stringify(data);
+  woSaveLocal(jobNum, data);
   woStatus('Saving…', true);
 
   getGSToken().then(function(t) {
