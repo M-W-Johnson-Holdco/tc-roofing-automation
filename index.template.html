@@ -4306,7 +4306,7 @@ function completeLogin(googleEmail, googleName, gsToken) {
     store.set("auth_role",   currentUserRole);
     store.set("auth_name",   currentUser);
     store.set("auth_token",  gsToken);
-    store.set("auth_expiry", String(Date.now() + 3500000)); // ~58 min
+    store.set("auth_expiry", String(Date.now() + 7 * 24 * 3600 * 1000)); // 7 days
 
     // Hide login, show app
     document.getElementById("login-screen").style.display = "none";
@@ -4417,18 +4417,41 @@ function refreshGSToken() {
 }
 
 // Boot — wait for GSI library to load then init
+var _gsiOfflineTimer = null;
 function tryInitGoogleAuth() {
   if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+    clearTimeout(_gsiOfflineTimer);
     initGoogleAuth();
   } else {
     setTimeout(tryInitGoogleAuth, 250);
   }
 }
+function _offlineSessionFallback() {
+  // GSI script never loaded (no internet) — restore cached session so user isn't locked out
+  var cachedEmail = store.get("auth_email");
+  var cachedRole  = store.get("auth_role");
+  var cachedName  = store.get("auth_name");
+  if (cachedEmail && cachedRole) {
+    currentUserEmail = cachedEmail;
+    currentUserRole  = cachedRole;
+    currentUser      = cachedName || cachedEmail;
+    document.getElementById("login-screen").style.display = "none";
+    var badge = document.querySelector("header .badge");
+    if (badge) badge.textContent = "👤 " + currentUser + " (" + currentUserRole + ") [offline]";
+    applyRolePermissions(currentUserRole);
+    woApplyRole(currentUserRole);
+    tnApplyRole(currentUserRole);
+  }
+}
 // Use window.onload to ensure DOM and scripts are ready
 if (document.readyState === "complete") {
+  _gsiOfflineTimer = setTimeout(_offlineSessionFallback, 5000);
   tryInitGoogleAuth();
 } else {
-  window.addEventListener("load", tryInitGoogleAuth);
+  window.addEventListener("load", function() {
+    _gsiOfflineTimer = setTimeout(_offlineSessionFallback, 5000);
+    tryInitGoogleAuth();
+  });
 }
 
 var SALESPERSON_MAP = {
@@ -4610,8 +4633,25 @@ function renderTemplates(){
 var gsToken=null,gsExpiry=0;
 function getGSToken(){
   if(gsToken&&Date.now()<gsExpiry)return Promise.resolve(gsToken);
+  // Try persisted token from localStorage (survives page reload)
+  try{
+    var c=JSON.parse(localStorage.getItem('_gs_token')||'null');
+    if(c&&c.token&&Date.now()<c.expiry){gsToken=c.token;gsExpiry=c.expiry;return Promise.resolve(gsToken);}
+  }catch(e){}
   return fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"client_id="+encodeURIComponent(CRED_GS_CLIENT_ID)+"&client_secret="+encodeURIComponent(CRED_GS_CLIENT_SECRET)+"&refresh_token="+encodeURIComponent(CRED_GS_REFRESH_TOKEN)+"&grant_type=refresh_token"})
-  .then(function(r){return r.json();}).then(function(d){if(!d.access_token)throw new Error("Google token failed");gsToken=d.access_token;gsExpiry=Date.now()+(d.expires_in-60)*1000;return gsToken;});
+  .then(function(r){return r.json();}).then(function(d){
+    if(!d.access_token)throw new Error("Google token failed");
+    gsToken=d.access_token;gsExpiry=Date.now()+(d.expires_in-60)*1000;
+    try{localStorage.setItem('_gs_token',JSON.stringify({token:gsToken,expiry:gsExpiry}));}catch(e){}
+    return gsToken;
+  }).catch(function(e){
+    // Offline fallback — use expired cached token if available
+    try{
+      var c=JSON.parse(localStorage.getItem('_gs_token')||'null');
+      if(c&&c.token){gsToken=c.token;return gsToken;}
+    }catch(ex){}
+    throw e;
+  });
 }
 var TC_CSV_SHEET_ID = "1vCz8x85_SW3AZdhiDPTY7n0jwo84YpPmdBG9zo8RRR4";
 var TC_CSV_SHEET_NAME = "TC_CSV_Cache";
