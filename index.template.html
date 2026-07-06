@@ -792,6 +792,11 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
         <button class=&quot;btn btn-export&quot; style=&quot;display:none&quot; onclick=&quot;exportPDF()&quot;>⬇ Export PDF Cheat Sheet</button>
         <button id=&quot;save-payroll-btn&quot; class=&quot;btn&quot; style=&quot;width:100%;margin-top:7px;background:#2a7a4f;color:#fff;font-weight:700&quot; onclick=&quot;saveToPayrollSheet()&quot;>💾 Save to Payroll Sheet</button>
         <button id=&quot;save-wo-btn&quot; class=&quot;btn&quot; style=&quot;width:100%;margin-top:7px;background:#1a5276;color:#fff;font-weight:700&quot; onclick=&quot;saveToWO()&quot;>📋 Save to Work Order</button>
+        <div style=&quot;display:flex;gap:5px;margin-top:7px&quot;>
+          <button class=&quot;btn&quot; style=&quot;flex:1;font-size:11px;background:#2c4a6e;color:#fff;font-weight:600&quot; onclick=&quot;saveAsOption(1)&quot;>💾 Save Option 1</button>
+          <button class=&quot;btn&quot; style=&quot;flex:1;font-size:11px;background:#2c4a6e;color:#fff;font-weight:600&quot; onclick=&quot;saveAsOption(2)&quot;>💾 Save Option 2</button>
+          <button class=&quot;btn&quot; style=&quot;flex:1;font-size:11px;background:#2c4a6e;color:#fff;font-weight:600&quot; onclick=&quot;saveAsOption(3)&quot;>💾 Save Option 3</button>
+        </div>
         <div style=&quot;display:flex;gap:7px;margin-top:7px&quot;>
           <button class=&quot;btn&quot; style=&quot;flex:1;font-size:12px&quot; onclick=&quot;resetCalc()&quot;>↺ Reset</button>
           <button class=&quot;btn&quot; style=&quot;flex:1;font-size:12px&quot; onclick=&quot;setPage('pg-hist')&quot;>📋 History</button>
@@ -1661,6 +1666,17 @@ function saveToWO(){
   }
   toast('📋 Sent to Work Order');
 }
+function saveAsOption(n){
+  const jobNum=((document.getElementById('fc-wo')||{}).value||'').trim();
+  if(!jobNum){toast('Enter a job number first');return;}
+  const payload=Object.assign({},lastCalcData,{_jobNum:jobNum,_ventCounts:ventCounts,_slot:n});
+  if(typeof window.parent!=='undefined'&amp;&amp;window.parent!==window&amp;&amp;typeof window.parent.receiveUpgradeOption==='function'){
+    window.parent.receiveUpgradeOption(n,payload);
+  } else if(typeof window.parent!=='undefined'&amp;&amp;window.parent!==window){
+    window.parent.postMessage({type:'saveUpgradeOption',slot:n,data:payload},'*');
+  }
+  toast('✓ Saved as Option '+n);
+}
 
 // PDF
 function exportPDF(){
@@ -1825,6 +1841,13 @@ function fetchJobData(){
       <button class="btn btn-secondary" onclick="woLoad()">📂 Load</button>
       <button class="btn btn-primary wo-save-only" onclick="woSave()">💾 Save</button>
       <button class="btn btn-warn wo-admin-only" onclick="woClear()">🗑️ Clear Form</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;">
+      <span style="font-size:11px;color:#64748b;font-weight:600;">Upgrade Options:</span>
+      <button id="wo-opt-1" class="btn btn-secondary btn-sm" onclick="woApplyOption(1)" disabled style="opacity:0.4">Option 1</button>
+      <button id="wo-opt-2" class="btn btn-secondary btn-sm" onclick="woApplyOption(2)" disabled style="opacity:0.4">Option 2</button>
+      <button id="wo-opt-3" class="btn btn-secondary btn-sm" onclick="woApplyOption(3)" disabled style="opacity:0.4">Option 3</button>
+      <button class="btn btn-secondary btn-sm" onclick="woSyncOptionsFromSheets()" style="margin-left:auto;">⬇ Load from Sheet</button>
     </div>
     <div id="wo-status" style="margin-top:10px;font-size:0.8rem;min-height:18px;"></div>
   </div>
@@ -5089,6 +5112,124 @@ window.addEventListener('message', function(e) {
   if (typeof window.receiveCalcData === 'function') window.receiveCalcData(e.data.data);
 });
 
+// ---- UPGRADE OPTIONS (per-job, localStorage + Sheets) ----
+var UPG_OPT_TAB = 'UpgradeOptions';
+
+window.receiveUpgradeOption = function(slot, data) {
+  var jobNum = (data._jobNum || '').trim();
+  if (!jobNum) return;
+  saveUpgradeOptionLocal(slot, jobNum, data);
+  woRefreshOptionButtons(jobNum);
+  woStatus('✓ Option ' + slot + ' saved for job ' + jobNum, true);
+  syncUpgradeOptionsToSheets(jobNum);
+};
+
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.type !== 'saveUpgradeOption') return;
+  if (typeof window.receiveUpgradeOption === 'function') window.receiveUpgradeOption(e.data.slot, e.data.data);
+});
+
+function getUpgradeOptionsLocal(jobNum) {
+  try { return JSON.parse(localStorage.getItem('UPGRADE_OPTIONS_' + jobNum) || '{}'); } catch(e) { return {}; }
+}
+
+function saveUpgradeOptionLocal(slot, jobNum, data) {
+  var opts = getUpgradeOptionsLocal(jobNum);
+  opts['option' + slot] = data;
+  opts['_ts' + slot] = new Date().toISOString();
+  localStorage.setItem('UPGRADE_OPTIONS_' + jobNum, JSON.stringify(opts));
+}
+
+function woRefreshOptionButtons(jobNum) {
+  if (!jobNum) return;
+  var opts = getUpgradeOptionsLocal(jobNum);
+  [1, 2, 3].forEach(function(n) {
+    var btn = document.getElementById('wo-opt-' + n);
+    if (!btn) return;
+    var has = !!opts['option' + n];
+    btn.disabled = !has;
+    btn.style.opacity = has ? '1' : '0.4';
+    var ts = opts['_ts' + n] ? new Date(opts['_ts' + n]).toLocaleDateString() : '';
+    btn.title = has ? 'Apply Option ' + n + (ts ? ' — saved ' + ts : '') : 'No Option ' + n + ' saved for this job';
+  });
+}
+
+function woApplyOption(n) {
+  var jobNum = (document.getElementById('wo-job-input').value || '').trim();
+  if (!jobNum) { woStatus('Enter a job number first.', false); return; }
+  var opts = getUpgradeOptionsLocal(jobNum);
+  var data = opts['option' + n];
+  if (!data) { woStatus('No Option ' + n + ' saved for job ' + jobNum + '.', false); return; }
+  if (typeof window.receiveCalcData === 'function') window.receiveCalcData(data);
+  woStatus('✓ Option ' + n + ' applied to work order.', true);
+}
+
+function syncUpgradeOptionsToSheets(jobNum) {
+  var opts = getUpgradeOptionsLocal(jobNum);
+  var sid = CRED_GS_SHEET_ID;
+  if (!sid) return;
+  getGSToken().then(function(t) {
+    var sn = encodeURIComponent(UPG_OPT_TAB);
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + sn + '!A:A',
+      { headers: { Authorization: 'Bearer ' + t } })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var rows = d.values || [];
+      var rowIndex = -1;
+      for (var i = 1; i < rows.length; i++) {
+        if ((rows[i][0] || '').trim().toLowerCase() === jobNum.toLowerCase()) { rowIndex = i + 1; break; }
+      }
+      var rowData = [
+        jobNum,
+        JSON.stringify(opts.option1 || null),
+        JSON.stringify(opts.option2 || null),
+        JSON.stringify(opts.option3 || null),
+        new Date().toISOString()
+      ];
+      if (rowIndex > 0) {
+        var range = encodeURIComponent(UPG_OPT_TAB + '!A' + rowIndex + ':E' + rowIndex);
+        return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + range + '?valueInputOption=RAW', {
+          method: 'PUT',
+          headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ range: UPG_OPT_TAB + '!A' + rowIndex + ':E' + rowIndex, majorDimension: 'ROWS', values: [rowData] })
+        });
+      } else {
+        return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + sn + '!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ values: [rowData] })
+        });
+      }
+    });
+  }).catch(function(e) { console.warn('[UpgradeOptions] Sheet sync failed:', e.message); });
+}
+
+function woSyncOptionsFromSheets() {
+  var jobNum = (document.getElementById('wo-job-input').value || '').trim();
+  if (!jobNum) { woStatus('Enter a job number first.', false); return; }
+  var sid = CRED_GS_SHEET_ID;
+  if (!sid) { woStatus('Sheet ID not configured.', false); return; }
+  woStatus('Loading options from sheet…', true);
+  getGSToken().then(function(t) {
+    var sn = encodeURIComponent(UPG_OPT_TAB);
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + sn + '!A:E',
+      { headers: { Authorization: 'Bearer ' + t } });
+  }).then(function(r) { return r.json(); })
+  .then(function(d) {
+    var rows = (d.values || []).slice(1);
+    var found = rows.find(function(r) { return (r[0] || '').trim().toLowerCase() === jobNum.toLowerCase(); });
+    if (!found) { woStatus('No saved options found in sheet for job ' + jobNum + '.', false); return; }
+    var opts = {};
+    try { if (found[1] && found[1] !== 'null') { opts.option1 = JSON.parse(found[1]); opts._ts1 = found[4] || ''; } } catch(e) {}
+    try { if (found[2] && found[2] !== 'null') { opts.option2 = JSON.parse(found[2]); opts._ts2 = found[4] || ''; } } catch(e) {}
+    try { if (found[3] && found[3] !== 'null') { opts.option3 = JSON.parse(found[3]); opts._ts3 = found[4] || ''; } } catch(e) {}
+    localStorage.setItem('UPGRADE_OPTIONS_' + jobNum, JSON.stringify(opts));
+    woRefreshOptionButtons(jobNum);
+    var count = [opts.option1, opts.option2, opts.option3].filter(Boolean).length;
+    woStatus('✓ Loaded ' + count + ' option(s) from sheet for job ' + jobNum, true);
+  }).catch(function(e) { woStatus('Error loading options: ' + e.message, false); });
+}
+
 // Fetch job measurement data from the upgrades sheet and pass match row to callback(row, error)
 var UPGRADES_FETCH_SHEET_ID = '1pgp5aW8e24JuYGDZGO9Wt5koer-sSU7FrBlwL55jevU';
 var UPGRADES_FETCH_GID      = 104064159;
@@ -8134,7 +8275,9 @@ function woLoad() {
     }
     woSetAllFields(found.data);
     woStatus('✓ Loaded work order for job ' + jobNum, true);
+    woRefreshOptionButtons(jobNum);
   }).catch(function(e) { woStatus('Error: ' + e.message, false); });
+  woRefreshOptionButtons(jobNum);
 }
 
 function woSave() {
