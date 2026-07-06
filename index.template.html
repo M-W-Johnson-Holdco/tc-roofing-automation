@@ -174,6 +174,7 @@
     <div class="tab" data-tab="pto">🏖️ PTO</div>
     <div class="tab" data-tab="prewo">📝 Pre-WO Form</div>
     <div class="tab" data-tab="smartsched">Smart 🏠 Scheduler</div>
+    <div class="tab" data-tab="metrics">📊 Company Metrics</div>
     <div class="tab" data-tab="tradenotes">Trade Notes 🔨</div>
   </div>
   <div id="admin-subtabs">
@@ -4162,6 +4163,10 @@ function toggleMaskedFields() {
     </div>
   </div>
 
+  <div class="section" id="tab-metrics" style="padding:0;height:calc(100vh - 56px);">
+    <iframe src="https://datastudio.google.com/embed/reporting/93c07835-f6ee-4330-92ad-546388617dd7" frameborder="0" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
+  </div>
+
   </div>
 
 <script>var PASSWORD = "hailyeah";
@@ -4202,11 +4207,11 @@ var store = {
 // Tabs: dashboard, weather, scheduler, templates, config, logs, commissions, workorder, pto, smartsched, prewo, tradenotes
 // Trade Notes write access: admin, claims, production — all others are view-only
 var ROLE_TABS = {
-  admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
-  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  },
-  sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false, tradenotes:true  },
-  production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
-  viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  }
+  admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true,  tradenotes:true,  metrics:true  },
+  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true,  metrics:true  },
+  sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false, tradenotes:true,  metrics:true  },
+  production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true,  tradenotes:true,  metrics:true  },
+  viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true,  metrics:true  }
 };
 
 var currentUserEmail = "";
@@ -4224,7 +4229,7 @@ function applyRolePermissions(role) {
   var tabMap = {
     dashboard: "dashboard", weather: "weather", scheduler: "scheduler",
     commissions: "commissions", workorder: "workorder", pto: "pto",
-    smartsched: "smartsched", prewo: "prewo", tradenotes: "tradenotes"
+    smartsched: "smartsched", prewo: "prewo", tradenotes: "tradenotes", metrics: "metrics"
   };
   var adminTabMap = { templates: "templates", config: "config", logs: "logs" };
   // Find first visible tab to activate
