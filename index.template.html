@@ -4737,6 +4737,19 @@ function appendSheetLog(e){
   });
 }
 
+function getStaffPhones() {
+  return getGSToken().then(function(t) {
+    var url = "https://sheets.googleapis.com/v4/spreadsheets/" + CRED_GS_SHEET_ID +
+              "/values/" + encodeURIComponent("StaffContacts") + "!B:B";
+    return fetch(url, { headers: { Authorization: "Bearer " + t } })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        return (d.values || []).map(function(r){ return (r[0]||'').trim(); })
+          .filter(function(p){ return /^\+?[0-9]{10,15}$/.test(p); });
+      });
+  });
+}
+
 function appendSchedulerLog(e) {
   return getGSToken().then(function(t) {
     var sid = CRED_GS_SHEET_ID;
@@ -6364,7 +6377,10 @@ function createCalendarEvent(jobKey, isReschedule, oldEventId) {
               var intMsg = '[Staff Note] ' + type + ' — ' + ctx.name + '\n' +
                            formatDateNice(date) + ' at ' + formatTimeNice(start) + '\n' +
                            internalNotes + '\nScheduled by: ' + (currentUser || 'Unknown');
-              sendSMS(FIXED_NUMBERS, intMsg).then(function(){
+              getStaffPhones().then(function(staffNums) {
+                if (!staffNums.length) { schedLog('warn', 'No staff phones found in StaffContacts tab.'); return; }
+                return sendSMS(staffNums, intMsg);
+              }).then(function(){
                 schedLog('success', 'Internal notes texted to staff immediately (last-minute appt).');
               }).catch(function(e){
                 schedLog('warn', 'Internal notes staff text failed: ' + e.message);
