@@ -393,11 +393,11 @@
     </div>
     <div class="card">
       <h2>MMS Image Uploads</h2>
-      <div class="alert alert-info">T1, T6, and T8 support image attachments. Images save permanently.</div>
+      <div class="alert alert-info">T1, T6, and T8 support image attachments. Paste the raw GitHub URL for each image — fetched at send time.</div>
       <div class="mms-grid">
-        <div class="img-upload-box"><label>T1 — Welcome</label><input type="file" id="img-T1" accept="image/*"><div id="img-T1-preview"></div></div>
-        <div class="img-upload-box"><label>T6 — Settlement</label><input type="file" id="img-T6" accept="image/*"><div id="img-T6-preview"></div></div>
-        <div class="img-upload-box"><label>T8 — Work Order</label><input type="file" id="img-T8" accept="image/*"><div id="img-T8-preview"></div></div>
+        <div class="img-upload-box"><label>T1 — Welcome</label><input type="text" id="img-T1" placeholder="https://raw.githubusercontent.com/…" style="width:100%;margin-bottom:6px;"><div id="img-T1-preview"></div></div>
+        <div class="img-upload-box"><label>T6 — Settlement</label><input type="text" id="img-T6" placeholder="https://raw.githubusercontent.com/…" style="width:100%;margin-bottom:6px;"><div id="img-T6-preview"></div></div>
+        <div class="img-upload-box"><label>T8 — Work Order</label><input type="text" id="img-T8" placeholder="https://raw.githubusercontent.com/…" style="width:100%;margin-bottom:6px;"><div id="img-T8-preview"></div></div>
       </div>
     </div>
     <div class="card">
@@ -4613,14 +4613,15 @@ document.addEventListener('DOMContentLoaded',initCoverLogo);
 
 function loadImages(){
   ["T1","T6","T8"].forEach(function(id){
-    var d=store.get("img_"+id);
-    if(d){try{var o=JSON.parse(d);imageStore[id]=o;renderImgPreview(id,o);}catch(e){}}
+    var url=store.get("img_"+id);
+    if(url){imageStore[id]={url:url};renderImgPreview(id,url);var inp=document.getElementById("img-"+id);if(inp)inp.value=url;}
   });
 }
-function renderImgPreview(id,obj){
+function renderImgPreview(id,url){
   var el=document.getElementById("img-"+id+"-preview");
   if(!el)return;
-  el.innerHTML='<img src="'+obj.dataUrl+'" style="max-width:100%;max-height:100px;border-radius:6px;margin-top:8px;"><div class="small" style="margin-top:4px;">'+obj.name+'</div><button class="btn btn-danger btn-sm" style="margin-top:6px;" data-clear-img="'+id+'">Remove</button>';
+  el.innerHTML='<img src="'+url+'" style="max-width:100%;max-height:100px;border-radius:6px;margin-top:8px;" onerror="this.style.display=\'none\'">'
+    +'<button class="btn btn-danger btn-sm" style="margin-top:6px;" data-clear-img="'+id+'">Remove</button>';
 }
 function clearImg(id){imageStore[id]=null;store.del("img_"+id);var el=document.getElementById("img-"+id+"-preview");if(el)el.innerHTML="";var inp=document.getElementById("img-"+id);if(inp)inp.value="";}
 
@@ -4769,12 +4770,17 @@ function sendSMS(to,msg){
   });
 }
 function sendMMS(to,img){
-  return getRCToken().then(function(t){
-    var fd=new FormData();
-    fd.append("json",new Blob([JSON.stringify({from:{phoneNumber:CRED_RC_FROM},to:to.map(function(n){return{phoneNumber:n};}),text:""})],{type:"application/json"}));
-    var b64=img.dataUrl.split(",")[1];var bytes=atob(b64);var arr=new Uint8Array(bytes.length);for(var i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i);
-    fd.append("attachment",new Blob([arr],{type:img.type}),img.name);
-    return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/mms",{method:"POST",headers:{Authorization:"Bearer "+t},body:fd});
+  return fetch(img.url).then(function(r){
+    if(!r.ok)throw new Error("Failed to fetch image: "+img.url);
+    return r.blob();
+  }).then(function(blob){
+    return getRCToken().then(function(t){
+      var fd=new FormData();
+      fd.append("json",new Blob([JSON.stringify({from:{phoneNumber:CRED_RC_FROM},to:to.map(function(n){return{phoneNumber:n};}),text:""})],{type:"application/json"}));
+      var filename=img.url.split("/").pop()||"image.jpg";
+      fd.append("attachment",blob,filename);
+      return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/mms",{method:"POST",headers:{Authorization:"Bearer "+t},body:fd});
+    });
   }).then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error("MMS failed: "+JSON.stringify(d));return d;});
 }
 
@@ -5427,7 +5433,7 @@ document.addEventListener("click",function(e){
 document.addEventListener("change",function(e){
   var t=e.target;
   if(t.id==="logo-upload"&&t.files[0]){var r=new FileReader();r.onload=function(ev){store.set("brand_logo",ev.target.result);applyLogo(ev.target.result);renderLogoPreview(ev.target.result);};r.readAsDataURL(t.files[0]);return;}
-  if((t.id==="img-T1"||t.id==="img-T6"||t.id==="img-T8")&&t.files[0]){var id=t.id.replace("img-","");var r2=new FileReader();r2.onload=function(ev){var obj={dataUrl:ev.target.result,type:t.files[0].type,name:t.files[0].name};imageStore[id]=obj;store.set("img_"+id,JSON.stringify(obj));renderImgPreview(id,obj);};r2.readAsDataURL(t.files[0]);return;}
+  if((t.id==="img-T1"||t.id==="img-T6"||t.id==="img-T8")&&t.type==="text"){var id=t.id.replace("img-","");var url=t.value.trim();if(url){imageStore[id]={url:url};store.set("img_"+id,url);renderImgPreview(id,url);}else{clearImg(id);}return;}
 });
 
 document.addEventListener("input",function(e){if(e.target.id==="weather-numbers")updateWeatherPreview();});
