@@ -5573,6 +5573,48 @@ function schedLog(type, msg) {
   box.scrollTop = box.scrollHeight;
 }
 
+// -- Search calendar for job by number/GUID --
+function searchCalendarForJob(query) {
+  return getGCalToken().then(function(t) {
+    var calIds = getAllCalendarIds();
+    var past = new Date(Date.now() - 365*86400000).toISOString();
+    var promises = calIds.map(function(calId) {
+      return fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(calId) +
+        "/events?q=" + encodeURIComponent(query) +
+        "&timeMin=" + encodeURIComponent(past) +
+        "&singleEvents=true&orderBy=startTime&maxResults=25",
+        { headers: { Authorization: "Bearer " + t } }
+      ).then(function(r){ return r.json(); })
+       .then(function(d){ return d.items || []; })
+       .catch(function(){ return []; });
+    });
+    return Promise.all(promises).then(function(results){
+      return results.reduce(function(a,b){ return a.concat(b); }, []);
+    });
+  }).then(function(events) {
+    var seen = {}, entries = [];
+    events.forEach(function(ev) {
+      var title = ev.summary || '';
+      var jobNum = '', jobGuid = '', name = '';
+      var m1 = title.match(/^([\w\-]+):\s*(.+?)\s*-\s*.+$/);
+      var m2 = title.match(/^.+?\s*-\s*(.+?)\s*-\s*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i);
+      var m3 = title.match(/—\s*(.+?)\s*\(Job\s*([^)]+)\)/);
+      if (m1) { if (/^[0-9]+$/.test(m1[1])) jobNum=m1[1]; else jobGuid=m1[1]; name=m1[2]; }
+      else if (m2) { name=m2[1]; jobGuid=m2[2]; }
+      else if (m3) { name=m3[1]; if (/^[0-9]+$/.test(m3[2])) jobNum=m3[2]; else jobGuid=m3[2]; }
+      var key = jobNum || jobGuid;
+      if (!key || seen[key]) return;
+      seen[key] = true;
+      entries.push({ timestamp:'', jobNum:jobNum, name:name, phone:'',
+        trigger:'', template:'', message:'', acculynxLogged:'', status:'',
+        jobGuid:jobGuid, messageId:'', runBy:'', secondaryPhone:'',
+        conversationId:'', _fromCalendar:true });
+    });
+    return entries;
+  });
+}
+
 // -- Search sheet log for job --
 function searchSheetForJob(query) {
   query = (query || "").trim();
@@ -5606,7 +5648,7 @@ function searchSheetForJob(query) {
 function renderJobResult(entries) {
   var container = document.getElementById("sched-job-result");
   if (!entries || !entries.length) {
-    container.innerHTML = '<div class="no-results">No matching job found in sheet log. Has a text been sent for this job yet?</div>';
+    container.innerHTML = '<div class="no-results">No matching job found in sheet or calendar.</div>';
     document.getElementById("sched-existing-card").style.display = "none";
     return;
   }
@@ -5632,14 +5674,19 @@ function renderJobResult(entries) {
     var sp = extractSalespersonFromEntries(allEntries);
     var spPhone = sp ? spE164(sp) : null;
 
+    var fromCal = !!j._fromCalendar;
     return '<div class="job-result-card">' +
-      '<h3>📋 ' + (j.name || "Unknown") + ' <span class="pill pill-blue">' + jobKey + '</span></h3>' +
+      '<h3>📋 ' + (j.name || "Unknown") + ' <span class="pill pill-blue">' + jobKey + '</span>' +
+        (fromCal ? ' <span class="pill" style="background:#0c1a2e;color:#60a5fa;border:1px solid #1e3a5f;font-size:0.65rem;">📅 Calendar</span>' : '') +
+      '</h3>' +
+      (fromCal ? '<div style="background:#0c1e38;border:1px solid #1e3a5f;border-radius:6px;padding:8px 12px;font-size:0.75rem;color:#93c5fd;margin-bottom:10px;">Found in calendar — no sheet record exists. Enter customer phone below to include them on the SMS.</div>' : '') +
       '<div class="meta">' +
         '<div>📱 Primary: <span>' + (j.phone || "—") + '</span></div>' +
         (j.secondaryPhone ? '<div>📱 Secondary: <span>' + j.secondaryPhone + '</span></div>' : '') +
-        '<div>🏷️ Templates sent: <span>' + (templates || "none") + '</span></div>' +
+        (!fromCal ? '<div>🏷️ Templates sent: <span>' + (templates || "none") + '</span></div>' : '') +
         (sp ? '<div>👤 Salesperson: <span>' + sp + '</span></div>' : '') +
       '</div>' +
+      (fromCal ? '<div style="margin-bottom:12px;"><label>Customer Phone <span style="color:#64748b;font-weight:400">(optional — leave blank to skip customer SMS)</span></label><input type="tel" id="appt-phone-' + jobKey + '" placeholder="+1 (555) 000-0000" data-sched-phone="' + jobKey + '"></div>' : '') +
       '<div id="sched-form-' + jobKey + '" class="cal-form">' +
         '<label>Appointment Type</label>' +
         '<select class="appt-type-select" id="appt-type-' + jobKey + '">' +
@@ -6548,10 +6595,20 @@ document.addEventListener("click", function(e){
   if (t.id === "sched-search-btn") {
     var q = (document.getElementById("sched-search-input") || {}).value || "";
     var statusEl = document.getElementById("sched-search-status");
-    if (statusEl) statusEl.textContent = "Searching…";
+    if (statusEl) statusEl.textContent = "Searching sheet…";
     searchSheetForJob(q).then(function(entries){
-      if (statusEl) statusEl.textContent = entries.length ? entries.length + " log row(s) found." : "No match found.";
-      renderJobResult(entries);
+      if (entries.length) {
+        if (statusEl) statusEl.textContent = entries.length + " log row(s) found.";
+        renderJobResult(entries);
+        return;
+      }
+      if (statusEl) statusEl.textContent = "Not in sheet — searching calendar…";
+      return searchCalendarForJob(q).then(function(calEntries){
+        if (statusEl) statusEl.textContent = calEntries.length
+          ? "Found in calendar (no sheet record — enter phone to send customer SMS)."
+          : "No match found in sheet or calendar.";
+        renderJobResult(calEntries);
+      });
     }).catch(function(err){
       if (statusEl) statusEl.textContent = "Error: " + err.message;
       schedLog("error", err.message);
@@ -6664,6 +6721,9 @@ document.querySelectorAll(".bulk-mode-btn").forEach(function(btn){
 
 // Live count
 document.addEventListener("input", function(e){
+  if (e.target.dataset.schedPhone && schedJobContext) {
+    schedJobContext.phone = toE164(e.target.value);
+  }
   if (e.target.id === "bulk-job-list") {
     var lines = e.target.value.split(/\n/).map(function(l){ return l.trim(); }).filter(Boolean);
     var el = document.getElementById("bulk-list-count");
