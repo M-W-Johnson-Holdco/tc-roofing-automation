@@ -61,6 +61,9 @@
   #admin-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#0f1420;border-radius:10px;border:1px solid #1e2a40;}
   #admin-subtabs .tab{font-size:0.75rem;padding:5px 13px;border-radius:14px;}
   #admin-subtabs .tab.active{background:#6366f1;border-color:#6366f1;}
+  #prodclaims-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#0f1420;border-radius:10px;border:1px solid #1e2a40;}
+  #prodclaims-subtabs .tab{font-size:0.75rem;padding:5px 13px;border-radius:14px;}
+  #prodclaims-subtabs .tab.active{background:#e8a020;border-color:#e8a020;color:#000;}
   .section{display:none}.section.active{display:block}
   .alert{padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px}
   .alert-warn{background:#2d2008;color:#fcd34d;border:1px solid #854d0e}
@@ -166,20 +169,24 @@
 <div class="container">
   <div class="section-tabs">
     <div class="tab active" data-tab="dashboard">Text Automation</div>
-    <div class="tab" data-tab="weather">🌧️ Weather Blast</div>
-    <div class="tab" data-tab="scheduler">📅 Scheduler</div>
+    <div class="tab" data-tab="prodclaims">🏗️ Production & Claims</div>
     <div class="tab" data-tab="admin">⚙️ Admin</div>
     <div class="tab" data-tab="commissions">💰 Upgrades Commissions</div>
     <div class="tab" data-tab="workorder">📋 Work Order</div>
     <div class="tab" data-tab="pto">🏖️ PTO</div>
-    <div class="tab" data-tab="prewo">📝 Pre-WO Form</div>
-    <div class="tab" data-tab="smartsched">Smart 🏠 Scheduler</div>
-    <div class="tab" data-tab="tradenotes">Trade Notes 🔨</div>
+    <div class="tab" data-tab="metrics">📊 Company Metrics</div>
   </div>
   <div id="admin-subtabs">
     <div class="tab" data-tab="templates">Text &amp; Image Templates</div>
     <div class="tab" data-tab="config">Configuration</div>
     <div class="tab" data-tab="logs">Run Logs</div>
+  </div>
+  <div id="prodclaims-subtabs">
+    <div class="tab" data-tab="weather">🌧️ Weather Blast</div>
+    <div class="tab" data-tab="scheduler">📅 Scheduler</div>
+    <div class="tab" data-tab="smartsched">Smart 🏠 Scheduler</div>
+    <div class="tab" data-tab="prewo">📝 Pre-WO Form</div>
+    <div class="tab" data-tab="tradenotes">Trade Notes 🔨</div>
   </div>
 
   <div class="section active" id="tab-dashboard">
@@ -392,11 +399,11 @@
     </div>
     <div class="card">
       <h2>MMS Image Uploads</h2>
-      <div class="alert alert-info">T1, T6, and T8 support image attachments. Images save permanently.</div>
+      <div class="alert alert-info">T1, T6, and T8 support image attachments. Paste the raw GitHub URL for each image — fetched at send time.</div>
       <div class="mms-grid">
-        <div class="img-upload-box"><label>T1 — Welcome</label><input type="file" id="img-T1" accept="image/*"><div id="img-T1-preview"></div></div>
-        <div class="img-upload-box"><label>T6 — Settlement</label><input type="file" id="img-T6" accept="image/*"><div id="img-T6-preview"></div></div>
-        <div class="img-upload-box"><label>T8 — Work Order</label><input type="file" id="img-T8" accept="image/*"><div id="img-T8-preview"></div></div>
+        <div class="img-upload-box"><label>T1 — Welcome</label><input type="text" id="img-T1" placeholder="https://raw.githubusercontent.com/…" style="width:100%;margin-bottom:6px;"><div id="img-T1-preview"></div></div>
+        <div class="img-upload-box"><label>T6 — Settlement</label><input type="text" id="img-T6" placeholder="https://raw.githubusercontent.com/…" style="width:100%;margin-bottom:6px;"><div id="img-T6-preview"></div></div>
+        <div class="img-upload-box"><label>T8 — Work Order</label><input type="text" id="img-T8" placeholder="https://raw.githubusercontent.com/…" style="width:100%;margin-bottom:6px;"><div id="img-T8-preview"></div></div>
       </div>
     </div>
     <div class="card">
@@ -792,6 +799,11 @@ input[type=range].margin-slider::-moz-range-thumb{width:22px;height:22px;border-
         <button class=&quot;btn btn-export&quot; style=&quot;display:none&quot; onclick=&quot;exportPDF()&quot;>⬇ Export PDF Cheat Sheet</button>
         <button id=&quot;save-payroll-btn&quot; class=&quot;btn&quot; style=&quot;width:100%;margin-top:7px;background:#2a7a4f;color:#fff;font-weight:700&quot; onclick=&quot;saveToPayrollSheet()&quot;>💾 Save to Payroll Sheet</button>
         <button id=&quot;save-wo-btn&quot; class=&quot;btn&quot; style=&quot;width:100%;margin-top:7px;background:#1a5276;color:#fff;font-weight:700&quot; onclick=&quot;saveToWO()&quot;>📋 Save to Work Order</button>
+        <div style=&quot;display:flex;gap:5px;margin-top:7px&quot;>
+          <button class=&quot;btn&quot; style=&quot;flex:1;font-size:11px;background:#2c4a6e;color:#fff;font-weight:600&quot; onclick=&quot;saveAsOption(1)&quot;>💾 Save Option 1</button>
+          <button class=&quot;btn&quot; style=&quot;flex:1;font-size:11px;background:#2c4a6e;color:#fff;font-weight:600&quot; onclick=&quot;saveAsOption(2)&quot;>💾 Save Option 2</button>
+          <button class=&quot;btn&quot; style=&quot;flex:1;font-size:11px;background:#2c4a6e;color:#fff;font-weight:600&quot; onclick=&quot;saveAsOption(3)&quot;>💾 Save Option 3</button>
+        </div>
         <div style=&quot;display:flex;gap:7px;margin-top:7px&quot;>
           <button class=&quot;btn&quot; style=&quot;flex:1;font-size:12px&quot; onclick=&quot;resetCalc()&quot;>↺ Reset</button>
           <button class=&quot;btn&quot; style=&quot;flex:1;font-size:12px&quot; onclick=&quot;setPage('pg-hist')&quot;>📋 History</button>
@@ -1661,6 +1673,17 @@ function saveToWO(){
   }
   toast('📋 Sent to Work Order');
 }
+function saveAsOption(n){
+  const jobNum=((document.getElementById('fc-wo')||{}).value||'').trim();
+  if(!jobNum){toast('Enter a job number first');return;}
+  const payload=Object.assign({},lastCalcData,{_jobNum:jobNum,_ventCounts:ventCounts,_slot:n});
+  if(typeof window.parent!=='undefined'&amp;&amp;window.parent!==window&amp;&amp;typeof window.parent.receiveUpgradeOption==='function'){
+    window.parent.receiveUpgradeOption(n,payload);
+  } else if(typeof window.parent!=='undefined'&amp;&amp;window.parent!==window){
+    window.parent.postMessage({type:'saveUpgradeOption',slot:n,data:payload},'*');
+  }
+  toast('✓ Saved as Option '+n);
+}
 
 // PDF
 function exportPDF(){
@@ -1825,6 +1848,13 @@ function fetchJobData(){
       <button class="btn btn-secondary" onclick="woLoad()">📂 Load</button>
       <button class="btn btn-primary wo-save-only" onclick="woSave()">💾 Save</button>
       <button class="btn btn-warn wo-admin-only" onclick="woClear()">🗑️ Clear Form</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;">
+      <span style="font-size:11px;color:#64748b;font-weight:600;">Upgrade Options:</span>
+      <button id="wo-opt-1" class="btn btn-secondary btn-sm" onclick="woApplyOption(1)" disabled style="opacity:0.4">Option 1</button>
+      <button id="wo-opt-2" class="btn btn-secondary btn-sm" onclick="woApplyOption(2)" disabled style="opacity:0.4">Option 2</button>
+      <button id="wo-opt-3" class="btn btn-secondary btn-sm" onclick="woApplyOption(3)" disabled style="opacity:0.4">Option 3</button>
+      <button class="btn btn-secondary btn-sm" onclick="woSyncOptionsFromSheets()" style="margin-left:auto;">⬇ Load from Sheet</button>
     </div>
     <div id="wo-status" style="margin-top:10px;font-size:0.8rem;min-height:18px;"></div>
   </div>
@@ -4130,21 +4160,21 @@ function toggleMaskedFields() {
     </div>
   </div>
 
-  <div class="section" id="tab-metrics" style="padding:0;overflow:auto;">
-    <div style="padding:10px 16px;display:flex;justify-content:center;">
-      <a href="https://datastudio.google.com/reporting/93c07835-f6ee-4330-92ad-546388617dd7/page/p_ic76uw054d" target="_blank" class="btn" style="font-size:0.9rem;padding:8px 20px;color:#ffffff;font-weight:700;">↗ Open in New Window</a>
-    </div>
-    <div style="display:flex;justify-content:center;">
-      <iframe width="1500" height="1126" src="https://datastudio.google.com/embed/reporting/93c07835-f6ee-4330-92ad-546388617dd7/page/p_ic76uw054d" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-    </div>
-  </div>
-
   <div class="section" id="tab-smartsched">
     <div class="card" style="text-align:center;padding:48px 24px;">
       <div style="font-size:2.5rem;margin-bottom:12px;">🏠⚡</div>
       <h2 style="margin-bottom:10px;">Smart Home Scheduler</h2>
       <p style="color:#4A90D9;font-size:1rem;font-weight:700;margin-bottom:6px;">The future of job scheduling is almost here.</p>
       <p style="color:#64748b;font-size:0.82rem;line-height:1.6;">Intelligent route optimization, crew assignments, and real-time calendar sync — built specifically for how TC Roofing runs jobs. Stay tuned.</p>
+    </div>
+  </div>
+
+  <div class="section" id="tab-metrics" style="padding:0;overflow:auto;">
+    <div style="padding:10px 16px;display:flex;justify-content:center;">
+      <a href="https://datastudio.google.com/reporting/93c07835-f6ee-4330-92ad-546388617dd7/page/p_ic76uw054d" target="_blank" class="btn" style="font-size:0.9rem;padding:8px 20px;color:#ffffff;font-weight:700;">↗ Open in New Window</a>
+    </div>
+    <div style="display:flex;justify-content:center;">
+      <iframe width="1500" height="1126" src="https://datastudio.google.com/embed/reporting/93c07835-f6ee-4330-92ad-546388617dd7/page/p_ic76uw054d" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
     </div>
   </div>
 
@@ -4185,14 +4215,24 @@ var store = {
 // =====================================================================
 
 // Tab visibility per role — true = visible
-// Tabs: dashboard, weather, scheduler, templates, config, logs, commissions, workorder, pto, smartsched, prewo, tradenotes
+// Main tabs: dashboard, prodclaims, templates, config, logs, commissions, workorder, pto, metrics
+// prodclaims sub-tabs: weather, scheduler, smartsched, prewo, tradenotes
 // Trade Notes write access: admin, claims, production — all others are view-only
 var ROLE_TABS = {
-  admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
-  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  },
-  sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false, tradenotes:true  },
-  production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true,  tradenotes:true  },
-  viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true  }
+  admin:      { dashboard:true,  prodclaims:true,  commissions:true,  workorder:true,  pto:true, metrics:true,  templates:true,  config:true,  logs:true  },
+  claims:     { dashboard:false, prodclaims:true,  commissions:true,  workorder:true,  pto:true, metrics:false, templates:true,  config:false, logs:false },
+  sales:      { dashboard:false, prodclaims:true,  commissions:true,  workorder:true,  pto:true, metrics:false, templates:false, config:false, logs:false },
+  production: { dashboard:false, prodclaims:true,  commissions:true,  workorder:false, pto:true, metrics:false, templates:false, config:false, logs:false },
+  viewer:     { dashboard:false, prodclaims:true,  commissions:true,  workorder:true,  pto:true, metrics:false, templates:false, config:false, logs:false }
+};
+
+// Sub-tab visibility within prodclaims per role
+var PRODCLAIMS_TABS = {
+  admin:      { weather:true,  scheduler:true,  smartsched:true,  prewo:true,  tradenotes:true  },
+  claims:     { weather:false, scheduler:true,  smartsched:false, prewo:true,  tradenotes:true  },
+  sales:      { weather:false, scheduler:false, smartsched:false, prewo:false, tradenotes:true  },
+  production: { weather:true,  scheduler:false, smartsched:true,  prewo:true,  tradenotes:true  },
+  viewer:     { weather:false, scheduler:false, smartsched:false, prewo:true,  tradenotes:true  }
 };
 
 var currentUserEmail = "";
@@ -4207,12 +4247,13 @@ function showLoginError(msg) {
 
 function applyRolePermissions(role) {
   var perms = ROLE_TABS[role] || ROLE_TABS["viewer"];
+  var pcPerms = PRODCLAIMS_TABS[role] || PRODCLAIMS_TABS["viewer"];
   var tabMap = {
-    dashboard: "dashboard", weather: "weather", scheduler: "scheduler",
-    commissions: "commissions", workorder: "workorder", pto: "pto",
-    smartsched: "smartsched", prewo: "prewo", tradenotes: "tradenotes"
+    dashboard: "dashboard", prodclaims: "prodclaims",
+    commissions: "commissions", workorder: "workorder", pto: "pto", metrics: "metrics"
   };
   var adminTabMap = { templates: "templates", config: "config", logs: "logs" };
+  var pcTabMap = { weather: "weather", scheduler: "scheduler", smartsched: "smartsched", prewo: "prewo", tradenotes: "tradenotes" };
   // Find first visible tab to activate
   var firstVisible = null;
   Object.keys(tabMap).forEach(function(key) {
@@ -4243,6 +4284,22 @@ function applyRolePermissions(role) {
   });
   var adminParent = document.querySelector(".tab[data-tab='admin']");
   if (adminParent) adminParent.style.display = anyAdmin ? "" : "none";
+  // Handle prodclaims sub-tabs
+  var anyPc = false; var firstPc = null;
+  Object.keys(pcTabMap).forEach(function(key) {
+    var tabEl  = document.querySelector("#prodclaims-subtabs .tab[data-tab='" + pcTabMap[key] + "']");
+    var sectEl = document.getElementById("tab-" + pcTabMap[key]);
+    if (pcPerms[key]) {
+      if (tabEl)  tabEl.style.display = "";
+      if (sectEl) sectEl.style.display = "";
+      anyPc = true; if (!firstPc) firstPc = pcTabMap[key];
+    } else {
+      if (tabEl)  tabEl.style.display = "none";
+      if (sectEl) sectEl.style.display = "none";
+    }
+  });
+  var pcParent = document.querySelector(".tab[data-tab='prodclaims']");
+  if (pcParent) pcParent.style.display = anyPc ? "" : "none";
   // Activate the first visible tab
   if (firstVisible) {
     document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); });
@@ -4251,6 +4308,14 @@ function applyRolePermissions(role) {
     var activeSect = document.getElementById("tab-" + firstVisible);
     if (activeTab)  activeTab.classList.add("active");
     if (activeSect) activeSect.classList.add("active");
+    if (firstVisible === "prodclaims" && firstPc) {
+      var pcSub = document.getElementById("prodclaims-subtabs");
+      if (pcSub) pcSub.style.display = "flex";
+      var pcFirstTab = document.querySelector("#prodclaims-subtabs .tab[data-tab='" + firstPc + "']");
+      var pcFirstSect = document.getElementById("tab-" + firstPc);
+      if (pcFirstTab)  pcFirstTab.classList.add("active");
+      if (pcFirstSect) pcFirstSect.classList.add("active");
+    }
   }
 }
 
@@ -4292,7 +4357,7 @@ function completeLogin(googleEmail, googleName, gsToken) {
     store.set("auth_role",   currentUserRole);
     store.set("auth_name",   currentUser);
     store.set("auth_token",  gsToken);
-    store.set("auth_expiry", String(Date.now() + 3500000)); // ~58 min
+    store.set("auth_expiry", String(Date.now() + 7 * 24 * 3600 * 1000)); // 7 days
 
     // Hide login, show app
     document.getElementById("login-screen").style.display = "none";
@@ -4403,18 +4468,41 @@ function refreshGSToken() {
 }
 
 // Boot — wait for GSI library to load then init
+var _gsiOfflineTimer = null;
 function tryInitGoogleAuth() {
   if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+    clearTimeout(_gsiOfflineTimer);
     initGoogleAuth();
   } else {
     setTimeout(tryInitGoogleAuth, 250);
   }
 }
+function _offlineSessionFallback() {
+  // GSI script never loaded (no internet) — restore cached session so user isn't locked out
+  var cachedEmail = store.get("auth_email");
+  var cachedRole  = store.get("auth_role");
+  var cachedName  = store.get("auth_name");
+  if (cachedEmail && cachedRole) {
+    currentUserEmail = cachedEmail;
+    currentUserRole  = cachedRole;
+    currentUser      = cachedName || cachedEmail;
+    document.getElementById("login-screen").style.display = "none";
+    var badge = document.querySelector("header .badge");
+    if (badge) badge.textContent = "👤 " + currentUser + " (" + currentUserRole + ") [offline]";
+    applyRolePermissions(currentUserRole);
+    woApplyRole(currentUserRole);
+    tnApplyRole(currentUserRole);
+  }
+}
 // Use window.onload to ensure DOM and scripts are ready
 if (document.readyState === "complete") {
+  _gsiOfflineTimer = setTimeout(_offlineSessionFallback, 5000);
   tryInitGoogleAuth();
 } else {
-  window.addEventListener("load", tryInitGoogleAuth);
+  window.addEventListener("load", function() {
+    _gsiOfflineTimer = setTimeout(_offlineSessionFallback, 5000);
+    tryInitGoogleAuth();
+  });
 }
 
 var SALESPERSON_MAP = {
@@ -4447,7 +4535,11 @@ var DEFAULT_BODIES = {
 
 var templateBodies = {};
 for(var k in DEFAULT_BODIES) templateBodies[k] = DEFAULT_BODIES[k];
-var imageStore = {T1:null,T6:null,T8:null};
+var imageStore = {
+  T1: {url:"https://raw.githubusercontent.com/M-W-Johnson-Holdco/tc-roofing-automation/main/Your%20Support%20Team%20-%202%20(1).png"},
+  T6: {url:"https://raw.githubusercontent.com/M-W-Johnson-Holdco/tc-roofing-automation/main/Invoiced-Next-Steps.jpg"},
+  T8: {url:"https://raw.githubusercontent.com/M-W-Johnson-Holdco/tc-roofing-automation/main/Post-WO_v6-(1).jpg"}
+};
 
 var TEMPLATES = [
   {id:"T1",name:"Welcome",trigger:"Submitted as Prospect Date — within 7 days, or Prospect Date — within 5 days",
@@ -4566,14 +4658,15 @@ document.addEventListener('DOMContentLoaded',initCoverLogo);
 
 function loadImages(){
   ["T1","T6","T8"].forEach(function(id){
-    var d=store.get("img_"+id);
-    if(d){try{var o=JSON.parse(d);imageStore[id]=o;renderImgPreview(id,o);}catch(e){}}
+    var url=store.get("img_"+id);
+    if(url){imageStore[id]={url:url};renderImgPreview(id,url);var inp=document.getElementById("img-"+id);if(inp)inp.value=url;}
   });
 }
-function renderImgPreview(id,obj){
+function renderImgPreview(id,url){
   var el=document.getElementById("img-"+id+"-preview");
   if(!el)return;
-  el.innerHTML='<img src="'+obj.dataUrl+'" style="max-width:100%;max-height:100px;border-radius:6px;margin-top:8px;"><div class="small" style="margin-top:4px;">'+obj.name+'</div><button class="btn btn-danger btn-sm" style="margin-top:6px;" data-clear-img="'+id+'">Remove</button>';
+  el.innerHTML='<img src="'+url+'" style="max-width:100%;max-height:100px;border-radius:6px;margin-top:8px;" onerror="this.style.display=\'none\'">'
+    +'<button class="btn btn-danger btn-sm" style="margin-top:6px;" data-clear-img="'+id+'">Remove</button>';
 }
 function clearImg(id){imageStore[id]=null;store.del("img_"+id);var el=document.getElementById("img-"+id+"-preview");if(el)el.innerHTML="";var inp=document.getElementById("img-"+id);if(inp)inp.value="";}
 
@@ -4596,8 +4689,25 @@ function renderTemplates(){
 var gsToken=null,gsExpiry=0;
 function getGSToken(){
   if(gsToken&&Date.now()<gsExpiry)return Promise.resolve(gsToken);
+  // Try persisted token from localStorage (survives page reload)
+  try{
+    var c=JSON.parse(localStorage.getItem('_gs_token_tc')||'null');
+    if(c&&c.token&&Date.now()<c.expiry){gsToken=c.token;gsExpiry=c.expiry;return Promise.resolve(gsToken);}
+  }catch(e){}
   return fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"client_id="+encodeURIComponent(CRED_GS_CLIENT_ID)+"&client_secret="+encodeURIComponent(CRED_GS_CLIENT_SECRET)+"&refresh_token="+encodeURIComponent(CRED_GS_REFRESH_TOKEN)+"&grant_type=refresh_token"})
-  .then(function(r){return r.json();}).then(function(d){if(!d.access_token)throw new Error("Google token failed");gsToken=d.access_token;gsExpiry=Date.now()+(d.expires_in-60)*1000;return gsToken;});
+  .then(function(r){return r.json();}).then(function(d){
+    if(!d.access_token)throw new Error("Google token failed");
+    gsToken=d.access_token;gsExpiry=Date.now()+(d.expires_in-60)*1000;
+    try{localStorage.setItem('_gs_token_tc',JSON.stringify({token:gsToken,expiry:gsExpiry}));}catch(e){}
+    return gsToken;
+  }).catch(function(e){
+    // Offline fallback — use expired cached token if available
+    try{
+      var c=JSON.parse(localStorage.getItem('_gs_token_tc')||'null');
+      if(c&&c.token){gsToken=c.token;return gsToken;}
+    }catch(ex){}
+    throw e;
+  });
 }
 var TC_CSV_SHEET_ID = "1vCz8x85_SW3AZdhiDPTY7n0jwo84YpPmdBG9zo8RRR4";
 var TC_CSV_SHEET_NAME = "TC_CSV_Cache";
@@ -4719,12 +4829,17 @@ function sendSMS(to,msg){
   });
 }
 function sendMMS(to,img){
-  return getRCToken().then(function(t){
-    var fd=new FormData();
-    fd.append("json",new Blob([JSON.stringify({from:{phoneNumber:CRED_RC_FROM},to:to.map(function(n){return{phoneNumber:n};}),text:""})],{type:"application/json"}));
-    var b64=img.dataUrl.split(",")[1];var bytes=atob(b64);var arr=new Uint8Array(bytes.length);for(var i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i);
-    fd.append("attachment",new Blob([arr],{type:img.type}),img.name);
-    return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/mms",{method:"POST",headers:{Authorization:"Bearer "+t},body:fd});
+  return fetch(img.url).then(function(r){
+    if(!r.ok)throw new Error("Failed to fetch image: "+img.url);
+    return r.blob();
+  }).then(function(blob){
+    return getRCToken().then(function(t){
+      var fd=new FormData();
+      fd.append("json",new Blob([JSON.stringify({from:{phoneNumber:CRED_RC_FROM},to:to.map(function(n){return{phoneNumber:n};}),text:""})],{type:"application/json"}));
+      var filename=img.url.split("/").pop()||"image.jpg";
+      fd.append("attachment",blob,filename);
+      return fetch("https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/mms",{method:"POST",headers:{Authorization:"Bearer "+t},body:fd});
+    });
   }).then(function(r){return r.json();}).then(function(d){if(d.errorCode)throw new Error("MMS failed: "+JSON.stringify(d));return d;});
 }
 
@@ -5112,6 +5227,133 @@ window.addEventListener('message', function(e) {
   if (typeof window.receiveCalcData === 'function') window.receiveCalcData(e.data.data);
 });
 
+// ---- UPGRADE OPTIONS (per-job, localStorage + Sheets) ----
+var UPG_OPT_TAB = 'UpgradesOptions';
+
+window.receiveUpgradeOption = function(slot, data) {
+  var jobNum = (data._jobNum || '').trim();
+  if (!jobNum) return;
+  saveUpgradeOptionLocal(slot, jobNum, data);
+  woRefreshOptionButtons(jobNum);
+  woStatus('✓ Option ' + slot + ' saved for job ' + jobNum, true);
+  toast('✓ Option ' + slot + ' saved for job ' + jobNum + ' — syncing to sheet…');
+  syncUpgradeOptionsToSheets(jobNum);
+};
+
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.type !== 'saveUpgradeOption') return;
+  if (typeof window.receiveUpgradeOption === 'function') window.receiveUpgradeOption(e.data.slot, e.data.data);
+});
+
+function getUpgradeOptionsLocal(jobNum) {
+  try { return JSON.parse(localStorage.getItem('UPGRADE_OPTIONS_' + jobNum) || '{}'); } catch(e) { return {}; }
+}
+
+function saveUpgradeOptionLocal(slot, jobNum, data) {
+  var opts = getUpgradeOptionsLocal(jobNum);
+  opts['option' + slot] = data;
+  opts['_ts' + slot] = new Date().toISOString();
+  localStorage.setItem('UPGRADE_OPTIONS_' + jobNum, JSON.stringify(opts));
+}
+
+function woRefreshOptionButtons(jobNum) {
+  if (!jobNum) return;
+  var opts = getUpgradeOptionsLocal(jobNum);
+  [1, 2, 3].forEach(function(n) {
+    var btn = document.getElementById('wo-opt-' + n);
+    if (!btn) return;
+    var has = !!opts['option' + n];
+    btn.disabled = !has;
+    btn.style.opacity = has ? '1' : '0.4';
+    var ts = opts['_ts' + n] ? new Date(opts['_ts' + n]).toLocaleDateString() : '';
+    btn.title = has ? 'Apply Option ' + n + (ts ? ' — saved ' + ts : '') : 'No Option ' + n + ' saved for this job';
+  });
+}
+
+function woApplyOption(n) {
+  var jobNum = (document.getElementById('wo-job-input').value || '').trim();
+  if (!jobNum) { woStatus('Enter a job number first.', false); return; }
+  var opts = getUpgradeOptionsLocal(jobNum);
+  var data = opts['option' + n];
+  if (!data) { woStatus('No Option ' + n + ' saved for job ' + jobNum + '.', false); return; }
+  if (typeof window.receiveCalcData === 'function') window.receiveCalcData(data);
+  woStatus('✓ Option ' + n + ' applied to work order.', true);
+}
+
+function syncUpgradeOptionsToSheets(jobNum) {
+  var opts = getUpgradeOptionsLocal(jobNum);
+  var sid = CRED_GS_SHEET_ID;
+  if (!sid) return;
+  getGSToken().then(function(t) {
+    var sn = encodeURIComponent(UPG_OPT_TAB);
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + sn + '!A:A',
+      { headers: { Authorization: 'Bearer ' + t } })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) throw new Error(d.error.message || JSON.stringify(d.error));
+      var rows = d.values || [];
+      var rowIndex = -1;
+      for (var i = 1; i < rows.length; i++) {
+        if ((rows[i][0] || '').trim().toLowerCase() === jobNum.toLowerCase()) { rowIndex = i + 1; break; }
+      }
+      var rowData = [
+        jobNum,
+        JSON.stringify(opts.option1 || null),
+        JSON.stringify(opts.option2 || null),
+        JSON.stringify(opts.option3 || null),
+        new Date().toISOString()
+      ];
+      var writeUrl, writeMethod, writeBody;
+      if (rowIndex > 0) {
+        var range = encodeURIComponent(UPG_OPT_TAB + '!A' + rowIndex + ':E' + rowIndex);
+        writeUrl = 'https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + range + '?valueInputOption=RAW';
+        writeMethod = 'PUT';
+        writeBody = JSON.stringify({ range: UPG_OPT_TAB + '!A' + rowIndex + ':E' + rowIndex, majorDimension: 'ROWS', values: [rowData] });
+      } else {
+        writeUrl = 'https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + sn + '!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS';
+        writeMethod = 'POST';
+        writeBody = JSON.stringify({ values: [rowData] });
+      }
+      return fetch(writeUrl, {
+        method: writeMethod,
+        headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },
+        body: writeBody
+      }).then(function(r2) { return r2.json(); }).then(function(d2) {
+        if (d2.error) throw new Error(d2.error.message || JSON.stringify(d2.error));
+      });
+    });
+  }).catch(function(e) {
+    console.warn('[UpgradeOptions] Sheet sync failed:', e.message);
+    toast('⚠ Sheet sync failed: ' + e.message);
+  });
+}
+
+function woSyncOptionsFromSheets() {
+  var jobNum = (document.getElementById('wo-job-input').value || '').trim();
+  if (!jobNum) { woStatus('Enter a job number first.', false); return; }
+  var sid = CRED_GS_SHEET_ID;
+  if (!sid) { woStatus('Sheet ID not configured.', false); return; }
+  woStatus('Loading options from sheet…', true);
+  getGSToken().then(function(t) {
+    var sn = encodeURIComponent(UPG_OPT_TAB);
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sid + '/values/' + sn + '!A:E',
+      { headers: { Authorization: 'Bearer ' + t } });
+  }).then(function(r) { return r.json(); })
+  .then(function(d) {
+    var rows = (d.values || []).slice(1);
+    var found = rows.find(function(r) { return (r[0] || '').trim().toLowerCase() === jobNum.toLowerCase(); });
+    if (!found) { woStatus('No saved options found in sheet for job ' + jobNum + '.', false); return; }
+    var opts = {};
+    try { if (found[1] && found[1] !== 'null') { opts.option1 = JSON.parse(found[1]); opts._ts1 = found[4] || ''; } } catch(e) {}
+    try { if (found[2] && found[2] !== 'null') { opts.option2 = JSON.parse(found[2]); opts._ts2 = found[4] || ''; } } catch(e) {}
+    try { if (found[3] && found[3] !== 'null') { opts.option3 = JSON.parse(found[3]); opts._ts3 = found[4] || ''; } } catch(e) {}
+    localStorage.setItem('UPGRADE_OPTIONS_' + jobNum, JSON.stringify(opts));
+    woRefreshOptionButtons(jobNum);
+    var count = [opts.option1, opts.option2, opts.option3].filter(Boolean).length;
+    woStatus('✓ Loaded ' + count + ' option(s) from sheet for job ' + jobNum, true);
+  }).catch(function(e) { woStatus('Error loading options: ' + e.message, false); });
+}
+
 // Fetch job measurement data from the upgrades sheet and pass match row to callback(row, error)
 var UPGRADES_FETCH_SHEET_ID = '1pgp5aW8e24JuYGDZGO9Wt5koer-sSU7FrBlwL55jevU';
 var UPGRADES_FETCH_GID      = 104064159;
@@ -5201,20 +5443,36 @@ document.addEventListener("click",function(e){
   var t=e.target;
   if(t.classList.contains("tab")&&t.dataset.tab){
     var adminSub=document.getElementById("admin-subtabs");
+    var pcSub=document.getElementById("prodclaims-subtabs");
     var isAdminChild=adminSub&&adminSub.contains(t);
+    var isPcChild=pcSub&&pcSub.contains(t);
     document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
     document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});
     if(t.dataset.tab==="admin"){
       t.classList.add("active");
-      if(adminSub){adminSub.style.display="flex";var first=adminSub.querySelector(".tab");if(first){first.classList.add("active");var fs=document.getElementById("tab-"+first.dataset.tab);if(fs)fs.classList.add("active");}}
+      if(pcSub)pcSub.style.display="none";
+      if(adminSub){adminSub.style.display="flex";var first=adminSub.querySelector(".tab:not([style*='none'])");if(first){first.classList.add("active");var fs=document.getElementById("tab-"+first.dataset.tab);if(fs)fs.classList.add("active");}}
     } else if(isAdminChild){
       var adminTab=document.querySelector(".tab[data-tab='admin']");
       if(adminTab)adminTab.classList.add("active");
       if(adminSub)adminSub.style.display="flex";
+      if(pcSub)pcSub.style.display="none";
+      t.classList.add("active");
+      var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");
+    } else if(t.dataset.tab==="prodclaims"){
+      t.classList.add("active");
+      if(adminSub)adminSub.style.display="none";
+      if(pcSub){pcSub.style.display="flex";var first=pcSub.querySelector(".tab:not([style*='none'])");if(first){first.classList.add("active");var fs=document.getElementById("tab-"+first.dataset.tab);if(fs)fs.classList.add("active");}}
+    } else if(isPcChild){
+      var pcTab=document.querySelector(".tab[data-tab='prodclaims']");
+      if(pcTab)pcTab.classList.add("active");
+      if(pcSub)pcSub.style.display="flex";
+      if(adminSub)adminSub.style.display="none";
       t.classList.add("active");
       var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");
     } else {
       if(adminSub)adminSub.style.display="none";
+      if(pcSub)pcSub.style.display="none";
       var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");
       t.classList.add("active");
       if(t.dataset.tab==="dashboard")autoLoadTCCsv();
@@ -5250,7 +5508,7 @@ document.addEventListener("click",function(e){
 document.addEventListener("change",function(e){
   var t=e.target;
   if(t.id==="logo-upload"&&t.files[0]){var r=new FileReader();r.onload=function(ev){store.set("brand_logo",ev.target.result);applyLogo(ev.target.result);renderLogoPreview(ev.target.result);};r.readAsDataURL(t.files[0]);return;}
-  if((t.id==="img-T1"||t.id==="img-T6"||t.id==="img-T8")&&t.files[0]){var id=t.id.replace("img-","");var r2=new FileReader();r2.onload=function(ev){var obj={dataUrl:ev.target.result,type:t.files[0].type,name:t.files[0].name};imageStore[id]=obj;store.set("img_"+id,JSON.stringify(obj));renderImgPreview(id,obj);};r2.readAsDataURL(t.files[0]);return;}
+  if((t.id==="img-T1"||t.id==="img-T6"||t.id==="img-T8")&&t.type==="text"){var id=t.id.replace("img-","");var url=t.value.trim();if(url){imageStore[id]={url:url};store.set("img_"+id,url);renderImgPreview(id,url);}else{clearImg(id);}return;}
 });
 
 document.addEventListener("input",function(e){if(e.target.id==="weather-numbers")updateWeatherPreview();});
@@ -8248,12 +8506,38 @@ function woLoad() {
   woFetchAllRows().then(function(rows) {
     var found = rows.find(function(r) { return r.jobNum.toLowerCase() === jobNum.toLowerCase(); });
     if (!found) {
-      woStatus('No work order found for job ' + jobNum + '. Fill in and save to create one.', false);
+      var local = woLoadLocal(jobNum);
+      if (local) {
+        woSetAllFields(local);
+        woStatus('✓ Loaded work order for job ' + jobNum + ' (local cache)', true);
+      } else {
+        woStatus('No work order found for job ' + jobNum + '. Fill in and save to create one.', false);
+      }
+      woRefreshOptionButtons(jobNum);
       return;
     }
     woSetAllFields(found.data);
+    woSaveLocal(jobNum, found.data);
     woStatus('✓ Loaded work order for job ' + jobNum, true);
-  }).catch(function(e) { woStatus('Error: ' + e.message, false); });
+    woRefreshOptionButtons(jobNum);
+  }).catch(function(e) {
+    var local = woLoadLocal(jobNum);
+    if (local) {
+      woSetAllFields(local);
+      woStatus('✓ Loaded work order for job ' + jobNum + ' (offline — local cache)', true);
+    } else {
+      woStatus('Error: ' + e.message, false);
+    }
+    woRefreshOptionButtons(jobNum);
+  });
+  woRefreshOptionButtons(jobNum);
+}
+
+function woSaveLocal(jobNum, data) {
+  try { localStorage.setItem('WO_' + jobNum, JSON.stringify(data)); } catch(e) {}
+}
+function woLoadLocal(jobNum) {
+  try { return JSON.parse(localStorage.getItem('WO_' + jobNum) || 'null'); } catch(e) { return null; }
 }
 
 function woSave() {
@@ -8262,6 +8546,7 @@ function woSave() {
   if (!jobNum) { woStatus('Enter a job number before saving.', false); return; }
   var data = woGetAllFields();
   var json = JSON.stringify(data);
+  woSaveLocal(jobNum, data);
   woStatus('Saving…', true);
 
   getGSToken().then(function(t) {

@@ -61,6 +61,9 @@
   #admin-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#0f1420;border-radius:10px;border:1px solid #1e2a40;}
   #admin-subtabs .tab{font-size:0.75rem;padding:5px 13px;border-radius:14px;}
   #admin-subtabs .tab.active{background:#6366f1;border-color:#6366f1;}
+  #prodclaims-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#0f1420;border-radius:10px;border:1px solid #1e2a40;}
+  #prodclaims-subtabs .tab{font-size:0.75rem;padding:5px 13px;border-radius:14px;}
+  #prodclaims-subtabs .tab.active{background:#e8a020;border-color:#e8a020;color:#000;}
   .section{display:none}.section.active{display:block}
   .alert{padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px}
   .alert-warn{background:#2d2008;color:#fcd34d;border:1px solid #854d0e}
@@ -166,21 +169,24 @@
 <div class="container">
   <div class="section-tabs">
     <div class="tab active" data-tab="dashboard">Text Automation</div>
-    <div class="tab" data-tab="weather">🌧️ Weather Blast</div>
-    <div class="tab" data-tab="scheduler">📅 Scheduler</div>
+    <div class="tab" data-tab="prodclaims">🏗️ Production & Claims</div>
     <div class="tab" data-tab="admin">⚙️ Admin</div>
     <div class="tab" data-tab="commissions">💰 Upgrades Commissions</div>
     <div class="tab" data-tab="workorder">📋 Work Order</div>
     <div class="tab" data-tab="pto">🏖️ PTO</div>
-    <div class="tab" data-tab="prewo">📝 Pre-WO Form</div>
-    <div class="tab" data-tab="smartsched">Smart 🏠 Scheduler</div>
     <div class="tab" data-tab="metrics">📊 Company Metrics</div>
-    <div class="tab" data-tab="tradenotes">Trade Notes 🔨</div>
   </div>
   <div id="admin-subtabs">
     <div class="tab" data-tab="templates">Text &amp; Image Templates</div>
     <div class="tab" data-tab="config">Configuration</div>
     <div class="tab" data-tab="logs">Run Logs</div>
+  </div>
+  <div id="prodclaims-subtabs">
+    <div class="tab" data-tab="weather">🌧️ Weather Blast</div>
+    <div class="tab" data-tab="scheduler">📅 Scheduler</div>
+    <div class="tab" data-tab="smartsched">Smart 🏠 Scheduler</div>
+    <div class="tab" data-tab="prewo">📝 Pre-WO Form</div>
+    <div class="tab" data-tab="tradenotes">Trade Notes 🔨</div>
   </div>
 
   <div class="section active" id="tab-dashboard">
@@ -4209,14 +4215,24 @@ var store = {
 // =====================================================================
 
 // Tab visibility per role — true = visible
-// Tabs: dashboard, weather, scheduler, templates, config, logs, commissions, workorder, pto, smartsched, prewo, tradenotes
+// Main tabs: dashboard, prodclaims, templates, config, logs, commissions, workorder, pto, metrics
+// prodclaims sub-tabs: weather, scheduler, smartsched, prewo, tradenotes
 // Trade Notes write access: admin, claims, production — all others are view-only
 var ROLE_TABS = {
-  admin:      { dashboard:true,  weather:true,  scheduler:true,  templates:true,  config:true,  logs:true,  commissions:true,  workorder:true,  pto:true, smartsched:true,  prewo:true,  tradenotes:true,  metrics:true  },
-  claims:     { dashboard:false, weather:false, scheduler:true,  templates:true,  config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true,  metrics:true  },
-  sales:      { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:false, tradenotes:true,  metrics:true  },
-  production: { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:false, pto:true, smartsched:true,  prewo:true,  tradenotes:true,  metrics:true  },
-  viewer:     { dashboard:false, weather:false, scheduler:false, templates:false, config:false, logs:false, commissions:true,  workorder:true,  pto:true, smartsched:false, prewo:true,  tradenotes:true,  metrics:true  }
+  admin:      { dashboard:true,  prodclaims:true,  commissions:true,  workorder:true,  pto:true, metrics:true,  templates:true,  config:true,  logs:true  },
+  claims:     { dashboard:false, prodclaims:true,  commissions:true,  workorder:true,  pto:true, metrics:false, templates:true,  config:false, logs:false },
+  sales:      { dashboard:false, prodclaims:true,  commissions:true,  workorder:true,  pto:true, metrics:false, templates:false, config:false, logs:false },
+  production: { dashboard:false, prodclaims:true,  commissions:true,  workorder:false, pto:true, metrics:false, templates:false, config:false, logs:false },
+  viewer:     { dashboard:false, prodclaims:true,  commissions:true,  workorder:true,  pto:true, metrics:false, templates:false, config:false, logs:false }
+};
+
+// Sub-tab visibility within prodclaims per role
+var PRODCLAIMS_TABS = {
+  admin:      { weather:true,  scheduler:true,  smartsched:true,  prewo:true,  tradenotes:true  },
+  claims:     { weather:false, scheduler:true,  smartsched:false, prewo:true,  tradenotes:true  },
+  sales:      { weather:false, scheduler:false, smartsched:false, prewo:false, tradenotes:true  },
+  production: { weather:true,  scheduler:false, smartsched:true,  prewo:true,  tradenotes:true  },
+  viewer:     { weather:false, scheduler:false, smartsched:false, prewo:true,  tradenotes:true  }
 };
 
 var currentUserEmail = "";
@@ -4231,12 +4247,13 @@ function showLoginError(msg) {
 
 function applyRolePermissions(role) {
   var perms = ROLE_TABS[role] || ROLE_TABS["viewer"];
+  var pcPerms = PRODCLAIMS_TABS[role] || PRODCLAIMS_TABS["viewer"];
   var tabMap = {
-    dashboard: "dashboard", weather: "weather", scheduler: "scheduler",
-    commissions: "commissions", workorder: "workorder", pto: "pto",
-    smartsched: "smartsched", prewo: "prewo", tradenotes: "tradenotes", metrics: "metrics"
+    dashboard: "dashboard", prodclaims: "prodclaims",
+    commissions: "commissions", workorder: "workorder", pto: "pto", metrics: "metrics"
   };
   var adminTabMap = { templates: "templates", config: "config", logs: "logs" };
+  var pcTabMap = { weather: "weather", scheduler: "scheduler", smartsched: "smartsched", prewo: "prewo", tradenotes: "tradenotes" };
   // Find first visible tab to activate
   var firstVisible = null;
   Object.keys(tabMap).forEach(function(key) {
@@ -4267,6 +4284,22 @@ function applyRolePermissions(role) {
   });
   var adminParent = document.querySelector(".tab[data-tab='admin']");
   if (adminParent) adminParent.style.display = anyAdmin ? "" : "none";
+  // Handle prodclaims sub-tabs
+  var anyPc = false; var firstPc = null;
+  Object.keys(pcTabMap).forEach(function(key) {
+    var tabEl  = document.querySelector("#prodclaims-subtabs .tab[data-tab='" + pcTabMap[key] + "']");
+    var sectEl = document.getElementById("tab-" + pcTabMap[key]);
+    if (pcPerms[key]) {
+      if (tabEl)  tabEl.style.display = "";
+      if (sectEl) sectEl.style.display = "";
+      anyPc = true; if (!firstPc) firstPc = pcTabMap[key];
+    } else {
+      if (tabEl)  tabEl.style.display = "none";
+      if (sectEl) sectEl.style.display = "none";
+    }
+  });
+  var pcParent = document.querySelector(".tab[data-tab='prodclaims']");
+  if (pcParent) pcParent.style.display = anyPc ? "" : "none";
   // Activate the first visible tab
   if (firstVisible) {
     document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); });
@@ -4275,6 +4308,14 @@ function applyRolePermissions(role) {
     var activeSect = document.getElementById("tab-" + firstVisible);
     if (activeTab)  activeTab.classList.add("active");
     if (activeSect) activeSect.classList.add("active");
+    if (firstVisible === "prodclaims" && firstPc) {
+      var pcSub = document.getElementById("prodclaims-subtabs");
+      if (pcSub) pcSub.style.display = "flex";
+      var pcFirstTab = document.querySelector("#prodclaims-subtabs .tab[data-tab='" + firstPc + "']");
+      var pcFirstSect = document.getElementById("tab-" + firstPc);
+      if (pcFirstTab)  pcFirstTab.classList.add("active");
+      if (pcFirstSect) pcFirstSect.classList.add("active");
+    }
   }
 }
 
@@ -5402,20 +5443,36 @@ document.addEventListener("click",function(e){
   var t=e.target;
   if(t.classList.contains("tab")&&t.dataset.tab){
     var adminSub=document.getElementById("admin-subtabs");
+    var pcSub=document.getElementById("prodclaims-subtabs");
     var isAdminChild=adminSub&&adminSub.contains(t);
+    var isPcChild=pcSub&&pcSub.contains(t);
     document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
     document.querySelectorAll(".tab").forEach(function(tb){tb.classList.remove("active");});
     if(t.dataset.tab==="admin"){
       t.classList.add("active");
-      if(adminSub){adminSub.style.display="flex";var first=adminSub.querySelector(".tab");if(first){first.classList.add("active");var fs=document.getElementById("tab-"+first.dataset.tab);if(fs)fs.classList.add("active");}}
+      if(pcSub)pcSub.style.display="none";
+      if(adminSub){adminSub.style.display="flex";var first=adminSub.querySelector(".tab:not([style*='none'])");if(first){first.classList.add("active");var fs=document.getElementById("tab-"+first.dataset.tab);if(fs)fs.classList.add("active");}}
     } else if(isAdminChild){
       var adminTab=document.querySelector(".tab[data-tab='admin']");
       if(adminTab)adminTab.classList.add("active");
       if(adminSub)adminSub.style.display="flex";
+      if(pcSub)pcSub.style.display="none";
+      t.classList.add("active");
+      var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");
+    } else if(t.dataset.tab==="prodclaims"){
+      t.classList.add("active");
+      if(adminSub)adminSub.style.display="none";
+      if(pcSub){pcSub.style.display="flex";var first=pcSub.querySelector(".tab:not([style*='none'])");if(first){first.classList.add("active");var fs=document.getElementById("tab-"+first.dataset.tab);if(fs)fs.classList.add("active");}}
+    } else if(isPcChild){
+      var pcTab=document.querySelector(".tab[data-tab='prodclaims']");
+      if(pcTab)pcTab.classList.add("active");
+      if(pcSub)pcSub.style.display="flex";
+      if(adminSub)adminSub.style.display="none";
       t.classList.add("active");
       var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");
     } else {
       if(adminSub)adminSub.style.display="none";
+      if(pcSub)pcSub.style.display="none";
       var sec=document.getElementById("tab-"+t.dataset.tab);if(sec)sec.classList.add("active");
       t.classList.add("active");
       if(t.dataset.tab==="dashboard")autoLoadTCCsv();
