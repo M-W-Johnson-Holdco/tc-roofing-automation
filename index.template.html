@@ -4494,7 +4494,11 @@ var DEFAULT_BODIES = {
 
 var templateBodies = {};
 for(var k in DEFAULT_BODIES) templateBodies[k] = DEFAULT_BODIES[k];
-var imageStore = {T1:null,T6:null,T8:null};
+var imageStore = {
+  T1: {url:"https://raw.githubusercontent.com/M-W-Johnson-Holdco/tc-roofing-automation/main/Your%20Support%20Team%20-%202%20(1).png"},
+  T6: {url:"https://raw.githubusercontent.com/M-W-Johnson-Holdco/tc-roofing-automation/main/Invoiced-Next-Steps.jpg"},
+  T8: {url:"https://raw.githubusercontent.com/M-W-Johnson-Holdco/tc-roofing-automation/main/Post-WO_v6-(1).jpg"}
+};
 
 var TEMPLATES = [
   {id:"T1",name:"Welcome",trigger:"Submitted as Prospect Date — within 7 days, or Prospect Date — within 5 days",
