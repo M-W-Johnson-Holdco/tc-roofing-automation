@@ -4749,7 +4749,8 @@ function appendSchedulerLog(e) {
       body: JSON.stringify({ values: [[
         e.timestamp, e.jobNum, e.name, e.apptType,
         e.date, e.start, e.end, e.action,
-        e.notes, e.internalNotes, e.scheduledBy, e.calEventId
+        e.notes, e.internalNotes, e.scheduledBy, e.calEventId,
+        e.internalNotesSent || ''
       ]] })
     });
   }).then(function(r) {
@@ -6319,6 +6320,18 @@ function createCalendarEvent(jobKey, isReschedule, oldEventId) {
             conversationId: convId || ""
           };
           var internalNotes = (document.getElementById(prefix + '-internalnotes-' + jobKey) || {}).value || '';
+
+          // Last-minute check: same day, or next day after 5pm CT
+          var isLastMinute = (function(){
+            if (!internalNotes) return false;
+            var ctNow = new Date(new Date().toLocaleString('en-US', {timeZone: 'America/Chicago'}));
+            var pad = function(n){ return String(n).padStart(2,'0'); };
+            var todayStr = ctNow.getFullYear()+'-'+pad(ctNow.getMonth()+1)+'-'+pad(ctNow.getDate());
+            var tom = new Date(ctNow); tom.setDate(tom.getDate()+1);
+            var tomorrowStr = tom.getFullYear()+'-'+pad(tom.getMonth()+1)+'-'+pad(tom.getDate());
+            return date === todayStr || (date === tomorrowStr && ctNow.getHours() >= 17);
+          })();
+
           var schedEntry = {
             timestamp: new Date().toISOString(),
             jobNum: ctx.jobNum || ctx.jobGuid,
@@ -6331,7 +6344,8 @@ function createCalendarEvent(jobKey, isReschedule, oldEventId) {
             notes: notes,
             internalNotes: internalNotes,
             scheduledBy: currentUser || 'Unknown',
-            calEventId: ev.id || ''
+            calEventId: ev.id || '',
+            internalNotesSent: isLastMinute ? 'IMMEDIATE' : ''
           };
           return appendSheetLog(entry).then(function(){
             schedLog("success", "Sheet log updated.");
@@ -6344,6 +6358,17 @@ function createCalendarEvent(jobKey, isReschedule, oldEventId) {
             if (isReschedule) {
               var rf = document.getElementById("reschedule-form-" + oldEventId);
               if (rf) rf.classList.add("hidden");
+            }
+            // Send internal notes immediately if last-minute
+            if (isLastMinute) {
+              var intMsg = '[Staff Note] ' + type + ' — ' + ctx.name + '\n' +
+                           formatDateNice(date) + ' at ' + formatTimeNice(start) + '\n' +
+                           internalNotes + '\nScheduled by: ' + (currentUser || 'Unknown');
+              sendSMS(FIXED_NUMBERS, intMsg).then(function(){
+                schedLog('success', 'Internal notes texted to staff immediately (last-minute appt).');
+              }).catch(function(e){
+                schedLog('warn', 'Internal notes staff text failed: ' + e.message);
+              });
             }
           });
         });
