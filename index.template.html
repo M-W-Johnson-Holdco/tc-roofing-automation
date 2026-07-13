@@ -4518,11 +4518,11 @@ var PRODUCTION_PHONE = "(214) 833-0149";
 var ESTIMATING_EMAIL = "estimating@tcroofingexperts.com";
 var ACCULYNX_PROXY = "https://acculynx-proxy.k-liss.workers.dev";
 var WEBHOOK_URL = "https://acculynx-sms-logger.k-liss.workers.dev/";
-var TEMPLATE_VARS = ["{{First Name}}","{{Last Name}}","{{Primary Salesperson}}","{{Salesperson Phone}}","{{Insurance Company}}","{{Job Number}}","{{Completed Date}}","{{Invoiced Date}}","{{WO Scheduled Date}}","{{Claim Number}}"];
+var TEMPLATE_VARS = ["{{First Name}}","{{Last Name}}","{{Address}}","{{Primary Salesperson}}","{{Salesperson Phone}}","{{Insurance Company}}","{{Job Number}}","{{Completed Date}}","{{Invoiced Date}}","{{WO Scheduled Date}}","{{Claim Number}}"];
 var WEATHER_MESSAGE_DEFAULT = "Mother Nature has other plans! Due to recent weather, we unfortunately need to delay your roof replacement to ensure a safe and high-quality build. We are closely monitoring the forecast and will reach out as soon as possible with your newly rescheduled build date. If you have immediate questions, please call Production at (214) 833-0149. Thank you for your patience! - TC Roofing & Restorations";
 
 var DEFAULT_BODIES = {
-  T1: "Hi {{First Name}}, thank you for choosing TC Roofing & Restorations! We're excited to get started with you. Check out the image below for important contact information throughout the process. Text in this group message at any point throughout your project to reach your dedicated team.",
+  T1: "Hi {{First Name}}, thank you for choosing TC Roofing & Restorations! We're excited to get started with you at {{Address}}. Check out the image below for important contact information throughout the process. Text in this group message at any point throughout your project to reach your dedicated team.",
   T2: "This is an important message from TC Roofing & Restorations. We have an update on your insurance claim. Please reach out to {{Primary Salesperson}} at {{Salesperson Phone}} ASAP.",
   T3: "This is an important message from TC Roofing & Restorations. Your roof replacement has been scheduled. Please reach out to {{Primary Salesperson}} ASAP at {{Salesperson Phone}} to choose roof materials if haven't scheduled appointment already.",
   T4: "Hi {{First Name}}! Congrats on your new roof! Do you have any questions or concerns regarding how your roof replacement went? Feel free to respond to this text or call Production directly at " + PRODUCTION_PHONE + ". Our Estimating Dept is submitting supplemental documentation to {{Insurance Company}}, so please keep an eye out for any funds released.\n\nNext steps: If you haven't had your final walk-through and attic inspection please reach out to {{Primary Salesperson}} to schedule.",
@@ -4617,6 +4617,7 @@ function buildMsg(id,row){
   var m=templateBodies[id]||DEFAULT_BODIES[id];
   m=m.replace(/{{First Name}}/g,row["Primary Contact: First Name"]||"");
   m=m.replace(/{{Last Name}}/g,row["Primary Contact: Last Name"]||"");
+  m=m.replace(/{{Address}}/g,row["Location Street 1"]||"");
   m=m.replace(/{{Primary Salesperson}}/g,row["Primary Salesperson"]||"");
   m=m.replace(/{{Salesperson Phone}}/g,spDisplay(row["Primary Salesperson"]));
   m=m.replace(/{{Insurance Company}}/g,row["Insurance Company"]||"");
@@ -4677,7 +4678,7 @@ function isModified(id){return templateBodies[id]!==DEFAULT_BODIES[id];}
 function renderTemplates(){
   var el=document.getElementById("templates-list");
   if(!el)return;
-  var sampleRow={"Primary Contact: First Name":"[First Name]","Primary Salesperson":"[Salesperson]","Insurance Company":"[Insurance Co]","Job Number":"12345","Completed Date":"[Date]","Invoiced Date":"[Date]","WO Scheduled Date":"[Date]","Claim Number":"[Claim#]"};
+  var sampleRow={"Primary Contact: First Name":"[First Name]","Location Street 1":"[Address]","Primary Salesperson":"[Salesperson]","Insurance Company":"[Insurance Co]","Job Number":"12345","Completed Date":"[Date]","Invoiced Date":"[Date]","WO Scheduled Date":"[Date]","Claim Number":"[Claim#]"};
   el.innerHTML=TEMPLATES.map(function(t){
     var mod=isModified(t.id);
     var prev=buildMsg(t.id,sampleRow);
