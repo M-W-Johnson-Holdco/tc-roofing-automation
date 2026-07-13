@@ -2109,8 +2109,7 @@ function fetchJobData(){
   }.wo-frame-wrap textarea.masked-field:focus, .wo-frame-wrap textarea.masked-field.unmasked {
     -webkit-text-security: none;
   }@media print {
-    textarea.masked-field { -webkit-text-security: disc; }
-    textarea.masked-field:focus { -webkit-text-security: none; }
+    textarea.masked-field, textarea.masked-field:focus { -webkit-text-security: none; }
   }.wo-frame-wrap /* ── PRINT ── */
   @page { size: 8.5in 11in; margin: 0; }@media print {
     html { margin: 0; padding: 0; }
