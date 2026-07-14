@@ -1006,8 +1006,11 @@ const MATS=[
   ]},
 ];
 
-let VERSIONS=[{id:'v1',label:'Jun 17, 2026 – Present',eff:'2026-06-17',exp:null,by:'admin'}];
-let vidx=2;
+let VERSIONS=[
+  {id:'v1',label:'Jun 17, 2026 – Jul 14, 2026',eff:'2026-06-17',exp:'2026-07-14',by:'admin'},
+  {id:'v2',label:'Jul 15, 2026 – Present',eff:'2026-07-15',exp:null,by:'admin'}
+];
+let vidx=3;
 
 
 let me=null,myRole=null,authTab='sales',activeVer=null,claimMode='full',hoOverride=false;
@@ -1039,7 +1042,7 @@ function initCalc(){
   bootCount=0;satCount=0;claimMode='full';hoOverride=false;upgradesDiscount=0;
   activeVer=getVer();updateBanner();buildMatUI();calc();
 }
-function onDateChange(){const nv=getVer(document.getElementById('fc-date').value);if(nv.id!==activeVer.id){activeVer=nv;updateBanner();buildMatUI();}calc();}
+function onDateChange(){const nv=getVer(document.getElementById('fc-date').value);if(nv.id!==activeVer.id){activeVer=nv;updateBanner();buildMatUI();const wSel=document.getElementById('warranty-sel');const isPledge=wSel&&(wSel.value==='GAF Silver Pledge'||wSel.value==='GAF Golden Pledge');applyGAFVentPricing(!!isPledge);}calc();}
 function updateBanner(){
   const v=activeVer;
   document.getElementById('ver-banner').innerHTML=`📅 <strong>${v.label}</strong> · Effective ${fd(v.eff)}${v.exp?' → expires '+fd(v.exp):' → current'}`;
@@ -1243,12 +1246,15 @@ function buildVentUI(){
 
 function buildBootUI(){
   const m=MATS.find(m=>m.key==='boot');
+  const gafAvail=activeVer&&activeVer.eff>='2026-07-15';
+  if(!gafAvail&&(matSel['boot']||0)===2){matSel['boot']=0;}
   const selIdx=matSel['boot']||0;
+  const visOpts=gafAvail?m.opts:m.opts.slice(0,2);
   return `<div class=&quot;mat-row&quot; id=&quot;mr-boot&quot;>
     <div class=&quot;mat-hd&quot;><span class=&quot;mat-hd-name&quot;>Pipe Boots</span><span class=&quot;mat-hd-cost&quot; id=&quot;mhc-boot&quot;></span></div>
     <div class=&quot;mat-body&quot;>
       ${existingTierDropdown(m)}
-      <div class=&quot;mat-sel&quot;>${m.opts.map((o,i)=>`<div class=&quot;mat-opt ${i===selIdx?'sel':''}&quot; id=&quot;mo-boot-${i}&quot; onclick=&quot;pickMat('boot',${i})&quot;>${o.name}</div>`).join('')}</div>
+      <div class=&quot;mat-sel&quot;>${visOpts.map((o,i)=>`<div class=&quot;mat-opt ${i===selIdx?'sel':''}&quot; id=&quot;mo-boot-${i}&quot; onclick=&quot;pickMat('boot',${i})&quot;>${o.name}</div>`).join('')}</div>
       <div class=&quot;cnt-f&quot; style=&quot;margin-top:8px&quot;><label>Number of Pipe Boots</label><input type=&quot;number&quot; value=&quot;${bootCount}&quot; min=&quot;0&quot; oninput=&quot;setBootCount(this.value)&quot; style=&quot;background:var(--surf);border:1px solid var(--bdr2);border-radius:6px;padding:8px 10px;color:var(--txt);outline:none;font-size:16px;font-family:'Syne',sans-serif;width:100%;-webkit-appearance:none&quot;/></div>
       <div class=&quot;mat-result&quot;><span class=&quot;mat-result-label&quot;>Upgrade cost (min charge to HO)</span><span class=&quot;mat-result-val&quot; style=&quot;color:var(--red)&quot; id=&quot;mrc-boot&quot;>—</span></div>
       ${sliderSection('boot')}
@@ -3469,6 +3475,8 @@ var _gafVentActive  = false;
 function applyGAFVentPricing(activate) {
   var ventM = MATS.find(function(m){ return m.key === 'vent'; });
   if (!ventM) return;
+  // GAF Pledge vent pricing only available from v2 (Jul 15, 2026) onwards
+  if (activeVer && activeVer.eff < '2026-07-15') { activate = false; }
   var indicator = document.getElementById('gaf-vent-indicator');
   if (activate && !_gafVentActive) {
     // Save originals then swap to GAF prices
