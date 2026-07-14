@@ -3468,7 +3468,7 @@ function checkWarrantyEligibility() {
   if (typeof applyGAFVentPricing === 'function') applyGAFVentPricing(isPledge);
 }
 // GAF Pledge ventilation pricing — indices match MATS vent opts: 1=box, 3=solar, 5=dome
-var GAF_VENT_PRICES = { 1: 27.03, 3: 397.01, 5: 98.74 };
+var GAF_VENT_PRICES = { 1: 27.03, 3: 397.01, 4: 84.77, 5: 98.74 };
 var _ventStdPrices  = {};  // stores original costEa values before swap
 var _gafVentActive  = false;
 
