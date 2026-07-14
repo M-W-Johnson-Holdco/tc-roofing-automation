@@ -977,15 +977,18 @@ const MATS=[
     existingOpts:[
       {val:'tier1', label:'3n1 Neoprene'},
       {val:'tier2', label:'Lead Pipeboot'},
+      {val:'tier3', label:'GAF Master Flow'},
     ],
     // pre-tax price diff per ea; ×1.08 applied in getUpgradeCost
     upgDiffEa:{
-      'tier1': [0, 23.95],
-      'tier2': [0, 0],
+      'tier1': [0, 23.95, 63.00],
+      'tier2': [0, 0,     63.00],
+      'tier3': [0, 0,     63.00],
     },
     opts:[
       {name:'3-in-1 Neoprene'},
       {name:'Lead Pipe Boot'},
+      {name:'GAF Master Flow Pipe Boots'},
     ],
   },
   {key:'vent',name:'Ventilation',unitType:'vent',unitLabel:'mixed units',opts:[
@@ -2369,6 +2372,7 @@ function fetchJobData(){
             <option value="">Choose...</option>
             <option>3n1 Neoprene</option>
             <option>Lead Pipeboot</option>
+            <option>GAF Master Flow</option>
           </select>
         </td>
         <td></td>
@@ -5148,6 +5152,7 @@ window.receiveCalcData = function(d) {
     'Secure Grip Synthetic':                    'Supplier Underlayment',
     '3-in-1 Neoprene':                          '3n1 Neoprene',
     'Lead Pipe Boot':                           'Lead Pipeboot',
+    'GAF Master Flow Pipe Boots':               'GAF Master Flow',
     'No Warranty / GAF Lim. Lifetime (incl.)':  'GAF Limited Lifetime Warranty',
   };
   function normalize(name) {
