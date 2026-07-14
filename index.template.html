@@ -2491,6 +2491,7 @@ function fetchJobData(){
           <option>GAF Golden Pledge</option>
         </select>
         <span id="warranty-warning" style="color:red;font-size:10px;font-weight:700;display:none;margin-left:6px;">&#9888; Requirements not met for warranty</span>
+        <span id="gaf-vent-indicator" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#1a3a1a;color:#39FF14;border:1px solid #39FF14;margin-left:6px;">⚡ GAF Pledge vent pricing active</span>
         <span style="flex:1;"></span>
         <textarea id="wo-f37" class="fi upgrade-cost currency wo-upg-col" rows="1" style="width:90px;" oninput="calcUpgradesTotal()"></textarea>
       </div>
@@ -3445,7 +3446,8 @@ function checkWarrantyEligibility() {
   if (!warrantySel) return;
   var warning = document.getElementById('warranty-warning');
   var current = warrantySel.value;
-  if (current === 'GAF Silver Pledge' || current === 'GAF Golden Pledge') {
+  var isPledge = (current === 'GAF Silver Pledge' || current === 'GAF Golden Pledge');
+  if (isPledge) {
     var allGAF = isGAF('shingle-type') && isGAF('ridgecap-type') &&
                  isGAF('starter-type') && isGAF('underlayment-type') && isGAF('valley-type');
     if (!allGAF && warning) warning.style.display = 'inline';
@@ -3453,7 +3455,37 @@ function checkWarrantyEligibility() {
   } else {
     if (warning) warning.style.display = 'none';
   }
+  if (typeof applyGAFVentPricing === 'function') applyGAFVentPricing(isPledge);
 }
+// GAF Pledge ventilation pricing — indices match MATS vent opts: 1=box, 3=solar, 5=dome
+var GAF_VENT_PRICES = { 1: 27.03, 3: 397.01, 5: 98.74 };
+var _ventStdPrices  = {};  // stores original costEa values before swap
+var _gafVentActive  = false;
+
+function applyGAFVentPricing(activate) {
+  var ventM = MATS.find(function(m){ return m.key === 'vent'; });
+  if (!ventM) return;
+  var indicator = document.getElementById('gaf-vent-indicator');
+  if (activate && !_gafVentActive) {
+    // Save originals then swap to GAF prices
+    Object.keys(GAF_VENT_PRICES).forEach(function(idx) {
+      _ventStdPrices[idx] = ventM.opts[idx].costEa;
+      ventM.opts[idx].costEa = GAF_VENT_PRICES[idx];
+    });
+    _gafVentActive = true;
+    if (indicator) indicator.style.display = '';
+  } else if (!activate && _gafVentActive) {
+    // Restore originals
+    Object.keys(_ventStdPrices).forEach(function(idx) {
+      ventM.opts[idx].costEa = _ventStdPrices[idx];
+    });
+    _gafVentActive = false;
+    if (indicator) indicator.style.display = 'none';
+  }
+  // Recalculate if there's current data
+  try { if (typeof calcAll === 'function') calcAll(); } catch(e) {}
+}
+
 function validateWarrantySelection(sel) {
   var warning = document.getElementById('warranty-warning');
   if (sel.value === 'GAF Silver Pledge' || sel.value === 'GAF Golden Pledge') {
@@ -3465,6 +3497,8 @@ function validateWarrantySelection(sel) {
       return;
     }
   }
+  var isPledge = (sel.value === 'GAF Silver Pledge' || sel.value === 'GAF Golden Pledge');
+  applyGAFVentPricing(isPledge);
   if (warning) warning.style.display = 'none';
 }
 
