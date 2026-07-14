@@ -1857,6 +1857,7 @@ function fetchJobData(){
       <button class="btn btn-secondary btn-sm" onclick="woSyncOptionsFromSheets()" style="margin-left:auto;">⬇ Load from Sheet</button>
     </div>
     <div id="wo-status" style="margin-top:10px;font-size:0.8rem;min-height:18px;"></div>
+    <div id="wo-unsaved-banner" style="display:none;margin-top:8px;padding:7px 12px;background:#7f1d1d;color:#fca5a5;border-radius:6px;font-size:0.82rem;font-weight:700;">⚠ Unsaved changes — tap Save to keep your work</div>
   </div>
 <style>
   #wo-status.ok  { color:#8DC63F; }
@@ -2109,8 +2110,7 @@ function fetchJobData(){
   }.wo-frame-wrap textarea.masked-field:focus, .wo-frame-wrap textarea.masked-field.unmasked {
     -webkit-text-security: none;
   }@media print {
-    textarea.masked-field { -webkit-text-security: disc; }
-    textarea.masked-field:focus { -webkit-text-security: none; }
+    textarea.masked-field, textarea.masked-field:focus { -webkit-text-security: none; }
   }.wo-frame-wrap /* ── PRINT ── */
   @page { size: 8.5in 11in; margin: 0; }@media print {
     html { margin: 0; padding: 0; }
@@ -2124,8 +2124,7 @@ function fetchJobData(){
       break-after: page;
       width: 8.5in !important;
       height: 11in !important;
-      overflow: clip !important;
-      contain: size layout !important;
+      overflow: hidden !important;
       box-sizing: border-box !important;
       display: flex !important;
       flex-direction: column !important;
@@ -2492,6 +2491,7 @@ function fetchJobData(){
           <option>GAF Golden Pledge</option>
         </select>
         <span id="warranty-warning" style="color:red;font-size:10px;font-weight:700;display:none;margin-left:6px;">&#9888; Requirements not met for warranty</span>
+        <span id="gaf-vent-indicator" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#1a3a1a;color:#39FF14;border:1px solid #39FF14;margin-left:6px;">⚡ GAF Pledge vent pricing active</span>
         <span style="flex:1;"></span>
         <textarea id="wo-f37" class="fi upgrade-cost currency wo-upg-col" rows="1" style="width:90px;" oninput="calcUpgradesTotal()"></textarea>
       </div>
@@ -3338,11 +3338,11 @@ function checkRidgeCapOnColorChange() {
     }
     canvas.addEventListener('mousedown', function(e) { drawing = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); });
     canvas.addEventListener('mousemove', function(e) { if (!drawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); });
-    canvas.addEventListener('mouseup', function() { drawing = false; });
+    canvas.addEventListener('mouseup', function() { drawing = false; woSigCheckpoint(); });
     canvas.addEventListener('mouseleave', function() { drawing = false; });
     canvas.addEventListener('touchstart', function(e) { drawing = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }, {passive:false});
     canvas.addEventListener('touchmove', function(e) { if (!drawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }, {passive:false});
-    canvas.addEventListener('touchend', function() { drawing = false; });
+    canvas.addEventListener('touchend', function() { drawing = false; woSigCheckpoint(); });
   }
   function clearSigFn(id) {
     var canvas = document.getElementById(id);
@@ -3446,7 +3446,8 @@ function checkWarrantyEligibility() {
   if (!warrantySel) return;
   var warning = document.getElementById('warranty-warning');
   var current = warrantySel.value;
-  if (current === 'GAF Silver Pledge' || current === 'GAF Golden Pledge') {
+  var isPledge = (current === 'GAF Silver Pledge' || current === 'GAF Golden Pledge');
+  if (isPledge) {
     var allGAF = isGAF('shingle-type') && isGAF('ridgecap-type') &&
                  isGAF('starter-type') && isGAF('underlayment-type') && isGAF('valley-type');
     if (!allGAF && warning) warning.style.display = 'inline';
@@ -3454,7 +3455,37 @@ function checkWarrantyEligibility() {
   } else {
     if (warning) warning.style.display = 'none';
   }
+  if (typeof applyGAFVentPricing === 'function') applyGAFVentPricing(isPledge);
 }
+// GAF Pledge ventilation pricing — indices match MATS vent opts: 1=box, 3=solar, 5=dome
+var GAF_VENT_PRICES = { 1: 27.03, 3: 397.01, 5: 98.74 };
+var _ventStdPrices  = {};  // stores original costEa values before swap
+var _gafVentActive  = false;
+
+function applyGAFVentPricing(activate) {
+  var ventM = MATS.find(function(m){ return m.key === 'vent'; });
+  if (!ventM) return;
+  var indicator = document.getElementById('gaf-vent-indicator');
+  if (activate && !_gafVentActive) {
+    // Save originals then swap to GAF prices
+    Object.keys(GAF_VENT_PRICES).forEach(function(idx) {
+      _ventStdPrices[idx] = ventM.opts[idx].costEa;
+      ventM.opts[idx].costEa = GAF_VENT_PRICES[idx];
+    });
+    _gafVentActive = true;
+    if (indicator) indicator.style.display = '';
+  } else if (!activate && _gafVentActive) {
+    // Restore originals
+    Object.keys(_ventStdPrices).forEach(function(idx) {
+      ventM.opts[idx].costEa = _ventStdPrices[idx];
+    });
+    _gafVentActive = false;
+    if (indicator) indicator.style.display = 'none';
+  }
+  // Recalculate if there's current data
+  try { if (typeof calcAll === 'function') calcAll(); } catch(e) {}
+}
+
 function validateWarrantySelection(sel) {
   var warning = document.getElementById('warranty-warning');
   if (sel.value === 'GAF Silver Pledge' || sel.value === 'GAF Golden Pledge') {
@@ -3466,6 +3497,8 @@ function validateWarrantySelection(sel) {
       return;
     }
   }
+  var isPledge = (sel.value === 'GAF Silver Pledge' || sel.value === 'GAF Golden Pledge');
+  applyGAFVentPricing(isPledge);
   if (warning) warning.style.display = 'none';
 }
 
@@ -3950,11 +3983,11 @@ function checkRidgeCapOnColorChange() {
     }
     canvas.addEventListener('mousedown', function(e) { drawing = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); });
     canvas.addEventListener('mousemove', function(e) { if (!drawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); });
-    canvas.addEventListener('mouseup', function() { drawing = false; });
+    canvas.addEventListener('mouseup', function() { drawing = false; woSigCheckpoint(); });
     canvas.addEventListener('mouseleave', function() { drawing = false; });
     canvas.addEventListener('touchstart', function(e) { drawing = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }, {passive:false});
     canvas.addEventListener('touchmove', function(e) { if (!drawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }, {passive:false});
-    canvas.addEventListener('touchend', function() { drawing = false; });
+    canvas.addEventListener('touchend', function() { drawing = false; woSigCheckpoint(); });
   }
   function clearSigFn(id) {
     var canvas = document.getElementById(id);
@@ -4519,11 +4552,11 @@ var PRODUCTION_PHONE = "(214) 833-0149";
 var ESTIMATING_EMAIL = "estimating@tcroofingexperts.com";
 var ACCULYNX_PROXY = "https://acculynx-proxy.k-liss.workers.dev";
 var WEBHOOK_URL = "https://acculynx-sms-logger.k-liss.workers.dev/";
-var TEMPLATE_VARS = ["{{First Name}}","{{Last Name}}","{{Primary Salesperson}}","{{Salesperson Phone}}","{{Insurance Company}}","{{Job Number}}","{{Completed Date}}","{{Invoiced Date}}","{{WO Scheduled Date}}","{{Claim Number}}"];
+var TEMPLATE_VARS = ["{{First Name}}","{{Last Name}}","{{Address}}","{{Primary Salesperson}}","{{Salesperson Phone}}","{{Insurance Company}}","{{Job Number}}","{{Completed Date}}","{{Invoiced Date}}","{{WO Scheduled Date}}","{{Claim Number}}"];
 var WEATHER_MESSAGE_DEFAULT = "Mother Nature has other plans! Due to recent weather, we unfortunately need to delay your roof replacement to ensure a safe and high-quality build. We are closely monitoring the forecast and will reach out as soon as possible with your newly rescheduled build date. If you have immediate questions, please call Production at (214) 833-0149. Thank you for your patience! - TC Roofing & Restorations";
 
 var DEFAULT_BODIES = {
-  T1: "Hi {{First Name}}, thank you for choosing TC Roofing & Restorations! We're excited to get started with you. Check out the image below for important contact information throughout the process. Text in this group message at any point throughout your project to reach your dedicated team.",
+  T1: "Hi {{First Name}}, thank you for choosing TC Roofing & Restorations! We're excited to get started with you at {{Address}}. Check out the image below for important contact information throughout the process. Text in this group message at any point throughout your project to reach your dedicated team.",
   T2: "This is an important message from TC Roofing & Restorations. We have an update on your insurance claim. Please reach out to {{Primary Salesperson}} at {{Salesperson Phone}} ASAP.",
   T3: "This is an important message from TC Roofing & Restorations. Your roof replacement has been scheduled. Please reach out to {{Primary Salesperson}} ASAP at {{Salesperson Phone}} to choose roof materials if haven't scheduled appointment already.",
   T4: "Hi {{First Name}}! Congrats on your new roof! Do you have any questions or concerns regarding how your roof replacement went? Feel free to respond to this text or call Production directly at " + PRODUCTION_PHONE + ". Our Estimating Dept is submitting supplemental documentation to {{Insurance Company}}, so please keep an eye out for any funds released.\n\nNext steps: If you haven't had your final walk-through and attic inspection please reach out to {{Primary Salesperson}} to schedule.",
@@ -4618,6 +4651,7 @@ function buildMsg(id,row){
   var m=templateBodies[id]||DEFAULT_BODIES[id];
   m=m.replace(/{{First Name}}/g,row["Primary Contact: First Name"]||"");
   m=m.replace(/{{Last Name}}/g,row["Primary Contact: Last Name"]||"");
+  m=m.replace(/{{Address}}/g,row["Location Street 1"]||"");
   m=m.replace(/{{Primary Salesperson}}/g,row["Primary Salesperson"]||"");
   m=m.replace(/{{Salesperson Phone}}/g,spDisplay(row["Primary Salesperson"]));
   m=m.replace(/{{Insurance Company}}/g,row["Insurance Company"]||"");
@@ -4678,7 +4712,7 @@ function isModified(id){return templateBodies[id]!==DEFAULT_BODIES[id];}
 function renderTemplates(){
   var el=document.getElementById("templates-list");
   if(!el)return;
-  var sampleRow={"Primary Contact: First Name":"[First Name]","Primary Salesperson":"[Salesperson]","Insurance Company":"[Insurance Co]","Job Number":"12345","Completed Date":"[Date]","Invoiced Date":"[Date]","WO Scheduled Date":"[Date]","Claim Number":"[Claim#]"};
+  var sampleRow={"Primary Contact: First Name":"[First Name]","Location Street 1":"[Address]","Primary Salesperson":"[Salesperson]","Insurance Company":"[Insurance Co]","Job Number":"12345","Completed Date":"[Date]","Invoiced Date":"[Date]","WO Scheduled Date":"[Date]","Claim Number":"[Claim#]"};
   el.innerHTML=TEMPLATES.map(function(t){
     var mod=isModified(t.id);
     var prev=buildMsg(t.id,sampleRow);
@@ -8499,6 +8533,22 @@ function woSyncVentFromCalc() {
     else woStatus('No non-zero vent/satellite counts found for job ' + jobNum + '.', false);
   });
 }
+function woCheckDraftRestore(jobNum, savedData) {
+  var draft = woDraftLoad(jobNum);
+  if (!draft || !draft.__draftTs) return false;
+  var savedTs = savedData && savedData.__savedTs ? savedData.__savedTs : 0;
+  if (draft.__draftTs > savedTs) {
+    var draftTime = new Date(draft.__draftTs).toLocaleTimeString();
+    if (confirm('An unsaved draft was found for job ' + jobNum + ' (saved at ' + draftTime + '). Restore it?')) {
+      woSetAllFields(draft);
+      woMarkDirty();
+      woStatus('Draft restored for job ' + jobNum + ' — tap Save to keep it.', true);
+      return true;
+    }
+  }
+  return false;
+}
+
 function woLoad() {
   var jobNum = (document.getElementById('wo-job-input').value || '').trim();
   if (!jobNum) { woStatus('Enter a job number first.', false); return; }
@@ -8509,24 +8559,37 @@ function woLoad() {
       var local = woLoadLocal(jobNum);
       if (local) {
         woSetAllFields(local);
-        woStatus('✓ Loaded work order for job ' + jobNum + ' (local cache)', true);
+        woMarkClean();
+        if (!woCheckDraftRestore(jobNum, local)) {
+          woStatus('✓ Loaded work order for job ' + jobNum + ' (local cache)', true);
+        }
       } else {
-        woStatus('No work order found for job ' + jobNum + '. Fill in and save to create one.', false);
+        if (!woCheckDraftRestore(jobNum, null)) {
+          woStatus('No work order found for job ' + jobNum + '. Fill in and save to create one.', false);
+        }
       }
       woRefreshOptionButtons(jobNum);
       return;
     }
     woSetAllFields(found.data);
     woSaveLocal(jobNum, found.data);
-    woStatus('✓ Loaded work order for job ' + jobNum, true);
+    woMarkClean();
+    if (!woCheckDraftRestore(jobNum, found.data)) {
+      woStatus('✓ Loaded work order for job ' + jobNum, true);
+    }
     woRefreshOptionButtons(jobNum);
   }).catch(function(e) {
     var local = woLoadLocal(jobNum);
     if (local) {
       woSetAllFields(local);
-      woStatus('✓ Loaded work order for job ' + jobNum + ' (offline — local cache)', true);
+      woMarkClean();
+      if (!woCheckDraftRestore(jobNum, local)) {
+        woStatus('✓ Loaded work order for job ' + jobNum + ' (offline — local cache)', true);
+      }
     } else {
-      woStatus('Error: ' + e.message, false);
+      if (!woCheckDraftRestore(jobNum, null)) {
+        woStatus('Error: ' + e.message, false);
+      }
     }
     woRefreshOptionButtons(jobNum);
   });
@@ -8540,11 +8603,68 @@ function woLoadLocal(jobNum) {
   try { return JSON.parse(localStorage.getItem('WO_' + jobNum) || 'null'); } catch(e) { return null; }
 }
 
+// ── Draft slot (option 2) ──────────────────────────────────────────────────
+function woDraftSave(jobNum) {
+  if (!jobNum) return;
+  try {
+    var data = woGetAllFields();
+    data.__draftTs = Date.now();
+    localStorage.setItem('WO_DRAFT_' + jobNum, JSON.stringify(data));
+  } catch(e) {}
+}
+function woDraftLoad(jobNum) {
+  try { return JSON.parse(localStorage.getItem('WO_DRAFT_' + jobNum) || 'null'); } catch(e) { return null; }
+}
+function woDraftClear(jobNum) {
+  try { localStorage.removeItem('WO_DRAFT_' + jobNum); } catch(e) {}
+}
+
+// ── Dirty tracking (option 5) ─────────────────────────────────────────────
+var woDirty = false;
+function woMarkDirty() {
+  if (woDirty) return;
+  woDirty = true;
+  var b = document.getElementById('wo-unsaved-banner');
+  if (b) b.style.display = 'block';
+}
+function woMarkClean() {
+  woDirty = false;
+  var b = document.getElementById('wo-unsaved-banner');
+  if (b) b.style.display = 'none';
+}
+
+// Autosave draft every 90 s if a job number is present
+setInterval(function() {
+  var jobNum = (document.getElementById('wo-job-input') || {}).value;
+  if (jobNum && jobNum.trim() && woDirty) woDraftSave(jobNum.trim());
+}, 90000);
+
+// Hook dirty flag onto all WO field inputs
+document.addEventListener('input', function(e) {
+  if (e.target && e.target.closest && e.target.closest('#tab-workorder')) woMarkDirty();
+});
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.closest && e.target.closest('#tab-workorder')) woMarkDirty();
+});
+// CB clicks are handled via delegated click; piggyback dirty flag there
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.classList && e.target.classList.contains('cb') &&
+      e.target.closest && e.target.closest('#tab-workorder')) woMarkDirty();
+});
+
+// ── Signature checkpoint (option 4) ──────────────────────────────────────
+function woSigCheckpoint() {
+  woMarkDirty();
+  var jobNum = (document.getElementById('wo-job-input') || {}).value;
+  if (jobNum && jobNum.trim()) woDraftSave(jobNum.trim());
+}
+
 function woSave() {
   woSerializeTrades();
   var jobNum = (document.getElementById('wo-job-input').value || '').trim();
   if (!jobNum) { woStatus('Enter a job number before saving.', false); return; }
   var data = woGetAllFields();
+  data.__savedTs = Date.now();
   var json = JSON.stringify(data);
   woSaveLocal(jobNum, data);
   woStatus('Saving…', true);
@@ -8587,6 +8707,8 @@ function woSave() {
   }).then(function(r) {
     if (!r.ok) return r.text().then(function(txt) { throw new Error('Save failed: ' + txt); });
     woStatus('✓ Work order saved for job ' + jobNum + ' at ' + new Date().toLocaleTimeString(), true);
+    woDraftClear(jobNum);
+    woMarkClean();
   }).catch(function(e) { woStatus('Error saving: ' + e.message, false); });
 }
 
