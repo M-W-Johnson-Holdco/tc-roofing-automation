@@ -4109,7 +4109,11 @@ function toggleMaskedFields() {
     btn.textContent = isUnmasked ? '🔒 Show Fields' : '🔓 Hide Fields';
   }
 }
-
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.masked-field').forEach(function(f) { f.classList.add('unmasked'); });
+  var btn = document.getElementById('mask-toggle');
+  if (btn) btn.textContent = '🔓 Hide Fields';
+});
 
 // printDoc is defined earlier in this file — this duplicate removed to avoid shadowing.
 
