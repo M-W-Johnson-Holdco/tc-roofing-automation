@@ -70,10 +70,11 @@ jobs:
           mkdir -p deploy
           cp index.html deploy/index.html
           cp wo-offline-guide.html deploy/wo-offline-guide.html
+          cp login-bg.jpg deploy/ 2>/dev/null || true
           cd deploy
           git init
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html wo-offline-guide.html
+          git add index.html wo-offline-guide.html login-bg.jpg
           git commit -m "Deploy [skip ci]"
           git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:gh-pages
