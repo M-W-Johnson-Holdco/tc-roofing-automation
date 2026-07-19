@@ -6,121 +6,121 @@
 <title>TC Employee Portal</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
-  #login-screen{position:fixed;inset:0;background:#0f1117;display:flex;align-items:center;justify-content:center;z-index:9999}
-  #login-box{background:#1a1f2e;border:1px solid #2a3050;border-radius:16px;padding:40px;text-align:center;width:340px;display:flex;flex-direction:column;align-items:center}
+  body{font-family:'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+  #login-screen{position:fixed;inset:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;z-index:9999}
+  #login-box{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:40px;text-align:center;width:340px;display:flex;flex-direction:column;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
   #login-box h2{color:#4A90D9;font-size:1.1rem;margin-bottom:6px;font-weight:700}
   #login-box p{color:#64748b;font-size:0.8rem;margin-bottom:20px}
   #google-signin-btn{display:flex;justify-content:center;margin-top:4px}
-  header{background:#1a1f2e;border-bottom:3px solid #4A90D9;padding:14px 28px;display:flex;align-items:center;gap:16px}
+  header{background:#fff;border-bottom:3px solid #4A90D9;padding:14px 28px;display:flex;align-items:center;gap:16px}
   header img{height:52px;width:auto;display:none}
   #header-fallback{font-size:1.3rem;font-weight:800;color:#4A90D9}
   #header-fallback span{color:#8DC63F}
   header .badge{background:#4A90D9;color:#fff;font-size:0.7rem;padding:3px 10px;border-radius:20px;font-weight:600;margin-left:auto}
   .container{max-width:960px;margin:0 auto;padding:28px 20px}
-  .card{background:#1a1f2e;border:1px solid #2a3050;border-radius:12px;padding:22px;margin-bottom:20px}
+  .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:22px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
   .card h2{font-size:0.95rem;font-weight:700;color:#4A90D9;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.05em}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  label{display:block;font-size:0.78rem;color:#94a3b8;margin-bottom:5px;font-weight:600}
-  input,textarea{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:0.85rem;outline:none;transition:border 0.2s}
+  label{display:block;font-size:0.78rem;color:#64748b;margin-bottom:5px;font-weight:600}
+  input,textarea{width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:9px 12px;color:#1e293b;font-size:0.85rem;outline:none;transition:border 0.2s}
   input:focus,textarea:focus{border-color:#4A90D9}
   textarea{resize:vertical;font-family:monospace;font-size:0.8rem}
   .btn{padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:0.9rem;transition:all 0.2s}
   .btn-primary{background:#4A90D9;color:#fff}.btn-primary:hover{background:#357abd}
-  .btn-secondary{background:#1e2a3a;color:#4A90D9}.btn-secondary:hover{background:#253448}
-  .btn-danger{background:#7f1d1d;color:#fca5a5}
-  .btn-warn{background:#78350f;color:#fcd34d}
+  .btn-secondary{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1}.btn-secondary:hover{background:#e2e8f0;color:#1e293b}
+  .btn-danger{background:#e53e3e;color:#fff;border:1px solid #c53030;}
+  .btn-warn{background:#fef3c7;color:#78350f;border:1px solid #fde68a}
   .btn-sm{padding:5px 12px;font-size:0.75rem}
   .btn:disabled{opacity:0.5;cursor:not-allowed}
   .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
-  .log-box{background:#0a0d14;border:1px solid #1e2640;border-radius:8px;padding:14px;height:260px;overflow-y:auto;font-family:monospace;font-size:0.78rem;line-height:1.6}
-  .log-entry{padding:2px 0;border-bottom:1px solid #1a1f2e}
-  .log-entry.success{color:#8DC63F}.log-entry.error{color:#fca5a5}.log-entry.info{color:#4A90D9}.log-entry.warn{color:#fcd34d}.log-entry.skip{color:#94a3b8}
+  .log-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;height:260px;overflow-y:auto;font-family:monospace;font-size:0.78rem;line-height:1.6}
+  .log-entry{padding:2px 0;border-bottom:1px solid #f1f5f9}
+  .log-entry.success{color:#5a9a1a}.log-entry.error{color:#dc2626}.log-entry.info{color:#4A90D9}.log-entry.warn{color:#92400e}.log-entry.skip{color:#94a3b8}
   .status-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px}
-  .status-bar.idle{background:#1e2640;color:#94a3b8}.status-bar.running{background:#1a2a3f;color:#4A90D9}.status-bar.done{background:#1a2a1f;color:#8DC63F}.status-bar.error{background:#2d1515;color:#fca5a5}
+  .status-bar.idle{background:#f1f5f9;color:#64748b}.status-bar.running{background:#dbeafe;color:#1e40af}.status-bar.done{background:#d1fae5;color:#065f46}.status-bar.error{background:#fee2e2;color:#991b1b}
   .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
   .dot.pulse{animation:pulse 1.2s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-  .stat{background:#1a1f2e;border:1px solid #2a3050;border-radius:10px;padding:14px;text-align:center}
+  .stat{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center}
   .stat .num{font-size:1.8rem;font-weight:800;color:#4A90D9}
   .stat .lbl{font-size:0.72rem;color:#64748b;margin-top:2px;text-transform:uppercase;letter-spacing:0.05em}
-  .template-item{background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:14px;margin-bottom:12px}
-  .template-item h3{font-size:0.85rem;color:#8DC63F;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
-  .trigger-badge{display:inline-block;background:#1a2a3f;color:#4A90D9;font-size:0.68rem;padding:2px 8px;border-radius:10px;margin-bottom:8px}
-  .template-body{font-size:0.78rem;color:#94a3b8;line-height:1.6;white-space:pre-wrap}
+  .template-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:12px}
+  .template-item h3{font-size:0.85rem;color:#5a9a1a;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+  .trigger-badge{display:inline-block;background:#dbeafe;color:#1e40af;font-size:0.68rem;padding:2px 8px;border-radius:10px;margin-bottom:8px}
+  .template-body{font-size:0.78rem;color:#64748b;line-height:1.6;white-space:pre-wrap}
   .template-edit-area{display:none;margin-top:10px}.template-edit-area.open{display:block}
   .var-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-  .var-chip{background:#1a2a3f;color:#4A90D9;font-size:0.7rem;padding:3px 8px;border-radius:10px;cursor:pointer;border:1px solid #4A90D9;font-family:monospace}
+  .var-chip{background:#dbeafe;color:#1e40af;font-size:0.7rem;padding:3px 8px;border-radius:10px;cursor:pointer;border:1px solid #93c5fd;font-family:monospace}
   .var-chip:hover{background:#4A90D9;color:#fff}
   .mms-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-  .img-upload-box{background:#0f1117;border:1px dashed #2a3050;border-radius:8px;padding:14px;text-align:center}
+  .img-upload-box{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;padding:14px;text-align:center}
   .section-tabs{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-  .tab{padding:8px 18px;border-radius:20px;border:1px solid #2a3050;background:#1a1f2e;color:#94a3b8;cursor:pointer;font-size:0.82rem;font-weight:600;transition:all 0.2s}
+  .tab{padding:8px 18px;border-radius:20px;border:1px solid #e2e8f0;background:#f1f5f9;color:#475569;cursor:pointer;font-size:0.82rem;font-weight:600;transition:all 0.2s}
   .tab.active{background:#4A90D9;color:#fff;border-color:#4A90D9}
-  #admin-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#0f1420;border-radius:10px;border:1px solid #1e2a40;}
+  #admin-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#f1f5f9;border-radius:10px;border:1px solid #e2e8f0;}
   #admin-subtabs .tab{font-size:0.75rem;padding:5px 13px;border-radius:14px;}
-  #admin-subtabs .tab.active{background:#6366f1;border-color:#6366f1;}
-  #prodclaims-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#0f1420;border-radius:10px;border:1px solid #1e2a40;}
+  #admin-subtabs .tab.active{background:#6366f1;border-color:#6366f1;color:#fff;}
+  #prodclaims-subtabs{display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:6px 10px;background:#f1f5f9;border-radius:10px;border:1px solid #e2e8f0;}
   #prodclaims-subtabs .tab{font-size:0.75rem;padding:5px 13px;border-radius:14px;}
   #prodclaims-subtabs .tab.active{background:#e8a020;border-color:#e8a020;color:#000;}
   .section{display:none}.section.active{display:block}
   .alert{padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px}
-  .alert-warn{background:#2d2008;color:#fcd34d;border:1px solid #854d0e}
-  .alert-info{background:#0c1a2e;color:#4A90D9;border:1px solid #1e3a5f}
+  .alert-warn{background:#fefce8;color:#92400e;border:1px solid #fde68a}
+  .alert-info{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
   .schedule-indicator{display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#94a3b8}
-  .next-run{color:#8DC63F;font-weight:600}
+  .next-run{color:#5a9a1a;font-weight:600}
   .small{font-size:0.75rem;color:#64748b;margin-top:4px}
-  hr{border:none;border-top:1px solid #2a3050;margin:16px 0}
-  .modified-badge{background:#78350f;color:#fcd34d;font-size:0.65rem;padding:2px 6px;border-radius:8px;margin-left:6px}
+  hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0}
+  .modified-badge{background:#fef3c7;color:#78350f;font-size:0.65rem;padding:2px 6px;border-radius:8px;margin-left:6px}
   /* Scheduler tab */
   .sched-search-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:16px}
   .sched-search-row input{flex:1}
-  .job-result-card{background:#0f1117;border:1px solid #2a3050;border-radius:10px;padding:16px;margin-bottom:14px}
-  .job-result-card h3{font-size:0.9rem;color:#8DC63F;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+  .job-result-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:14px}
+  .job-result-card h3{font-size:0.9rem;color:#5a9a1a;margin-bottom:8px;display:flex;align-items:center;gap:10px}
   .job-result-card .meta{font-size:0.75rem;color:#64748b;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:12px}
   .job-result-card .meta span{color:#94a3b8}
-  .cal-form{background:#0a0d14;border:1px solid #1e2640;border-radius:8px;padding:16px;margin-top:12px}
+  .cal-form{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-top:12px}
   .cal-form.hidden{display:none}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-  .appt-type-select{width:100%;background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:0.85rem;outline:none}
+  .appt-type-select{width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:9px 12px;color:#1e293b;font-size:0.85rem;outline:none}
   .appt-type-select:focus{border-color:#4A90D9}
-  .cal-event-row{background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .cal-event-row{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .cal-event-row .ev-info{flex:1;min-width:0}
-  .cal-event-row .ev-title{font-size:0.85rem;color:#e2e8f0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-event-row .ev-title{font-size:0.85rem;color:#1e293b;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cal-event-row .ev-time{font-size:0.75rem;color:#64748b;margin-top:2px}
   .cal-event-row .ev-actions{display:flex;gap:6px;flex-shrink:0}
   .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:0.68rem;font-weight:600}
-  .pill-green{background:#1a2e1a;color:#8DC63F;border:1px solid #2a4a2a}
-  .pill-blue{background:#0c1a2e;color:#4A90D9;border:1px solid #1e3a5f}
-  .pill-yellow{background:#2d2008;color:#fcd34d;border:1px solid #854d0e}
-  .sched-log-box{background:#0a0d14;border:1px solid #1e2640;border-radius:8px;padding:14px;height:200px;overflow-y:auto;font-family:monospace;font-size:0.78rem;line-height:1.6}
+  .pill-green{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;}
+  .pill-blue{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
+  .pill-yellow{background:#fef3c7;color:#78350f;border:1px solid #fde68a;}
+  .sched-log-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;height:200px;overflow-y:auto;font-family:monospace;font-size:0.78rem;line-height:1.6}
   .no-results{color:#64748b;font-size:0.82rem;padding:12px 0;text-align:center}
-  .reschedule-form{background:#0a0d14;border:1px solid #4A90D9;border-radius:8px;padding:14px;margin-top:10px}
+  .reschedule-form{background:#f8fafc;border:1px solid #4A90D9;border-radius:8px;padding:14px;margin-top:10px}
   .reschedule-form.hidden{display:none}
   /* Bulk scheduler */
   .bulk-mode-btn.active{background:#4A90D9;color:#fff;border-color:#4A90D9}
-  .bulk-job-row{background:#0f1117;border:1px solid #2a3050;border-radius:10px;padding:14px;margin-bottom:10px}
+  .bulk-job-row{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px}
   .bulk-job-row.found{border-left:3px solid #8DC63F}
-  .bulk-job-row.notfound{border-left:3px solid #fca5a5;opacity:0.65}
+  .bulk-job-row.notfound{border-left:3px solid #dc2626;opacity:0.65}
   .bulk-job-row .bjr-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-  .bulk-job-row .bjr-name{font-size:0.88rem;color:#e2e8f0;font-weight:700}
+  .bulk-job-row .bjr-name{font-size:0.88rem;color:#1e293b;font-weight:700}
   .bulk-job-row .bjr-meta{font-size:0.72rem;color:#64748b;flex:1}
   .bulk-job-row .bjr-fields{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 2fr;gap:8px;align-items:end}
-  .bulk-job-row .bjr-fields label{font-size:0.7rem;color:#94a3b8;margin-bottom:3px}
-  .bulk-job-row select{background:#0a0d14;border:1px solid #2a3050;border-radius:6px;padding:7px 8px;color:#e2e8f0;font-size:0.78rem;outline:none;width:100%}
+  .bulk-job-row .bjr-fields label{font-size:0.7rem;color:#64748b;margin-bottom:3px}
+  .bulk-job-row select{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:7px 8px;color:#1e293b;font-size:0.78rem;outline:none;width:100%}
   .bulk-job-row select:focus{border-color:#4A90D9}
   .bulk-job-row input[type=date],.bulk-job-row input[type=time],.bulk-job-row input[type=text]{font-size:0.78rem;padding:7px 8px}
-  .bulk-copy-bar{background:#0a0d14;border:1px solid #1e2640;border-radius:6px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:0.75rem;color:#94a3b8}
-  .bulk-copy-bar select{background:#0f1117;border:1px solid #2a3050;border-radius:6px;padding:5px 8px;color:#e2e8f0;font-size:0.75rem;outline:none}
-  .bulk-copy-bar input{background:#0f1117;border:1px solid #2a3050;border-radius:6px;padding:5px 8px;color:#e2e8f0;font-size:0.75rem;outline:none;width:auto}
+  .bulk-copy-bar{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:0.75rem;color:#64748b}
+  .bulk-copy-bar select{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;color:#1e293b;font-size:0.75rem;outline:none}
+  .bulk-copy-bar input{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;color:#1e293b;font-size:0.75rem;outline:none;width:auto}
   /* Calendar invite templates */
-  .cal-tmpl-item{background:#0f1117;border:1px solid #2a3050;border-radius:8px;padding:14px;margin-bottom:10px}
-  .cal-tmpl-item h3{font-size:0.85rem;color:#8DC63F;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
-  .cal-tmpl-body{font-size:0.78rem;color:#94a3b8;line-height:1.6;white-space:pre-wrap;margin-top:6px}
+  .cal-tmpl-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:10px}
+  .cal-tmpl-item h3{font-size:0.85rem;color:#5a9a1a;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+  .cal-tmpl-body{font-size:0.78rem;color:#64748b;line-height:1.6;white-space:pre-wrap;margin-top:6px}
   .cal-tmpl-edit{display:none;margin-top:10px}.cal-tmpl-edit.open{display:block}
   .cal-var-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-  .cal-var-chip{background:#1a2a3f;color:#4A90D9;font-size:0.7rem;padding:3px 8px;border-radius:10px;cursor:pointer;border:1px solid #4A90D9;font-family:monospace}
+  .cal-var-chip{background:#dbeafe;color:#1e40af;font-size:0.7rem;padding:3px 8px;border-radius:10px;cursor:pointer;border:1px solid #93c5fd;font-family:monospace}
   .cal-var-chip:hover{background:#4A90D9;color:#fff}
 
   #tab-workorder .wo-frame-wrap input, #tab-workorder .wo-frame-wrap textarea, #tab-workorder .wo-frame-wrap select { color: #000 !important; background: #fff !important; border-color: #000 !important; }
@@ -408,12 +408,12 @@
     </div>
     <div class="card">
       <h2>📅 Calendar Event Body Templates</h2>
-      <div class="alert alert-info">Each appointment type has its own editable body — used as both the Google Calendar event description and the invite email sent to attendees. Supports <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Customer Name}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Job Number}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Date}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Time}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Address}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Salesperson}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Insurance Company}}</code>, <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Phone}}</code>. Changes save permanently.</div>
+      <div class="alert alert-info">Each appointment type has its own editable body — used as both the Google Calendar event description and the invite email sent to attendees. Supports <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Customer Name}}</code>, <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Job Number}}</code>, <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Date}}</code>, <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Time}}</code>, <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Address}}</code>, <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Salesperson}}</code>, <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Insurance Company}}</code>, <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Phone}}</code>. Changes save permanently.</div>
       <div id="cal-templates-list"></div>
     </div>
     <div class="card">
       <h2>💬 Scheduled Appointment SMS Templates</h2>
-      <div class="alert alert-info">One SMS template per appointment type — sent to the full group thread when an appointment is scheduled. Variables: <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{First Name}}</code> <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Appointment Type}}</code> <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Date}}</code> <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Time}}</code> <code style="background:#0f1117;padding:1px 5px;border-radius:4px;">{{Address}}</code>. Changes save permanently.</div>
+      <div class="alert alert-info">One SMS template per appointment type — sent to the full group thread when an appointment is scheduled. Variables: <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{First Name}}</code> <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Appointment Type}}</code> <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Date}}</code> <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Time}}</code> <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px;">{{Address}}</code>. Changes save permanently.</div>
       <div id="sched-sms-templates-list"></div>
     </div>
     <div class="card">
@@ -1881,17 +1881,17 @@ function fetchJobData(){
   </div>
 <style>
   .wo-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
-  .wo-hero-title{font-size:1.1rem;font-weight:700;color:#e2e8f0;}
+  .wo-hero-title{font-size:1.1rem;font-weight:700;color:#1e293b;}
   .wo-hero-sub{font-size:0.78rem;color:#94a3b8;margin-top:3px;}
-  .wo-guide-link{font-size:0.72rem;font-weight:600;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;border:1px solid #2a3050;background:#1e2a3a;white-space:nowrap;transition:color 0.15s,border-color 0.15s;}
+  .wo-guide-link{font-size:0.72rem;font-weight:600;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;white-space:nowrap;transition:color 0.15s,border-color 0.15s;}
   .wo-guide-link:hover{color:#4A90D9;border-color:#4A90D9;}
 
-  .wo-toolbar{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;background:#0f1117;border:1px solid #2a3050;border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+  .wo-toolbar{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 18px;margin-bottom:14px;}
   .wo-field{flex:1;min-width:180px;}
   .wo-field label{font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px;display:block;}
   .wo-actions{display:flex;gap:10px;}
 
-  .wo-options-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#0f1117;border:1px solid #2a3050;border-radius:10px;padding:12px 16px;margin-bottom:4px;}
+  .wo-options-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:4px;}
   .wo-options-label{font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#94a3b8;}
   .wo-opt-pill{padding:7px 16px;border-radius:16px;border:1px solid #4A90D9;background:transparent;color:#4A90D9;cursor:pointer;font-size:0.8rem;font-weight:700;transition:all 0.2s;}
   .wo-opt-pill:not(:disabled):hover{background:#4A90D9;color:#fff;}
@@ -4722,7 +4722,7 @@ function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
 
 
 function applyLogo(d){var l=document.getElementById("header-logo");var f=document.getElementById("header-fallback");l.src=d;l.style.display="block";f.style.display="none";}
-function renderLogoPreview(d){document.getElementById("logo-preview").innerHTML='<img src="'+d+'" style="max-height:60px;border-radius:6px;border:1px solid #2a3050;background:#0f1117;padding:6px;margin-top:8px;"><div class="small" style="margin-top:4px;">Logo saved</div><button class="btn btn-danger btn-sm" id="remove-logo-btn" style="margin-top:6px;">Remove</button>';var b=document.getElementById("remove-logo-btn");if(b)b.addEventListener("click",clearLogo);}
+function renderLogoPreview(d){document.getElementById("logo-preview").innerHTML='<img src="'+d+'" style="max-height:60px;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;padding:6px;margin-top:8px;"><div class="small" style="margin-top:4px;">Logo saved</div><button class="btn btn-danger btn-sm" id="remove-logo-btn" style="margin-top:6px;">Remove</button>';var b=document.getElementById("remove-logo-btn");if(b)b.addEventListener("click",clearLogo);}
 function clearLogo(){store.del("brand_logo");var l=document.getElementById("header-logo");l.src="";l.style.display="none";document.getElementById("header-fallback").style.display="block";document.getElementById("logo-preview").innerHTML="";document.getElementById("logo-upload").value="";}
 function loadLogo(){var d=store.get("brand_logo");if(d){applyLogo(d);renderLogoPreview(d);}}
 
@@ -5966,7 +5966,7 @@ var TIME_WINDOWS = {
 function apptWindowSelect(prefix, key) {
   return '<div style="margin-top:10px;">' +
     '<label>Time Window</label>' +
-    '<select id="' + prefix + '-win-' + key + '" onchange="apptWindowChange(\'' + prefix + '\',\'' + key + '\')" style="background:#0f1117;border:1px solid #2a3050;border-radius:6px;padding:6px 10px;color:#e2e8f0;font-size:0.82rem;width:100%;outline:none;">' +
+    '<select id="' + prefix + '-win-' + key + '" onchange="apptWindowChange(\'' + prefix + '\',\'' + key + '\')" style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;color:#1e293b;font-size:0.82rem;width:100%;outline:none;">' +
       '<option value="specific">Specific Time</option>' +
       '<option value="morning">Morning Window (8am–12pm)</option>' +
       '<option value="afternoon">Afternoon Window (12–5pm)</option>' +
@@ -6923,7 +6923,7 @@ function renderBulkGrid(jobs) {
   var foundJobs = jobs.filter(function(j){ return j.found; });
   var copyBar = foundJobs.length > 1
     ? '<div class="bulk-copy-bar">' +
-        '⚡ <strong style="color:#e2e8f0;">Fill all rows:</strong>  ' +
+        '⚡ <strong style="color:#1e293b;">Fill all rows:</strong>  ' +
         '<select id="bulk-fill-type" style="min-width:180px;">' + apptTypeOptions() + '</select>' +
         ' <input type="date" id="bulk-fill-date" style="width:130px;">' +
         ' <input type="time" id="bulk-fill-start" style="width:105px;" placeholder="Start">' +
@@ -7545,7 +7545,7 @@ function renderAllEvents() {
     }).join("");
 
     return '<div style="margin-bottom:18px;">' +
-      '<div style="font-size:0.78rem;font-weight:700;color:#4A90D9;text-transform:uppercase;letter-spacing:0.06em;padding:6px 0 8px;border-bottom:1px solid #2a3050;margin-bottom:8px;">' + dateKey + '</div>' +
+      '<div style="font-size:0.78rem;font-weight:700;color:#4A90D9;text-transform:uppercase;letter-spacing:0.06em;padding:6px 0 8px;border-bottom:1px solid #e2e8f0;margin-bottom:8px;">' + dateKey + '</div>' +
       evRows +
     '</div>';
   }).join("");
