@@ -69,7 +69,6 @@ jobs:
         run: |
           mkdir -p deploy
           cp index.html deploy/index.html
-          cp "TC_White_Logo_2025__2_.png" deploy/ 2>/dev/null || true
           cp wo-offline-guide.html deploy/wo-offline-guide.html
           cd deploy
           git init
