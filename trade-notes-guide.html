@@ -1,0 +1,341 @@
+<title>Trade Notes Guide | TC Roofing & Restorations</title>
+<style>
+:root {
+  --blue: #4A90D9;
+  --blue-dim: #357abd;
+  --green: #8DC63F;
+  --purple: #a78bfa;
+  --amber: #f59e0b;
+  --red: #ef4444;
+
+  --bg: #f1f5f9;
+  --bg2: #e8eef6;
+  --surf: #ffffff;
+  --surf2: #f8fafc;
+  --bdr: #d1dae8;
+  --bdr2: #c3cfe2;
+
+  --txt: #1e293b;
+  --txt2: #475569;
+  --txt3: #64748b;
+  --txt4: #94a3b8;
+
+  --step-sz: 28px;
+  --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.site-header {
+  background: var(--surf);
+  border-bottom: 3px solid var(--blue);
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-brand { font-size: 1rem; font-weight: 800; color: var(--blue); letter-spacing: -0.01em; }
+.header-brand span { color: var(--green); }
+.header-doc-title {
+  font-size: 0.78rem; font-weight: 600; color: var(--txt3);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-left: 4px; padding-left: 16px; border-left: 1px solid var(--bdr);
+}
+.header-meta { margin-left: auto; font-size: 0.72rem; color: var(--txt4); text-align: right; }
+
+.page-wrap { max-width: 780px; margin: 0 auto; padding: 36px 24px 80px; }
+
+.part-heading {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--bdr);
+}
+.part-icon {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; flex-shrink: 0;
+  background: color-mix(in srgb, var(--blue) 15%, var(--surf));
+}
+.part-title { font-size: 1.5rem; font-weight: 800; color: var(--txt); letter-spacing: -0.02em; text-wrap: balance; line-height: 1.2; }
+.part-subtitle { font-size: 0.82rem; color: var(--txt3); margin-top: 4px; }
+
+.guide-section {
+  background: var(--surf); border: 1px solid var(--bdr); border-radius: var(--radius);
+  padding: 24px 26px; margin-bottom: 20px;
+}
+.section-eyebrow {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--txt4); margin-bottom: 8px;
+}
+.section-title { font-size: 1.05rem; font-weight: 700; color: var(--txt); margin-bottom: 14px; letter-spacing: -0.01em; }
+
+.steps { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
+.step { display: grid; grid-template-columns: var(--step-sz) 1fr; gap: 12px; align-items: start; }
+.step-num {
+  width: var(--step-sz); height: var(--step-sz); border-radius: 50%;
+  font-size: 0.72rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  background: color-mix(in srgb, var(--blue) 18%, var(--surf)); color: var(--blue);
+}
+.step-body { padding-top: 4px; }
+.step-body strong { color: var(--txt); font-weight: 700; display: block; margin-bottom: 3px; font-size: 0.9rem; }
+.step-body p { color: var(--txt2); font-size: 0.86rem; line-height: 1.6; }
+.step-body p + p { margin-top: 8px; }
+
+.callout {
+  border-radius: 8px; padding: 13px 15px; font-size: 0.83rem; line-height: 1.55; margin-top: 14px;
+  display: grid; grid-template-columns: 18px 1fr; gap: 10px; align-items: start;
+}
+.callout-icon { font-size: 0.9rem; line-height: 1.4; }
+.callout-body { color: var(--txt2); }
+.callout-body strong { display: block; margin-bottom: 3px; color: var(--txt); }
+.callout.info { background: color-mix(in srgb, var(--blue) 10%, var(--surf)); border: 1px solid color-mix(in srgb, var(--blue) 25%, var(--surf)); }
+.callout.warn { background: color-mix(in srgb, var(--amber) 10%, var(--surf)); border: 1px solid color-mix(in srgb, var(--amber) 30%, var(--surf)); }
+.callout.policy { background: color-mix(in srgb, var(--red) 8%, var(--surf)); border: 1px solid color-mix(in srgb, var(--red) 22%, var(--surf)); }
+.callout.tip { background: color-mix(in srgb, var(--green) 10%, var(--surf)); border: 1px solid color-mix(in srgb, var(--green) 25%, var(--surf)); }
+
+.toc { background: var(--surf); border: 1px solid var(--bdr); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 28px; }
+.toc-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--txt4); margin-bottom: 10px; }
+.toc-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.toc-list li a { font-size: 0.84rem; color: var(--txt2); text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 3px 0; transition: color 0.15s; }
+.toc-list li a:hover { color: var(--blue); }
+.toc-list li a .toc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--bdr2); flex-shrink: 0; }
+
+.sub-divider { border: none; border-top: 1px dashed var(--bdr); margin: 22px 0; }
+
+.tag {
+  display: inline-block; padding: 1px 7px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;
+  vertical-align: middle; margin-left: 3px;
+}
+.tag-blue { background: color-mix(in srgb, var(--blue) 15%, var(--surf)); color: var(--blue); }
+.tag-green { background: color-mix(in srgb, var(--green) 15%, var(--surf)); color: #166534; }
+.tag-amber { background: color-mix(in srgb, var(--amber) 18%, var(--surf)); color: #92400e; }
+.tag-purple { background: color-mix(in srgb, var(--purple) 18%, var(--surf)); color: #6d28d9; }
+
+kbd, .btnlabel {
+  display: inline-block; font-family: inherit; font-size: 0.82rem; font-weight: 700;
+  background: var(--surf2); border: 1px solid var(--bdr2); border-radius: 6px; padding: 1px 8px; color: var(--txt);
+}
+
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.86rem; color: var(--txt2); }
+.checklist li::before { content: "☐"; color: var(--blue); font-size: 1rem; line-height: 1.3; flex-shrink: 0; }
+
+.msg-thread { display: flex; flex-direction: column; align-items: flex-start; margin-top: 12px; }
+.msg-bubble {
+  background: color-mix(in srgb, var(--blue) 12%, var(--surf));
+  border: 1px solid color-mix(in srgb, var(--blue) 22%, var(--surf));
+  border-radius: 16px; border-top-left-radius: 4px;
+  padding: 13px 16px; font-size: 0.86rem; line-height: 1.6; color: var(--txt);
+  white-space: pre-line; max-width: 100%;
+}
+.msg-bubble .mv { color: var(--blue-dim); font-weight: 700; }
+.msg-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--txt4); margin: 14px 0 4px; }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1720; --bg2: #131c27; --surf: #182430; --surf2: #1e2b38;
+    --bdr: #2c3b4a; --bdr2: #364a5c;
+    --txt: #e2e8f0; --txt2: #b8c4d0; --txt3: #8fa0b3; --txt4: #64748b;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1720; --bg2: #131c27; --surf: #182430; --surf2: #1e2b38;
+  --bdr: #2c3b4a; --bdr2: #364a5c;
+  --txt: #e2e8f0; --txt2: #b8c4d0; --txt3: #8fa0b3; --txt4: #64748b;
+}
+:root[data-theme="light"] {
+  --bg: #f1f5f9; --bg2: #e8eef6; --surf: #ffffff; --surf2: #f8fafc;
+  --bdr: #d1dae8; --bdr2: #c3cfe2;
+  --txt: #1e293b; --txt2: #475569; --txt3: #64748b; --txt4: #94a3b8;
+}
+
+@media (max-width: 600px) {
+  .site-header { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
+  .page-wrap { padding: 24px 14px 60px; }
+}
+</style>
+
+<header class="site-header">
+  <div><div class="header-brand">TC <span>Roofing</span> & Restorations</div></div>
+  <div class="header-doc-title">Trade Notes Guide</div>
+  <div class="header-meta">TC Employee Portal<br>For internal use</div>
+</header>
+
+<div class="page-wrap">
+
+  <div class="part-heading">
+    <div class="part-icon">🔨</div>
+    <div>
+      <div class="part-title">Trade Notes — How It Works</div>
+      <div class="part-subtitle">Posting notes by trade, AccuLynx thread syncing, and email notifications</div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">In this guide</div>
+    <ul class="toc-list">
+      <li><a href="#overview"><span class="toc-dot"></span>What Trade Notes is for</a></li>
+      <li><a href="#posting"><span class="toc-dot"></span>Posting a note</a></li>
+      <li><a href="#acculynx"><span class="toc-dot"></span>AccuLynx thread syncing</a></li>
+      <li><a href="#status"><span class="toc-dot"></span>Current Status & Sub Quote</a></li>
+      <li><a href="#salesperson"><span class="toc-dot"></span>Salesperson linking</a></li>
+      <li><a href="#tags"><span class="toc-dot"></span>@Tagging & email notifications</a></li>
+      <li><a href="#trouble"><span class="toc-dot"></span>Troubleshooting</a></li>
+    </ul>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="guide-section" id="overview">
+    <div class="section-eyebrow">Read this first</div>
+    <div class="section-title">What Trade Notes Is For</div>
+    <p style="color:var(--txt2);font-size:0.86rem;margin-bottom:14px;">Trade Notes gives every job its own running conversation <strong>per trade</strong> — Roofing, Gutters, Siding, Windows, and so on, each with its own separate thread. It looks and behaves like a group text: your own notes show on the right, everyone else's on the left with their name and timestamp.</p>
+    <div class="callout policy">
+      <div class="callout-icon">⚠</div>
+      <div class="callout-body"><strong>Keep notes specific to the trade you're posting in</strong> Don't cross trades — a Gutters update belongs in the Gutters thread, not Roofing. Each trade's thread stays focused so anyone reading it later gets a clean history for that trade only.</div>
+    </div>
+    <div class="callout info" style="margin-top:10px;">
+      <div class="callout-icon">🔒</div>
+      <div class="callout-body"><strong>Write access is role-gated</strong> Admin, Claims, and Production roles can post notes. Other roles can load a job and read every trade's thread, but can't add to it.</div>
+    </div>
+  </div>
+
+  <!-- POSTING -->
+  <div class="guide-section" id="posting">
+    <div class="section-eyebrow">Day to day</div>
+    <div class="section-title">Posting a Note</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Enter the job number and click "Load Notes"</strong>
+          <p>The trade list on the left populates. Any trade that already has notes turns lime green.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Click a trade</strong>
+          <p>Its thread loads on the right, along with its Current Status / Type / Sub Quote fields above it.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Type your note and click "Add Note"</strong>
+          <p>It's saved immediately, appears in the thread attributed to you, and — if this job is linked to AccuLynx (see below) — is also posted there.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCULYNX -->
+  <div class="guide-section" id="acculynx">
+    <div class="section-eyebrow">Behind the scenes</div>
+    <div class="section-title">AccuLynx Thread Syncing</div>
+    <p style="color:var(--txt2);font-size:0.86rem;margin-bottom:14px;">Each trade gets its own message thread on the job's AccuLynx file — separate from other trades, and separate from the customer texting automation's thread.</p>
+    <div class="msg-label">First note posted for a trade</div>
+    <div class="msg-thread"><div class="msg-bubble"><span class="mv">ROOFING THREAD</span>
+
+<span class="mv">Kat Liss:</span> Shingles delivered, crew scheduled for tomorrow morning.</div></div>
+    <div class="msg-label">Every note after that, for the same trade</div>
+    <div class="msg-thread"><div class="msg-bubble"><span class="mv">Kat Liss:</span> Crew wrapped up, final walkthrough Friday.</div></div>
+    <div class="callout policy" style="margin-top:14px;">
+      <div class="callout-icon">🚫</div>
+      <div class="callout-body"><strong>Only reply in the app — never in AccuLynx</strong> The app is the source of truth. If you reply directly inside the AccuLynx thread, it does not come back into the app, and the next person reading the thread in-app won't see it. Always post through Trade Notes; it handles pushing your note to AccuLynx automatically.</div>
+    </div>
+    <div class="callout info" style="margin-top:10px;">
+      <div class="callout-icon">🔗</div>
+      <div class="callout-body"><strong>Linking a job to AccuLynx</strong> The app needs the job's AccuLynx GUID to know where to post. It looks for one automatically (from another trade already linked on this job, or from the job's texting-automation history) — if it truly can't find one, you'll get a one-time prompt to paste the AccuLynx job URL. Do this once per job; every trade on that job reuses it from then on. If you skip the prompt, notes still save in the app — they just won't sync to AccuLynx until it's linked.</div>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="guide-section" id="status">
+    <div class="section-eyebrow">Tracking progress</div>
+    <div class="section-title">Current Status & Sub Quote</div>
+    <p style="color:var(--txt2);font-size:0.86rem;margin-bottom:14px;">Each trade also has its own Current Status, Type, Insurance Funds, and Sub Quote fields, saved with the "Save" button next to them.</p>
+    <div class="callout tip">
+      <div class="callout-icon">✅</div>
+      <div class="callout-body"><strong>Changing Status or Sub Quote auto-posts a note</strong> Whenever you save a different Current Status or Sub Quote value, the app automatically adds a note like <em>"Status updated to &quot;Supplementing&quot; by Kat Liss"</em> or <em>"Sub Quote updated to $4,200.00 by Kat Liss"</em> — into both the trade's thread and its AccuLynx thread. You don't need to also type a manual note about it; saving the field is enough.</div>
+    </div>
+  </div>
+
+  <!-- SALESPERSON -->
+  <div class="guide-section" id="salesperson">
+    <div class="section-eyebrow">One-time setup per job</div>
+    <div class="section-title">Salesperson Linking</div>
+    <p style="color:var(--txt2);font-size:0.86rem;">The first time any note needs to notify someone on a job, you may be prompted: <em>"Who is the salesperson on Job X?"</em> Enter their name. This is saved job-wide — every trade on that job reuses the same salesperson from then on, so you only ever enter it once per job.</p>
+  </div>
+
+  <!-- TAGS -->
+  <div class="guide-section" id="tags">
+    <div class="section-eyebrow">Notifications</div>
+    <div class="section-title">@Tagging & Email Notifications</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>Type @name anywhere in a note to notify that person by email</strong>
+          <p>Example: <span class="btnlabel">@kevin heads up on the material count</span>. The handle is matched to that person's login email directly — <span class="btnlabel">@kevin</span> means whoever logs into the app as <span class="btnlabel">kevin@tcroofingexperts.com</span>. You can tag more than one person in the same note.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>The salesperson is always notified — tags are on top of that, not instead of it</strong>
+          <p>If a note has no @tags at all, only the salesperson gets an email. If it has tags, those people get notified in addition to the salesperson.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>You never get emailed about your own note</strong>
+          <p>Unless you deliberately tag yourself (e.g. <span class="btnlabel">@kat remind me to follow up Friday</span>) — that's honored, since it's clearly meant as a reminder to yourself.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout info" style="margin-top:14px;">
+      <div class="callout-icon">✉</div>
+      <div class="callout-body"><strong>What the email looks like</strong> Subject: <em>"Trade Note Update — Job [number] ([trade])"</em>. Body: who posted it, on which trade/job, the note text itself, a link back to the app, and a reminder to reply in the app rather than in AccuLynx.</div>
+    </div>
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <div class="guide-section" id="trouble">
+    <div class="section-eyebrow">If something doesn't go as expected</div>
+    <div class="section-title">Troubleshooting</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>A note says "not synced to AccuLynx"</strong>
+          <p>Means no AccuLynx GUID is linked for this job yet. Post another note and, if prompted, paste the job's AccuLynx URL — every trade on the job will pick it up from then on.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>Someone I @tagged says they didn't get an email</strong>
+          <p>Double check the handle matches the exact start of their login email (before the @). If their login is <span class="btnlabel">kevin.smith@tcroofingexperts.com</span>, the tag needs to be <span class="btnlabel">@kevin.smith</span>, not just <span class="btnlabel">@kevin</span>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>A reply was typed directly in AccuLynx and it's missing from the app</strong>
+          <p>Expected — AccuLynx replies don't flow back into the app. Re-post the note through Trade Notes so it's captured in both places going forward.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
