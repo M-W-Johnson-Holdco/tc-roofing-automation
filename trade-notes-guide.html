@@ -285,7 +285,7 @@ kbd, .btnlabel {
         <div class="step-num">●</div>
         <div class="step-body">
           <strong>Type @name anywhere in a note to notify that person by email</strong>
-          <p>Example: <span class="btnlabel">@kevin heads up on the material count</span>. The handle is matched to that person's login email directly — <span class="btnlabel">@kevin</span> means whoever logs into the app as <span class="btnlabel">kevin@tcroofingexperts.com</span>. You can tag more than one person in the same note.</p>
+          <p>Example: <span class="btnlabel">@kevin heads up on the material count</span>. The handle is matched to that person's login email (the part before the @) or their first name — whichever it lines up with. So <span class="btnlabel">@kevin</span> matches someone logging in as <span class="btnlabel">kevin@tcroofingexperts.com</span>, and it'll also match someone whose login is formatted differently (like <span class="btnlabel">b.walls@tcroofingexperts.com</span>) as long as their first name in the system is "Kevin." You can tag more than one person in the same note.</p>
         </div>
       </div>
       <div class="step">
@@ -325,7 +325,7 @@ kbd, .btnlabel {
         <div class="step-num">●</div>
         <div class="step-body">
           <strong>Someone I @tagged says they didn't get an email</strong>
-          <p>Double check the handle matches the exact start of their login email (before the @). If their login is <span class="btnlabel">kevin.smith@tcroofingexperts.com</span>, the tag needs to be <span class="btnlabel">@kevin.smith</span>, not just <span class="btnlabel">@kevin</span>.</p>
+          <p>The tag matches either their login handle (the part before the @ in their login email) or their first name — whichever it matches. If neither lines up with what you typed, it won't resolve. E.g. if someone's login is <span class="btnlabel">kevin.smith@tcroofingexperts.com</span> and everyone calls them "Kevin," both <span class="btnlabel">@kevin.smith</span> and <span class="btnlabel">@kevin</span> will work — but a nickname that matches neither their login nor their first name won't.</p>
         </div>
       </div>
       <div class="step">
