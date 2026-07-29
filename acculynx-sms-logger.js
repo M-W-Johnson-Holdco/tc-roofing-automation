@@ -45,6 +45,35 @@ const DEDUP_PHONE_LAST10 = "2145098272";
 
 function last10(v) { return String(v || "").replace(/\D/g, "").slice(-10); }
 
+// ---- DUPLICATE DELIVERY GUARD ----
+// If a second subscription exists on this extension, it delivers every message a
+// second time about 1ms later. When it was created with different RingCentral
+// credentials, this app cannot list it (GET /subscription is scoped to the
+// authenticating user AND app) and cannot delete it either — DELETE returns
+// 404 CMN-102. Without a guard, each delivery posts its own AccuLynx note.
+// Peachtree hit exactly this.
+//
+// Cloudflare routinely handles near-simultaneous requests in the same isolate, so
+// a module-scope map catches them with no KV binding and no setup. It is
+// per-isolate, so treat this as a strong mitigation rather than a guarantee; if
+// duplicates ever reappear, the two deliveries landed in separate isolates and
+// this needs promoting to KV.
+const seenMessages = new Map(); // messageId -> epoch ms
+const SEEN_TTL_MS = 10 * 60 * 1000;
+
+function claimMessage(msgId) {
+  if (!msgId) return true; // nothing to key on — let it through
+  const now = Date.now();
+  for (const [k, t] of seenMessages) { if (now - t > SEEN_TTL_MS) seenMessages.delete(k); }
+  if (seenMessages.has(msgId)) return false;
+  seenMessages.set(msgId, now);
+  return true;
+}
+
+// Release the claim when posting failed, so a genuine retry is not swallowed by
+// the guard for the next ten minutes.
+function releaseMessage(msgId) { if (msgId) seenMessages.delete(msgId); }
+
 // Timestamps carry an explicit zone label so a wrong-timezone deployment is
 // visible on the job file instead of silently reading an hour off.
 function brandTimestamp(creationTime) {
@@ -113,6 +142,14 @@ async function handleRequest(request) {
                     "msgId:", msg.id, "subscriptionId:", body.subscriptionId, "Text:", text);
         if (!fromPhone) continue;
 
+        // Claim before the sheet lookup, so the duplicate is dropped as early as
+        // possible rather than racing us through the slower AccuLynx call.
+        if (!claimMessage(msg.id)) {
+          console.log("Duplicate delivery of msgId", msg.id, "via subscription",
+                      body.subscriptionId, "— already handled, skipping");
+          continue;
+        }
+
         const jobInfo = await findJob(fromPhone, conversationId);
         const note = "[Inbound SMS Reply] From: " + fromPhone + " | " + timestamp + "\n\n" + text;
 
@@ -129,11 +166,16 @@ async function handleRequest(request) {
             } else {
               await postToAccuLynx(jobInfo.jobGuid, note);
             }
-          } catch (e) { console.error("AccuLynx post error:", e.message); }
+          } catch (e) {
+            console.error("AccuLynx post error:", e.message);
+            releaseMessage(msg.id);
+          }
         } else if (jobInfo && !jobInfo.jobGuid) {
           console.log("Found job", jobInfo.jobNum, "but no GUID");
+          releaseMessage(msg.id); // nothing posted — do not block a later attempt
         } else {
           console.log("No job found for phone:", fromPhone, "conversationId:", conversationId);
+          releaseMessage(msg.id); // nothing posted — do not block a later attempt
         }
       }
 
