@@ -103,7 +103,14 @@ async function handleRequest(request) {
         const text = msg.subject || msg.body || msg.text || "(no text)";
         const conversationId = msg.conversation?.id || "";
         const timestamp = brandTimestamp(msg.creationTime);
-        console.log("From:", fromPhone, "ConversationId:", conversationId, "Text:", text);
+        // subscriptionId is logged because a second, hidden subscription on the
+        // same account will silently deliver every message twice, and the worker
+        // posts once per delivery. RingCentral scopes GET /subscription to the
+        // authenticating user, so the app's Config panel cannot see subscriptions
+        // created under other credentials — this field is the only reliable way
+        // to tell duplicate delivery apart from a bug in this code.
+        console.log("From:", fromPhone, "ConversationId:", conversationId,
+                    "msgId:", msg.id, "subscriptionId:", body.subscriptionId, "Text:", text);
         if (!fromPhone) continue;
 
         const jobInfo = await findJob(fromPhone, conversationId);
