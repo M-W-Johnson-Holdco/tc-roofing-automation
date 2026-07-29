@@ -17,8 +17,8 @@
 // copying this file to the other brand, change the whole BRAND CONFIG
 // block, not just one line.
 //
-//   TC        -> America/Chicago, "CT", RC_FROM +12147168582
-//   Peachtree -> America/New_York, "ET", RC_FROM +14043295117
+//   TC        -> America/Chicago,  "CT", RC_FROM +12147168582, dedup +12145098272
+//   Peachtree -> America/New_York, "ET", RC_FROM +14043295117, dedup +14045768975
 //
 // SETUP
 // 1. Paste this file into the Worker and fill in every YOUR_... value.
@@ -37,11 +37,11 @@ const ACCULYNX_API_KEY = "YOUR_TC_ACCULYNX_API_KEY";
 const GS_CLIENT_ID     = "YOUR_GS_CLIENT_ID";
 const GS_CLIENT_SECRET = "YOUR_GS_CLIENT_SECRET";
 const GS_REFRESH_TOKEN = "YOUR_GS_REFRESH_TOKEN";
-
-// Injected by the app into a job's Secondary Phone when two jobs share a primary
+// The app injects this into a job's Secondary Phone when two jobs share a primary
 // phone, purely to force RingCentral into separate group threads. Never a real
-// participant, so it must not resolve to a job.
-const DEDUP_PHONE_LAST10 = "4045768975";
+// participant, so it must not resolve to a job. Brand-specific — TC's app uses
+// +12145098272 (see DEDUP_PHONE in index.template.html), Peachtree's +14045768975.
+const DEDUP_PHONE_LAST10 = "2145098272";
 
 function last10(v) { return String(v || "").replace(/\D/g, "").slice(-10); }
 
