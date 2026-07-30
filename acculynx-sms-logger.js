@@ -45,6 +45,22 @@ const DEDUP_PHONE_LAST10 = "2145098272";
 
 function last10(v) { return String(v || "").replace(/\D/g, "").slice(-10); }
 
+// ---- DENIED SUBSCRIPTIONS ----
+// Notifications from these subscription IDs are dropped outright. Use it when a
+// duplicate subscription cannot be removed: RingCentral scopes both GET and DELETE
+// /subscription to the user AND app that created it, so one registered with other
+// credentials is invisible to List All and DELETE returns 404 CMN-102. Deleting
+// the owning app does not necessarily stop it delivering either — Peachtree hit
+// exactly this and needed an entry here.
+//
+// Deliberately a denylist rather than an allowlist. Re-registering the webhook
+// mints a new subscription ID, and an allowlist would silently stop all inbound
+// logging until someone remembered to update this constant. Every payload's
+// subscriptionId is logged, so a new offender is easy to identify and add.
+const IGNORED_SUBSCRIPTION_IDS = [
+  // none known for TC
+];
+
 // ---- DUPLICATE DELIVERY GUARD ----
 // If a second subscription exists on this extension, it delivers every message a
 // second time about 1ms later. When it was created with different RingCentral
@@ -111,6 +127,17 @@ async function handleRequest(request) {
       const bodyText = await request.text();
       console.log("Received body:", bodyText);
       const body = JSON.parse(bodyText);
+
+      // Drop denied subscriptions before doing any work. subscriptionId lives on
+      // the envelope, so this is one check per notification, not per message.
+      if (body && IGNORED_SUBSCRIPTION_IDS.indexOf(body.subscriptionId) !== -1) {
+        console.log("Ignoring notification from denied subscription", body.subscriptionId,
+                    "— known duplicate delivery, see IGNORED_SUBSCRIPTION_IDS");
+        const h = { "Content-Type": "application/json" };
+        if (validationToken) h["Validation-Token"] = validationToken;
+        return new Response(JSON.stringify({ status: "ignored" }), { status: 200, headers: h });
+      }
+
       const msgBody = body?.body;
       const msgs = msgBody?.messages || (msgBody?.direction ? [msgBody] : []);
       console.log("Messages found:", msgs.length);
