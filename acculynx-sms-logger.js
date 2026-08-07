@@ -58,8 +58,24 @@ function last10(v) { return String(v || "").replace(/\D/g, "").slice(-10); }
 // logging until someone remembered to update this constant. Every payload's
 // subscriptionId is logged, so a new offender is easy to identify and add.
 const IGNORED_SUBSCRIPTION_IDS = [
-  // none known for TC
+  // Hidden duplicate on TC's account (63377564031). Delivered a second copy of
+  // every inbound ~1ms after the app's own subscription
+  // 4c5f6ae9-8ef4-45a2-8fe6-4a24c846a991, so each reply was posted to AccuLynx
+  // twice. Not visible to List All and not deletable from the app, same as the
+  // Peachtree case. Stored as a prefix because Cloudflare's log view truncates
+  // the id and that is the only place it appears.
+  "fa50c707-121e-4cbd-bcd6-"
 ];
+
+// Entries may be a full UUID or just the leading portion of one — the offending
+// id is usually only visible in a truncated log line. A minimum length keeps a
+// short or accidental entry from matching real subscriptions.
+function isDeniedSubscription(id) {
+  if (!id) return false;
+  return IGNORED_SUBSCRIPTION_IDS.some(function (entry) {
+    return entry && entry.length >= 8 && String(id).indexOf(entry) === 0;
+  });
+}
 
 // ---- DUPLICATE DELIVERY GUARD ----
 // If a second subscription exists on this extension, it delivers every message a
@@ -130,7 +146,7 @@ async function handleRequest(request) {
 
       // Drop denied subscriptions before doing any work. subscriptionId lives on
       // the envelope, so this is one check per notification, not per message.
-      if (body && IGNORED_SUBSCRIPTION_IDS.indexOf(body.subscriptionId) !== -1) {
+      if (body && isDeniedSubscription(body.subscriptionId)) {
         console.log("Ignoring notification from denied subscription", body.subscriptionId,
                     "— known duplicate delivery, see IGNORED_SUBSCRIPTION_IDS");
         const h = { "Content-Type": "application/json" };
