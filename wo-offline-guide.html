@@ -1,0 +1,479 @@
+<title>Offline Work Order Prep — Field Guide | TC Roofing & Restorations</title>
+<style>
+:root {
+  --blue: #4A90D9;
+  --blue-dim: #357abd;
+  --green: #8DC63F;
+  --purple: #a78bfa;
+  --amber: #f59e0b;
+  --red: #ef4444;
+
+  --bg: #f1f5f9;
+  --bg2: #e8eef6;
+  --surf: #ffffff;
+  --surf2: #f8fafc;
+  --bdr: #d1dae8;
+  --bdr2: #c3cfe2;
+
+  --txt: #1e293b;
+  --txt2: #475569;
+  --txt3: #64748b;
+  --txt4: #94a3b8;
+
+  --step-sz: 28px;
+  --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.site-header {
+  background: var(--surf);
+  border-bottom: 3px solid var(--blue);
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-brand { font-size: 1rem; font-weight: 800; color: var(--blue); letter-spacing: -0.01em; }
+.header-brand span { color: var(--green); }
+.header-doc-title {
+  font-size: 0.78rem; font-weight: 600; color: var(--txt3);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-left: 4px; padding-left: 16px; border-left: 1px solid var(--bdr);
+}
+.header-meta { margin-left: auto; font-size: 0.72rem; color: var(--txt4); text-align: right; }
+
+.page-wrap { max-width: 780px; margin: 0 auto; padding: 36px 24px 80px; }
+
+.part-heading {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--bdr);
+}
+.part-icon {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; flex-shrink: 0;
+  background: color-mix(in srgb, var(--blue) 15%, var(--surf));
+}
+[data-theme="dark"] .part-icon { background: #1e3a5f; }
+@media (prefers-color-scheme: dark) { .part-icon { background: #1e3a5f; } }
+.part-title { font-size: 1.5rem; font-weight: 800; color: var(--txt); letter-spacing: -0.02em; text-wrap: balance; line-height: 1.2; }
+.part-subtitle { font-size: 0.82rem; color: var(--txt3); margin-top: 4px; }
+
+.guide-section {
+  background: var(--surf); border: 1px solid var(--bdr); border-radius: var(--radius);
+  padding: 24px 26px; margin-bottom: 20px;
+}
+.section-eyebrow {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--txt4); margin-bottom: 8px;
+}
+.section-title { font-size: 1.05rem; font-weight: 700; color: var(--txt); margin-bottom: 14px; letter-spacing: -0.01em; }
+
+.steps { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
+.step { display: grid; grid-template-columns: var(--step-sz) 1fr; gap: 12px; align-items: start; }
+.step-num {
+  width: var(--step-sz); height: var(--step-sz); border-radius: 50%;
+  font-size: 0.72rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  background: color-mix(in srgb, var(--blue) 18%, var(--surf)); color: var(--blue);
+}
+.step-body { padding-top: 4px; }
+.step-body strong { color: var(--txt); font-weight: 700; display: block; margin-bottom: 3px; font-size: 0.9rem; }
+.step-body p { color: var(--txt2); font-size: 0.86rem; line-height: 1.6; }
+.step-body p + p { margin-top: 8px; }
+
+.callout {
+  border-radius: 8px; padding: 13px 15px; font-size: 0.83rem; line-height: 1.55; margin-top: 14px;
+  display: grid; grid-template-columns: 18px 1fr; gap: 10px; align-items: start;
+}
+.callout-icon { font-size: 0.9rem; line-height: 1.4; }
+.callout-body { color: var(--txt2); }
+.callout-body strong { display: block; margin-bottom: 3px; }
+.callout.info { background: color-mix(in srgb, var(--blue) 10%, var(--surf)); border: 1px solid color-mix(in srgb, var(--blue) 25%, var(--surf)); }
+.callout.warn { background: color-mix(in srgb, var(--amber) 10%, var(--surf)); border: 1px solid color-mix(in srgb, var(--amber) 30%, var(--surf)); }
+.callout.policy { background: color-mix(in srgb, var(--red) 8%, var(--surf)); border: 1px solid color-mix(in srgb, var(--red) 22%, var(--surf)); }
+.callout.tip { background: color-mix(in srgb, var(--green) 10%, var(--surf)); border: 1px solid color-mix(in srgb, var(--green) 25%, var(--surf)); }
+
+.toc { background: var(--surf); border: 1px solid var(--bdr); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 28px; }
+.toc-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--txt4); margin-bottom: 10px; }
+.toc-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.toc-list li a { font-size: 0.84rem; color: var(--txt2); text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 3px 0; transition: color 0.15s; }
+.toc-list li a:hover { color: var(--blue); }
+.toc-list li a .toc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--bdr2); flex-shrink: 0; }
+
+.sub-divider { border: none; border-top: 1px dashed var(--bdr); margin: 22px 0; }
+
+.tag {
+  display: inline-block; padding: 1px 7px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;
+  vertical-align: middle; margin-left: 3px;
+}
+.tag-blue { background: color-mix(in srgb, var(--blue) 15%, var(--surf)); color: var(--blue); }
+.tag-green { background: color-mix(in srgb, var(--green) 15%, var(--surf)); color: #166534; }
+[data-theme="dark"] .tag-green { color: var(--green); }
+@media (prefers-color-scheme: dark) { .tag-green { color: var(--green); } }
+.tag-amber { background: color-mix(in srgb, var(--amber) 18%, var(--surf)); color: #92400e; }
+[data-theme="dark"] .tag-amber { color: #fcd34d; }
+@media (prefers-color-scheme: dark) { .tag-amber { color: #fcd34d; } }
+
+kbd, .btnlabel {
+  display: inline-block; font-family: inherit; font-size: 0.82rem; font-weight: 700;
+  background: var(--surf2); border: 1px solid var(--bdr2); border-radius: 6px; padding: 1px 8px; color: var(--txt);
+}
+
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.86rem; color: var(--txt2); }
+.checklist li::before { content: "☐"; color: var(--blue); font-size: 1rem; line-height: 1.3; flex-shrink: 0; }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1720; --bg2: #131c27; --surf: #182430; --surf2: #1e2b38;
+    --bdr: #2c3b4a; --bdr2: #364a5c;
+    --txt: #e2e8f0; --txt2: #b8c4d0; --txt3: #8fa0b3; --txt4: #64748b;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1720; --bg2: #131c27; --surf: #182430; --surf2: #1e2b38;
+  --bdr: #2c3b4a; --bdr2: #364a5c;
+  --txt: #e2e8f0; --txt2: #b8c4d0; --txt3: #8fa0b3; --txt4: #64748b;
+}
+:root[data-theme="light"] {
+  --bg: #f1f5f9; --bg2: #e8eef6; --surf: #ffffff; --surf2: #f8fafc;
+  --bdr: #d1dae8; --bdr2: #c3cfe2;
+  --txt: #1e293b; --txt2: #475569; --txt3: #64748b; --txt4: #94a3b8;
+}
+
+@media (max-width: 600px) {
+  .site-header { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
+  .page-wrap { padding: 24px 14px 60px; }
+}
+</style>
+
+<header class="site-header">
+  <div><div class="header-brand">TC <span>Roofing</span> & Restorations</div></div>
+  <div class="header-doc-title">Offline Work Order Prep — Field Guide</div>
+  <div class="header-meta">TC Employee Portal<br>For internal use</div>
+</header>
+
+<div class="page-wrap">
+
+  <div class="part-heading">
+    <div class="part-icon">📶</div>
+    <div>
+      <div class="part-title">Running a Work Order Appointment With No Signal</div>
+      <div class="part-subtitle">How to prep your device so the Work Order and Upgrades tabs keep working when you're out of service</div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">In this guide</div>
+    <ul class="toc-list">
+      <li><a href="#read-first"><span class="toc-dot"></span>Read this first — how offline mode actually works</a></li>
+      <li><a href="#setup"><span class="toc-dot"></span>1. One-time device setup</a></li>
+      <li><a href="#prep-wo"><span class="toc-dot"></span>2. Prep the Work Order for each job</a></li>
+      <li><a href="#prep-upg"><span class="toc-dot"></span>3. Prep your 3 upgrade options</a></li>
+      <li><a href="#lock-in"><span class="toc-dot"></span>4. Lock it in before you head out</a></li>
+      <li><a href="#at-appt"><span class="toc-dot"></span>5. At the appointment, no signal</a></li>
+      <li><a href="#wrap-up"><span class="toc-dot"></span>6. Wrapping up & signatures</a></li>
+      <li><a href="#reconcile"><span class="toc-dot"></span>7. Back in service — reconcile everything</a></li>
+      <li><a href="#trouble"><span class="toc-dot"></span>Troubleshooting</a></li>
+      <li><a href="#checklist"><span class="toc-dot"></span>Quick pre-flight checklist</a></li>
+    </ul>
+  </div>
+
+  <!-- READ FIRST -->
+  <div class="guide-section" id="read-first">
+    <div class="section-eyebrow">Why the steps below matter</div>
+    <div class="section-title">Read This First — How Offline Mode Actually Works</div>
+    <p style="color:var(--txt2);font-size:0.86rem;margin-bottom:14px;">Everything in this guide comes down to one fact: the app saves to <strong>your browser's local storage on that specific device</strong> before it ever tries to reach the internet. Understanding that makes every step below make sense instead of feeling like arbitrary ritual.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>Local storage is tied to one device + one browser</strong>
+          <p>It does not sync between your phone and laptop, and it does not sync between Chrome and Edge on the same laptop. Whatever device and browser you prep on is the <em>only</em> one that will have the offline data at the appointment.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>Save always writes locally first, network second</strong>
+          <p>Every <span class="btnlabel">💾 Save</span> button — on the Work Order tab or the Upgrades Commissions tab — writes to your device immediately, then tries to sync to the online sheet as a separate step afterward. If you're offline, that second part fails and shows an error message — but your local copy is already safe by the time you see it. Don't let that error message worry you.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>Load tries online first, then falls back to your device automatically</strong>
+          <p>Clicking <span class="btnlabel">📂 Load</span> always tries to reach the network first. If there's no signal, it fails silently in the background and pulls from your local cache instead — as long as that job's data is already on your device from Step 2 below.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>Being signed in offline works too — but only if you've signed in successfully at least once</strong>
+          <p>The app remembers your name and role locally, the same way it remembers Work Orders. If your device has no internet when the app loads, it waits a few seconds and then signs you back in from that cached login automatically (you'll see <span class="tag tag-blue">[offline]</span> next to your name). But if you've never fully logged in on that device before, there's nothing to fall back to — you'll be stuck on the sign-in screen with no way to reach it.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body"><strong>My take</strong> This is the one thing worth internalizing: everything downstream (Work Orders, upgrade options, even being logged in at all) depends on that device having done a successful <em>online</em> pass first. Offline mode isn't magic — it's a cache of things you already did while you had signal. Prep is really just "make sure the cache has what you need."</div>
+    </div>
+  </div>
+
+  <!-- ONE-TIME SETUP -->
+  <div class="guide-section" id="setup">
+    <div class="section-eyebrow">Do this once per device</div>
+    <div class="section-title">1. One-Time Device Setup</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Install Google Chrome on the device you'll actually carry to appointments</strong>
+          <p>Use Chrome specifically for all of the steps below — and use it consistently. If you sometimes use Chrome and sometimes Edge on the same laptop, treat them as two completely separate devices as far as offline data goes.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Get online and sign in with your Google account</strong>
+          <p>Load the Employee Portal, sign in, and confirm you see your name and role badge in the header before doing anything else. That successful login is what gets cached for the offline fallback described above.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Allow cookies / site data if Chrome asks</strong>
+          <p>The app relies on your browser's local storage to hold everything offline. Blocking cookies or clearing site data for this site wipes out your cached login and any saved Work Orders — allow it to persist.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn">
+      <div class="callout-icon">⚠</div>
+      <div class="callout-body"><strong>Don't clear browsing data on this device</strong> "Clear browsing data," "Clear cache," or a Chrome reset wipes local storage — which means your cached login <em>and</em> every saved Work Order and upgrade option disappear with it. If IT or a phone reset ever touches this device, redo the full setup and re-prep before your next offline appointment.</div>
+    </div>
+  </div>
+
+  <!-- PREP WO -->
+  <div class="guide-section" id="prep-wo">
+    <div class="section-eyebrow">Do this for every job you'll visit</div>
+    <div class="section-title">2. Prep the Work Order for Each Job</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>While still online, go to the Work Order tab</strong>
+          <p>Type the job number into the <strong>Job Number</strong> field.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Click <span class="btnlabel">💾 Save</span> right away</strong>
+          <p>This pulls in the pre-filled Work Order and writes it to your device's local storage immediately, keyed to that job number. This is the copy <span class="btnlabel">📂 Load</span> will fall back to later when you have no signal.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout info">
+      <div class="callout-icon">🗂</div>
+      <div class="callout-body"><strong>Multiple stops in one day?</strong> Local storage is keyed per job number, so repeat this for every job on your route before you leave — prepping one job does not prep the others.</div>
+    </div>
+  </div>
+
+  <!-- PREP UPGRADES -->
+  <div class="guide-section" id="prep-upg">
+    <div class="section-eyebrow">Optional, but recommended</div>
+    <div class="section-title">3. Prep Your 3 Upgrade Options</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>On the Upgrades Commissions tab, build out your three plans for this job</strong>
+          <p>Use the same job number you saved the Work Order under in Step 2 — the options are matched up by job number.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Save each one as you finish it</strong>
+          <p>Click <span class="btnlabel">💾 Save Option 1</span>, <span class="btnlabel">💾 Save Option 2</span>, and <span class="btnlabel">💾 Save Option 3</span> for each plan. Each click saves to your device instantly and then syncs to the sheet in the background — same local-first behavior as the Work Order save.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Confirm they took, back on the Work Order tab</strong>
+          <p>The <span class="btnlabel">Option 1</span> / <span class="btnlabel">Option 2</span> / <span class="btnlabel">Option 3</span> buttons next to the job number are greyed out until that job has a saved option to apply. If one is still greyed out after saving, it didn't save locally — try again before you lose signal.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCK IN -->
+  <div class="guide-section" id="lock-in">
+    <div class="section-eyebrow">Before you walk out the door</div>
+    <div class="section-title">4. Lock It In Before You Head Out</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Leave the app open on the Work Order tab and let the device sleep</strong>
+          <p>Don't sign out and don't close Chrome entirely — just let the screen lock/sleep normally.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Do this a few hours ahead, not five minutes before you leave</strong>
+          <p>Gives you a buffer to notice and fix a failed save (bad job number, missed Option save, etc.) while you still have signal to correct it.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout tip">
+      <div class="callout-icon">✅</div>
+      <div class="callout-body"><strong>My take — do a dry run once</strong> The first time you rely on this, prep a job as above, then turn on Airplane Mode and try <span class="btnlabel">📂 Load</span> and <span class="btnlabel">Option 1</span> before you actually need them at a live appointment. Takes two minutes and turns "I think this works" into "I know this works." Turn Airplane Mode back off afterward.</div>
+    </div>
+    <div class="callout warn" style="margin-top:10px;">
+      <div class="callout-icon">🔋</div>
+      <div class="callout-body"><strong>My take — charge it</strong> Sleep still drains battery over several hours. Plug the device in (or top it off) as part of this step, especially if the appointment is later in the day.</div>
+    </div>
+  </div>
+
+  <!-- AT APPOINTMENT -->
+  <div class="guide-section" id="at-appt">
+    <div class="section-eyebrow">No signal, live with the homeowner</div>
+    <div class="section-title">5. At the Appointment (No Signal)</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Wake the device, type the job number, click <span class="btnlabel">📂 Load</span></strong>
+          <p>This loads the pre-filled Work Order you saved back in Step 2, straight from local storage.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Click whichever Option matches what you and the homeowner land on</strong>
+          <p>This syncs that option's materials and pricing <em>on top of</em> the Work Order already loaded — it is not reloading the Work Order itself, so there's no risk of losing what's already on screen. You'll get a warning message when you do this; that warning is just describing the sync, not a problem.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WRAP UP -->
+  <div class="guide-section" id="wrap-up">
+    <div class="section-eyebrow">Finishing the document</div>
+    <div class="section-title">6. Wrapping Up & Signatures</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Save as you go</strong>
+          <p>You'll see <span class="tag tag-amber">⚠ Unsaved changes — tap Save to keep your work</span> appear as you fill in notes and choices. Get in the habit of clicking <span class="btnlabel">💾 Save</span> every few fields rather than waiting until the very end.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Save again immediately after signatures are collected</strong>
+          <p>Still offline, so this save is local-only — but it means you never have to start the document over if something interrupts you right after.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Export and save the completed Work Order to the device</strong>
+          <p>Use <strong>Export as Flattened PDF</strong> once everything is signed and saved. This is what you'll upload to AccuLynx.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout info">
+      <div class="callout-icon">ℹ</div>
+      <div class="callout-body"><strong>If Save shows an error while you're still offline</strong> That's expected — it's the online sheet sync failing, not the save itself. Your local copy already wrote to the device before that network step ran. Don't re-enter anything; just keep going and reconcile once you're back in service (Step 7).</div>
+    </div>
+  </div>
+
+  <!-- RECONCILE -->
+  <div class="guide-section" id="reconcile">
+    <div class="section-eyebrow">Once you're back in signal range</div>
+    <div class="section-title">7. Back in Service Area — Reconcile Everything</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Click <span class="btnlabel">💾 Save</span> on the Work Order tab again</strong>
+          <p>Now that you have signal, this pushes your finalized, signed Work Order up to the online sheet, so it's there if anyone needs to reference or edit it later.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Upload the exported PDF to AccuLynx</strong>
+          <p>Use the flattened PDF you exported in Step 6.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Submit your Upgrades Commissions tab to the payroll sheet</strong>
+          <p>Reflect whatever the final decision was at the appointment — this is how you see your own commission, and how payroll admin can see it too.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <div class="guide-section" id="trouble">
+    <div class="section-eyebrow">If something doesn't go as expected</div>
+    <div class="section-title">Troubleshooting</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>"No work order found for job X" while offline</strong>
+          <p>Step 2 wasn't completed for that job on this specific device before you left — there's nothing local to fall back to. Keep a paper or photo backup of key job details as a last resort for this scenario.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>App shows the Google sign-in screen instead of loading straight in</strong>
+          <p>Means this device never completed a full successful login before (see Step 1) — the offline fallback has nothing cached to restore. There's no way to sign in without signal, so this has to be fixed before you leave the office, not at the appointment.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">●</div>
+        <div class="step-body">
+          <strong>Option 1/2/3 button still greyed out at the appointment</strong>
+          <p>That option never saved locally on this device. Apply whichever ones did save, and finish the rest manually.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="guide-section" id="checklist">
+    <div class="section-eyebrow">Recap</div>
+    <div class="section-title">Quick Pre-Flight Checklist</div>
+    <ul class="checklist">
+      <li>Chrome installed, cookies/site data allowed, on the exact device you're bringing</li>
+      <li>Signed in and full name/role visible in the header at least once on this device</li>
+      <li>Job number entered and <span class="btnlabel">💾 Save</span> clicked for every job on today's route</li>
+      <li>All 3 upgrade options saved for each job, and Option buttons confirmed <em>not</em> greyed out</li>
+      <li>Device charged, left signed in, put to sleep a few hours before departure — not last minute</li>
+      <li>(Optional) Did an Airplane Mode dry run at least once to confirm offline load actually works</li>
+    </ul>
+  </div>
+
+</div>
